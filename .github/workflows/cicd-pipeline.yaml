@@ -35,6 +35,10 @@ jobs:
     uses: ./.github/workflows/check-markdown-format.yaml
   check-terraform-format:
     uses: ./.github/workflows/check-terraform-format.yaml
+  check-python-black-format:
+      uses: ./.github/workflows/check-python-black-format.yaml
+  check-python-flake-rules:
+      uses: ./.github/workflows/check-python-flake-rules.yaml
   cloc-repository:
     uses: ./.github/workflows/cloc-repository.yaml
   scan-dependencies:
@@ -48,6 +52,8 @@ jobs:
         check-file-format,
         check-markdown-format,
         check-terraform-format,
+        check-python-black-format,
+        check-python-flake-rules,
         cloc-repository,
         scan-dependencies,
       ]
