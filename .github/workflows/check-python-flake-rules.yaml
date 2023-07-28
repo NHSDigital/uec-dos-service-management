@@ -1,0 +1,15 @@
+name: Check Python Flake Rules
+
+on:
+  workflow_call:
+
+jobs:
+  check-python-flake-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: |
+          export PRECOMMIT=false
+          ./scripts/githooks/python-flake-pre-commit.sh

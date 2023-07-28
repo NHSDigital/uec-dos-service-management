@@ -1,0 +1,15 @@
+name: Check Python Black Format
+
+on:
+  workflow_call:
+
+jobs:
+  check-python-black-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: |
+          export PRECOMMIT=false
+          ./scripts/githooks/python-black-pre-commit.sh

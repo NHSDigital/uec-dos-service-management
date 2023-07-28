@@ -1,0 +1,3 @@
+#! /bin/bash
+# copy this file into .git/hooks directory
+scripts/githooks/pre-commit $*
