@@ -17,3 +17,54 @@ regexes = [
 
 [allowlist]
 files = ['.terraform.lock.hcl', 'poetry.lock', 'yarn.lock']
+Regexes = '''========================================='''
+
+[[rules]]
+description = "DynamoDB Endpoints"
+id = "dynamodb"
+regex = '''dynamodb\.[a-z]{2}[a-z-]*[1,2,3]\.amazonaws\.com'''
+
+[[rules]]
+description = "ARN Generic"
+id = "arn"
+regex = '''arn:aws:(.*):(.*):[0-9]{12}'''
+
+[[rules]]
+description = "ARN S3 "
+id = "arns3"
+regex = '''arn:aws:s3:::(.*)'''
+
+[[rules]]
+description = "ECR Endpoints"
+id = "ecr"
+regex = '''[0-9]{12}\.dkr\.ecr\.[a-z-]*-[1,2,3]\.amazonaws\.com'''
+
+[[rules]]
+description = "Elastic Search Endpoints"
+id = "esendpoints"
+regex = '''(.*)[a-z-]*[1,2,3]\.es\.amazonaws\.com'''
+
+[[rules]]
+description = "Standard Certificate"
+id = "standardcertificate"
+regex = '''-----BEGIN(\s)CERTIFICATE-----\n'''
+
+[[rules]]
+description = "Private Keys"
+id = "privatekeys"
+regex = '''\s*(\bBEGIN\b).*(PRIVATE KEY\b)\s*'''
+
+[[rules]]
+description = "AWS Secret Access Key"
+id = "secretaccesskey"
+regex = '''(AWS|aws|Aws)?_?(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)?\s*(:|=>|=)\s*[A-Za-z0-9/\+=]{40}\n'''
+
+[[rules]]
+id = "genericawsacno"
+description = "Generic 12 digit AWS acccount number"
+regex = '''\b\d{12}\b'''
+
+[[rules]]
+id = "awsaccountid"
+description = "AWS Account ID"
+regex = '''(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?\s*(:|=>|=)\s*[0-9]{4}\-?[0-9]{4}\-?[0-9]{4}'''

@@ -1,15 +1,15 @@
-name: Scan Secrets
+name: Check Python Flake Rules
 
 on:
   workflow_call:
 
 jobs:
-  scan-secrets:
+  check-python-flake-rules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: |
-          export ALL_FILES=true
-          ./scripts/githooks/secret-scan-pre-commit.sh
+          export PRECOMMIT=false
+          ./scripts/githooks/python-flake-pre-commit.sh
