@@ -3,17 +3,19 @@
 # ACTION eg plan, apply, destroy
 # STACK eg iam-policy
 # ACCOUNT_TYPE eg dev,test
-# ACCOUNT_PROJECT eg dos or cm
 
-# clear out local state
-# functions
-source ./scripts/functions/terraform-functions.sh
+# fail on first error
+set -e
 
 export ACTION="${ACTION:-""}"               # The terraform action to execute
 export STACK="${STACK:-""}"                 # The terraform stack to be actioned
 export ACCOUNT_TYPE="${ACCOUNT_TYPE:-""}"     # The type of account being used - dev test
-export ACCOUNT_PROJECT="${ACCOUNT_PROJECT:-""}"             # dos or cm
 export USE_REMOTE_STATE_STORE="${USE_REMOTE_STATE_STORE:-true}"
+
+# functions
+source ./scripts/project-common.sh
+source ./scripts/functions/terraform-functions.sh
+
 # check exports have been done
 EXPORTS_SET=0
 # Check key variables have been exported - see above
@@ -96,6 +98,9 @@ if [ -n "$ACTION" ] && [ "$ACTION" = 'destroy' ] ; then
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$COMMON_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$PROJECT_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$ENV_TF_VARS_FILE
+fi
+if [ -n "$ACTION" ] && [ "$ACTION" = 'validate' ] ; then
+  terraform validate
 fi
 # remove temp files
 rm -f "$STACK_DIR"/locals.tf

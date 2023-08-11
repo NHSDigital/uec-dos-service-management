@@ -1,0 +1,64 @@
+name: Validate terraform
+
+on:
+  workflow_call:
+    inputs:
+      ENV:
+        required: true
+        type: string
+
+jobs:
+
+  derive-tf-versions:
+    name: Derive Min/Max Terraform Versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Extract Terraform min/max versions
+        id: minMax
+        uses: clowdhaus/terraform-min-max@main
+        with:
+          directory: ./infrastructure/remote
+    outputs:
+      minVersion: ${{ steps.minMax.outputs.minVersion }}
+      maxVersion: ${{ steps.minMax.outputs.maxVersion }}
+
+  validate-against-tf-versions:
+    name: Validate terraform against the min/max versions
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENV }}
+    permissions:
+      id-token: write
+      contents: read
+    needs: derive-tf-versions
+    strategy:
+      matrix:
+        version:
+          - ${{ needs.versionExtract.outputs.minVersion }}
+          - ${{ needs.versionExtract.outputs.maxVersion }}
+        stack:
+          - github-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: eu-west-2
+
+      - name: Install Terraform v${{ matrix.version }}
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.version }}
+
+      - name: Initialize terraform and validate stack ${{ matrix.stack }} against v${{ matrix.version }}
+        run: |
+          export ACTION=validate
+          export STACK=${{ matrix.stack }}
+          export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
+          /bin/bash ./scripts/infra-deploy.sh
