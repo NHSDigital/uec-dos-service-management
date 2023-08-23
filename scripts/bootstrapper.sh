@@ -16,7 +16,7 @@ source ./scripts/project-common.sh
 source ./scripts/functions/terraform-functions.sh
 
 # Github org
-GITHUB_ORG="NHSDigital"
+export TF_VAR_github_org="NHSDigital"
 # check exports have been done
 EXPORTS_SET=0
 # Check key variables have been exported - see above
@@ -84,9 +84,9 @@ if ! $USE_REMOTE_STATE_STORE  ; then
     ROOT_DIR=$PWD
     STACK_DIR=$PWD/$INFRASTRUCTURE_DIR/stacks/$STACK
     cd "$STACK_DIR" || exit
-    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/versions.tf "$STACK_DIR"
-    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/locals.tf "$STACK_DIR"
-    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/provider.tf "$STACK_DIR"
+    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/versions.tf "$STACK_DIR"
+    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/locals.tf "$STACK_DIR"
+    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/provider.tf "$STACK_DIR"
     # run terraform init with migrate flag set
     terraform-init-migrate "$STACK" "$USE_REMOTE_STATE_STORE"
     # now push local state to remote
@@ -107,7 +107,6 @@ export HOST=$(curl https://token.actions.githubusercontent.com/.well-known/openi
 export CERT_URL=$(jq -r '.jwks_uri | split("/")[2]' <<< $HOST)
 export THUMBPRINT=$(echo | openssl s_client -servername "$CERT_URL" -showcerts -connect "$CERT_URL":443 2> /dev/null | tac | sed -n '/-----END CERTIFICATE-----/,/-----BEGIN CERTIFICATE-----/p; /-----BEGIN CERTIFICATE-----/q' | tac | openssl x509 -sha1 -fingerprint -noout | sed 's/://g' | awk -F= '{print tolower($2)}')
 # ------------- Step four create oidc identity provider, github runner role and policies for that role -----------
-export TF_VAR_repo_name="$GITHUB_ORG/$REPO_NAME"
 export TF_VAR_oidc_provider_url="https://token.actions.githubusercontent.com"
 export TF_VAR_oidc_thumbprint=$THUMBPRINT
 export TF_VAR_oidc_client="sts.amazonaws.com"

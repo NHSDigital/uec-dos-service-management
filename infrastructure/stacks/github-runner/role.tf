@@ -12,7 +12,7 @@ resource "aws_iam_role_policy_attachment" "attach_power_user" {
   policy_arn = data.aws_iam_policy.power_user_policy.arn
 }
 resource "aws_iam_policy" "ro_policy_iam" {
-  name        = "${local.terraform-git-repo}-github-runner-iam-services"
+  name        = "${var.repo_name}-github-runner-iam-services"
   description = "Read-only policies for key iam permissions required by github runner"
 
   policy = file("uec-github-runner-iam-services.json")
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "attach_ro_iam" {
 
 
 resource "aws_iam_role" "github_runner_role" {
-  name               = "${local.terraform-git-repo}-github-runner"
+  name               = "${var.repo_name}-github-runner"
   assume_role_policy = <<EOF
     {
       "Version":"2012-10-17",
@@ -38,7 +38,7 @@ resource "aws_iam_role" "github_runner_role" {
           "Action":"sts:AssumeRoleWithWebIdentity",
           "Condition":{
             "ForAllValues:StringLike":{
-                "token.actions.githubusercontent.com:sub":"repo:${var.repo_name}:*",
+                "token.actions.githubusercontent.com:sub":"repo:${var.github_org}/${var.repo_name}:*",
                 "token.actions.githubusercontent.com:aud":"sts.amazonaws.com"
               }
           }

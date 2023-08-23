@@ -1,19 +1,27 @@
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:GenerateCredentialReport",
-                "iam:GenerateServiceLastAccessedDetails",
-                "iam:Get*",
-                "iam:List*",
-                "iam:SimulateCustomPolicy",
-                "iam:SimulatePrincipalPolicy",
-                "iam:CreatePolicy",
-                "iam:TagPolicy"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "VisualEditor0",
+          "Effect": "Allow",
+          "Action": [
+              "iam:GenerateCredentialReport",
+              "iam:List*",
+              "iam:GenerateServiceLastAccessedDetails",
+              "iam:TagRole",
+              "iam:DeletePolicy",
+              "iam:CreateRole",
+              "iam:DeleteRole",
+              "iam:AttachRolePolicy",
+              "iam:TagPolicy",
+              "iam:CreatePolicy",
+              "iam:PassRole",
+              "iam:Get*",
+              "iam:DetachRolePolicy",
+              "iam:SimulatePrincipalPolicy",
+              "iam:SimulateCustomPolicy"
+          ],
+          "Resource": "*"
+      }
+  ]
 }
