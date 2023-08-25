@@ -6,8 +6,8 @@ INFRASTRUCTURE_DIR="${INFRASTRUCTURE_DIR:-"infrastructure"}"
 TERRAFORM_DIR="${TERRAFORM_DIR:-"$INFRASTRUCTURE_DIR/stacks"}"
 ACCOUNT_TYPE="${ACCOUNT_TYPE:-""}"
 
-export TERRAFORM_BUCKET_NAME="nhse-$ACCOUNT_TYPE-$REPO_NAME-terraform-state"  # globally unique name
-export TERRAFORM_LOCK_TABLE="nhse-$ACCOUNT_TYPE-$REPO_NAME-terraform-state-lock"
+export TERRAFORM_BUCKET_NAME="nhse-$ACCOUNT_TYPE-$TF_VAR_repo_name-terraform-state"  # globally unique name
+export TERRAFORM_LOCK_TABLE="nhse-$ACCOUNT_TYPE-$TF_VAR_repo_name-terraform-state-lock"
 
 function terraform-initialise {
     STACK=$1

@@ -55,6 +55,7 @@ if [ $EXPORTS_SET = 1 ] ; then
 fi
 
 COMMON_TF_VARS_FILE="common.tfvars"
+STACK_TF_VARS_FILE="$STACK.tfvars"
 PROJECT_TF_VARS_FILE="$ACCOUNT_PROJECT-project.tfvars"
 ENV_TF_VARS_FILE="$ACCOUNT_TYPE.tfvars"
 echo "Preparing to run terraform $ACTION for stack $STACK for account type $ACCOUNT_TYPE and project $ACCOUNT_PROJECT"
@@ -64,24 +65,31 @@ STACK_DIR=$PWD/$INFRASTRUCTURE_DIR/stacks/$STACK
 # remove any previous local backend for stack
 rm -rf "$STACK_DIR"/.terraform
 rm -f "$STACK_DIR"/.terraform.lock.hcl
+cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/locals.tf "$STACK_DIR"
+cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/provider.tf "$STACK_DIR"
+cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/common-variables.tf "$STACK_DIR"
+
 #  copy shared tf files to stack
 if [[ "$USE_REMOTE_STATE_STORE" =~ ^(true|yes|y|on|1|TRUE|YES|Y|ON) ]]; then
   cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/versions.tf "$STACK_DIR"
-  cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/locals.tf "$STACK_DIR"
-  cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/provider.tf "$STACK_DIR"
 else
   cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/local/versions.tf "$STACK_DIR"
-  cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/local/locals.tf "$STACK_DIR"
-  cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/local/provider.tf "$STACK_DIR"
 fi
 # switch to target stack directory ahead of tf init/plan/apply
 cd "$STACK_DIR" || exit
+# if no stack tfvars create temporary one
+TEMP_STACK_TF_VARS_FILE=0
+if [ ! -f "$ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE" ] ; then
+  touch "$ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE"
+  TEMP_STACK_TF_VARS_FILE=1
+fi
 # init terraform
 terraform-initialise "$STACK" "$ACCOUNT_TYPE" "$USE_REMOTE_STATE_STORE"
 # plan
 if [ -n "$ACTION" ] && [ "$ACTION" = 'plan' ] ; then
   terraform plan \
   -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$COMMON_TF_VARS_FILE \
+  -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE \
   -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$PROJECT_TF_VARS_FILE \
   -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$ENV_TF_VARS_FILE
 fi
@@ -89,6 +97,7 @@ fi
 if [ -n "$ACTION" ] && [ "$ACTION" = 'apply' ] ; then
   terraform apply -auto-approve \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$COMMON_TF_VARS_FILE \
+    -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$PROJECT_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$ENV_TF_VARS_FILE
 fi
@@ -96,6 +105,7 @@ fi
 if [ -n "$ACTION" ] && [ "$ACTION" = 'destroy' ] ; then
   terraform destroy -auto-approve\
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$COMMON_TF_VARS_FILE \
+    -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$PROJECT_TF_VARS_FILE \
     -var-file $ROOT_DIR/$INFRASTRUCTURE_DIR/$ENV_TF_VARS_FILE
 fi
@@ -106,5 +116,10 @@ fi
 rm -f "$STACK_DIR"/locals.tf
 rm -f "$STACK_DIR"/provider.tf
 rm -f "$STACK_DIR"/versions.tf
+rm -f "$STACK_DIR"/common-variables.tf
+
+if [ $TEMP_STACK_TF_VARS_FILE = 1 ] ; then
+  rm -f "$ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE"
+fi
 
 echo "Completed terraform $ACTION for stack $STACK for account type $ACCOUNT_TYPE and project $ACCOUNT_PROJECT"
