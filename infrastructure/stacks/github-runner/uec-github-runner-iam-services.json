@@ -22,7 +22,8 @@
               "iam:SimulateCustomPolicy",
               "iam:SimulateCustomPolicy",
               "iam:CreatePolicyVersion",
-              "iam:DeletePolicyVersion"
+              "iam:DeletePolicyVersion",
+              "iam:TagOpenIDConnectProvider"
           ],
           "Resource": "*"
       }
