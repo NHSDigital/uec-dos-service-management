@@ -1,0 +1,22 @@
+name: Orchestrate bootstrapper workflow
+
+on:
+  push:
+    branches:
+      - 'task/DR-371_Boot_strap_action'
+
+jobs:
+    run-bootstrap-dos-dev:
+      name: Run bootstrap for dos dev account
+      uses: ./.github/workflows/run-bootstrap.yaml
+      with:
+        ENV: dev
+      secrets: inherit
+    # TODO add other dos related accounts as required
+    # run-bootstrap-dos-test:
+    #   name: Run bootstrap for dos test account
+    #   uses: ./.github/workflows/run-bootstrap.yaml
+    #   with:
+    #     ENV: test
+    #   secrets: inherit
+
