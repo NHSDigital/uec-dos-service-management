@@ -2,7 +2,8 @@
 
 # This bootstrapper script initialises various resources necessary for Terraform and Github Actions to build
 # the DoS or CM application in an AWS account
-
+# fail on first error
+set -e
 # Before running this bootstrapper script:
 #  - Login to an appropriate AWS account as appropriate user via commamnd-line AWS-cli
 #  - Export the following variables appropriate for your account and github setup prior to calling this script

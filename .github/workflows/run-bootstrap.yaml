@@ -1,4 +1,4 @@
-name: Apply terraform
+name: Run bootstrapper
 
 on:
   workflow_call:
@@ -8,15 +8,13 @@ on:
         type: string
 
 jobs:
-
-  deploy-application-infrastructure:
+  run-bootstrap:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENV }}
     permissions:
       id-token: write
       contents: read
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -32,14 +30,8 @@ jobs:
           role-session-name: github-pipeline-session
           aws-region: eu-west-2
 
-      # - name: Initialise and Run Terraform Apply
-      #   run: |
-      #     export ACTION=plan
-      #     export STACK=TBC
-      #     export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
-      #     /bin/bash ./scripts/infra-deploy.sh
-
-
-
-
-
+      - name: Run bootstrapper
+        run: |
+          export ACTION=apply
+          export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
+          /bin/bash ./scripts/bootstrapper.sh
