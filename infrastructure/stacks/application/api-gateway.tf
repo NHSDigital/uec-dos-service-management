@@ -1,11 +1,11 @@
-module "cm_rest_api" {
+module "sm_rest_api" {
   source = "../../modules/api-gateway-rest-api"
 
   rest_api_name = var.rest_api_name
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
-  rest_api_id = module.cm_rest_api.rest_api_id
+  rest_api_id = module.sm_rest_api.rest_api_id
   lifecycle {
     create_before_destroy = true
   }
@@ -61,13 +61,13 @@ resource "aws_api_gateway_deployment" "deployment" {
   ]
   triggers = {
     redeployment = sha1(jsonencode([
-      module.cm_rest_api
+      module.sm_rest_api
     ]))
   }
 }
 
 resource "aws_api_gateway_stage" "stage" {
   deployment_id = aws_api_gateway_deployment.deployment.id
-  rest_api_id   = module.cm_rest_api.rest_api_id
+  rest_api_id   = module.sm_rest_api.rest_api_id
   stage_name    = "default"
 }
