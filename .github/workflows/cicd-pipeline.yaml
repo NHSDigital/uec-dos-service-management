@@ -43,9 +43,9 @@ jobs:
   #     ENV: dev
   #   secrets: inherit
   check-python-black-format:
-      uses: ./.github/workflows/check-python-black-format.yaml
+    uses: ./.github/workflows/check-python-black-format.yaml
   check-python-flake-rules:
-      uses: ./.github/workflows/check-python-flake-rules.yaml
+    uses: ./.github/workflows/check-python-flake-rules.yaml
   cloc-repository:
     uses: ./.github/workflows/cloc-repository.yaml
   scan-dependencies:
@@ -64,6 +64,9 @@ jobs:
         cloc-repository,
         scan-dependencies,
       ]
+    permissions:
+      id-token: write
+      contents: read
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -79,3 +82,10 @@ jobs:
       # - name: Run Tests ...
       #   run: |
       #     ?
+      - name: "Perform static analysis"
+        run: |
+          export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
+          export SONAR_ORGANISATION_KEY=${{ vars.SONAR_ORGANISATION_KEY }}
+          export SONAR_PROJECT_KEY=${{ vars.SONAR_PROJECT_KEY }}
+          export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
+          ./scripts/reports/perform-static-analysis.sh
