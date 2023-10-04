@@ -1,5 +1,54 @@
+<<<<<<< HEAD
 .scannerwork
+=======
+# Local .terraform directories
+*.terraform
+
+# .tfstate files
+.terraform
+*terraform.tfstate*
+*terraform.lock.hcl*
+*.tfstate
+*.tfstate.*
+*.terraform.lock.hcl
+plan.out
+plan.out.json
+
+# System Files
+*.DS_Store*
+.DS_Store
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# misc
+.coverage
+htmlcov
+coverage.xml
+**/__pycache__/
+.pytest_cache/
+htmlcov/
+*/test
+*/*.pyc
+__pycache__
+*/__pycache__
+*.pyc
+.coverage.*
+coverage.xml
+tests/*/reports/*
+>>>>>>> d5b0766 (DR-432 Include support tools)
 cve-scan*.json
 sbom-spdx*.json
 *.code-workspace
 !project.code-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json

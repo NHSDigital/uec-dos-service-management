@@ -1,6 +1,0 @@
-.terraform
-*terraform.tfstate*
-*terraform.lock.hcl*
-plan.out
-plan.out.json
-*.DS_Store*
