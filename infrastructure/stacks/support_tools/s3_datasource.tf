@@ -1,4 +1,4 @@
-module "cm_datasource_bucket" {
+module "sm_datasource_bucket" {
   source      = "../../modules/s3"
-  bucket_name = var.cm_datasource_bucket_name
+  bucket_name = var.sm_datasource_bucket_name
 }
