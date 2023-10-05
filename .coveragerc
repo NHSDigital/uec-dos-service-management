@@ -7,7 +7,7 @@ omit =
         */__init__.py
         */*/chalicelib/common/utilities.py
         */app.py
-        */database_populator.py
+        **/*database_populator.py
 
 [report]
 omit =
@@ -16,4 +16,4 @@ omit =
         */__init__.py
         */*/chalicelib/common/utilities.py
         */app.py
-        */database_populator.py
+        **/*database_populator.py
