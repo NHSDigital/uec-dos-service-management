@@ -1,0 +1,19 @@
+
+[run]
+branch = True
+omit =
+        */test/*
+        */usr/local/lib*
+        */__init__.py
+        */*/chalicelib/common/utilities.py
+        */app.py
+        **/*database_populator.py
+
+[report]
+omit =
+        */test/*
+        */usr/local/lib*
+        */__init__.py
+        */*/chalicelib/common/utilities.py
+        */app.py
+        **/*database_populator.py
