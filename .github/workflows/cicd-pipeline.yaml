@@ -79,9 +79,11 @@ jobs:
           export PYTHON_VERSION="${{ needs.get-metadata.outputs.python_version }}"
           export TERRAFORM_VERSION="${{ needs.get-metadata.outputs.terraform_version }}"
           make list-variables
-      # - name: Run Tests ...
-      #   run: |
-      #     ?
+      - name: Run unit test
+      - uses: ./.github/workflows/unit-test.yaml
+        with:
+            github_environment: dev
+          secrets: inherit
       - name: "Perform static analysis"
         run: |
           export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
