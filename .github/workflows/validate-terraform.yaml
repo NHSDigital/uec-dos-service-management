@@ -9,22 +9,6 @@ on:
 
 jobs:
 
-  derive-tf-versions:
-    name: Derive Min/Max Terraform Versions
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Extract Terraform min/max versions
-        id: minMax
-        uses: clowdhaus/terraform-min-max@main
-        with:
-          directory: ./infrastructure/remote
-    outputs:
-      minVersion: ${{ steps.minMax.outputs.minVersion }}
-      maxVersion: ${{ steps.minMax.outputs.maxVersion }}
-
   validate-against-tf-versions:
     name: Validate terraform against the min/max versions
     runs-on: ubuntu-latest
@@ -32,12 +16,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    needs: derive-tf-versions
     strategy:
       matrix:
-        version:
-          - ${{ needs.derive-tf-versions.outputs.minVersion }}
-          - ${{ needs.derive-tf-versions.outputs.maxVersion }}
         stack:
           - github-runner
           - application
@@ -53,12 +33,12 @@ jobs:
           role-session-name: github-pipeline-session
           aws-region: eu-west-2
 
-      - name: Install Terraform v${{ matrix.version }}
+      - name: Install Terraform v${{ vars.TF_VERSION }}
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ matrix.version }}
+          terraform_version: ${{ vars.TF_VERSION }}
 
-      - name: Initialize terraform and validate stack ${{ matrix.stack }} against v${{ matrix.version }}
+      - name: Initialize terraform and validate stack ${{ matrix.stack }} against v${{ vars.TF_VERSION }}
         run: |
           export ACTION=validate
           export STACK=${{ matrix.stack }}
