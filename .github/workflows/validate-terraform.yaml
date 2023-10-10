@@ -36,8 +36,8 @@ jobs:
     strategy:
       matrix:
         version:
-          - ${{ needs.versionExtract.outputs.minVersion }}
-          - ${{ needs.versionExtract.outputs.maxVersion }}
+          - ${{ needs.derive-tf-versions.outputs.minVersion }}
+          - ${{ needs.derive-tf-versions.outputs.maxVersion }}
         stack:
           - github-runner
     steps:
