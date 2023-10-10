@@ -40,6 +40,8 @@ jobs:
           - ${{ needs.derive-tf-versions.outputs.maxVersion }}
         stack:
           - github-runner
+          - application
+          - support_tools
     steps:
       - name: Checkout
         uses: actions/checkout@v4
