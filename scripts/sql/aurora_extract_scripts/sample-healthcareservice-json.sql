@@ -1,15 +1,16 @@
 select
 json_build_object(
-  'services', json_agg(
-  json_build_object(
-'resourceType','HealthcareService',
-'identifier', identifier.identifier,
-'active','true',
-'providedBy',
-json_build_object(
-'resourceType', 'Organization',
-'identifier', 'TBC' ),
-'type',
+  'services',
+  json_agg(
+    json_build_object(
+      'resourceType','HealthcareService',
+      'identifier', identifier.identifier,
+      'active','true',
+      'providedBy',
+      json_build_object(
+        'resourceType', 'Organization',
+        'identifier', 'TBC' ),
+      'type',
 st.name,
 'location',
 json_build_object(
