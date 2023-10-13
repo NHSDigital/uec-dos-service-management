@@ -61,19 +61,20 @@ left join (
   group by id
 ) telecom
 on s.id = telecom.id
-left join
-(select
-serviceid,
-'To be defined by the DoS lead' as name
-,json_agg(
-json_build_array(rr.name)) eligibleFor
-from pathwaysdos.servicereferralroles sr
-inner join pathwaysdos.referralroles rr on sr.referralroleid=rr.id group by serviceid
+left join (
+  select
+  serviceid,
+  'To be defined by the DoS lead' as name,
+  json_agg(
+    json_build_array(rr.name)
+    ) eligibleFor
+  from pathwaysdos.servicereferralroles sr
+  inner join pathwaysdos.referralroles rr
+  on sr.referralroleid=rr.id group by serviceid
 ) serviceProfiles
 on s.id = serviceProfiles.serviceid
 where s.id in (169621,
 143973,
 127423,
 107275,
-107273)
-;
+107273);
