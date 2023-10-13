@@ -35,7 +35,7 @@ select
                 json_build_object('system','fax','value',s.fax, 'use', 'non-public'),
                 json_build_object('system','email','value',s.email, 'use', 'non-public')
               ),
-              'serviceProfiles',serviceProfiles
+              'serviceProfiles',json_build_object('name',serviceProfiles.name, 'eligibleFor',serviceProfiles.eligiblefor)
             )
         )
     ) services
