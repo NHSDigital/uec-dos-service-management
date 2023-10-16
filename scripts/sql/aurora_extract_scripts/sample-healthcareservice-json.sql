@@ -1,3 +1,15 @@
+with serviceProfiles as (select
+    serviceid,
+    'To be defined by the DoS lead' as name
+    ,json_agg(
+        json_build_array(rr.name)) eligibleFor
+        from pathwaysdos.servicereferralroles sr
+        inner join pathwaysdos.referralroles rr
+        on sr.referralroleid=rr.id
+        group by serviceid
+)
+
+
 select
     json_build_object(
         'services', json_agg(
@@ -40,17 +52,7 @@ select
         )
     ) services
 from pathwaysdos.services s
-left join
-(select
-    serviceid,
-    'To be defined by the DoS lead' as name
-    ,json_agg(
-        json_build_array(rr.name)) eligibleFor
-        from pathwaysdos.servicereferralroles sr
-        inner join pathwaysdos.referralroles rr
-        on sr.referralroleid=rr.id
-        group by serviceid
-) serviceProfiles
+left join serviceProfiles
 on s.id = serviceProfiles.serviceid
 
 where s.id in (169621,
