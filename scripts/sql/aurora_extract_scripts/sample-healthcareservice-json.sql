@@ -47,14 +47,39 @@ select
                 json_build_object('system','fax','value',s.fax, 'use', 'non-public'),
                 json_build_object('system','email','value',s.email, 'use', 'non-public')
               ),
-              'serviceProfiles',json_build_object('name',serviceProfiles.name, 'eligibleFor',serviceProfiles.eligiblefor)
+              'serviceProfiles',
+              json_build_object(
+                'name',serviceProfiles.name,
+                'eligibleFor',serviceProfiles.eligiblefor,
+                'genders', genders.gender,
+                'ageranges', ageranges.ageranges
+              )
             )
         )
     ) services
 from pathwaysdos.services s
 left join serviceProfiles
 on s.id = serviceProfiles.serviceid
-
+left join
+(select
+    serviceid, 'gender',
+    json_agg(
+        json_build_object('gendername',g.name,'genderletter', g.letter)) gender
+        from pathwaysdos.servicegenders sg
+        inner join pathwaysdos.genders g
+        on sg.genderid=g.id
+        group by serviceid
+) genders
+on s.id = genders.serviceid
+left join
+(select
+    serviceid, 'ageranges',
+    json_agg(
+        json_build_object('agefrom',sa.daysfrom,'ageto', sa.daysto)) ageranges
+        from pathwaysdos.serviceagerange sa
+        group by serviceid
+) ageranges
+on s.id = ageranges.serviceid
 where s.id in (169621,
 143973,
 127423,
