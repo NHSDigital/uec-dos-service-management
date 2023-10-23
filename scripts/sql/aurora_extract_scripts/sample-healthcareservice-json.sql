@@ -52,7 +52,8 @@ select
                 'name',serviceProfiles.name,
                 'eligibleFor',serviceProfiles.eligiblefor,
                 'genders', genders.gender,
-                'ageranges', ageranges.ageranges
+                'ageranges', ageranges.ageranges,
+                'gpReferral', gpReferral.gpReferral
               )
             )
         )
@@ -80,7 +81,21 @@ left join
         group by serviceid
 ) ageranges
 on s.id = ageranges.serviceid
-where s.id in (169621,
+left join
+(select
+    s.id as serviceid,
+    json_build_array(
+      json_build_object('restricted',s.restricttoreferrals),
+      'referredFrom', json_agg(
+            json_build_object('resourceType','Organization','identifier',sr.referredserviceid)) ) gpReferral
+            from pathwaysdos.services s inner join
+            pathwaysdos.servicereferrals sr on s.id=sr.referralserviceid
+            group by s.id,uid) gpReferral
+on s.id = gpReferral.serviceid
+where s.id in
+
+
+(169621,
 143973,
 127423,
 107275,
