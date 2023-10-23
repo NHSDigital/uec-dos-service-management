@@ -1,0 +1,6 @@
+Flask==1.1.4
+pytest==6.2.5
+MarkupSafe==2.0.1
+boto3
+moto[all]==4.2.0
+coverage==7.3.1
