@@ -33,7 +33,7 @@ jobs:
     with:
       github_environment: "test"
       deployment_workspace: ${{ github.ref_name }}
-      stack: capacity_management
+      stack: application
       action: apply
       tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
     secrets: inherit

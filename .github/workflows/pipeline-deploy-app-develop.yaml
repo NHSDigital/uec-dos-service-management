@@ -74,7 +74,7 @@ jobs:
       uses: ./.github/workflows/action-infrastructure-stack.yaml
       with:
         github_environment: dev
-        stack: capacity_management
+        stack: application
         action: plan
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit

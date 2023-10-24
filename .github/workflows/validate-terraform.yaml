@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         stack:
-          - capacity_management
+          - application
           - support_tools
     steps:
       - name: Checkout

@@ -19,6 +19,6 @@ jobs:
 
       - name: Run Database Populator
         run: |
-          cd ../../infrastructure/stacks/capacity_management/scripts/database_populator
+          cd ../../infrastructure/stacks/application/scripts/database_populator
           pip install -r requirements.txt
           python database_populator.py
