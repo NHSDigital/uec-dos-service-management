@@ -6,16 +6,16 @@ on:
       - 'main'
 
 jobs:
-    deploy-bootstrap-cm-dev:
-      name: Run bootstrap for cm dev account
+    deploy-bootstrap-dos-dev:
+      name: Run bootstrap for dos dev account
       uses: ./.github/workflows/deploy-bootstrap.yaml
       with:
         ENV: dev
       secrets: inherit
-    deploy-bootstrap-cm-test:
-      name: Run bootstrap for cm test account
+    deploy-bootstrap-dos-test:
+      name: Run bootstrap for dos test account
       uses: ./.github/workflows/deploy-bootstrap.yaml
       with:
         ENV: test
       secrets: inherit
-    # TODO add other cm related accounts as required
+    # TODO add other dos related accounts as required
