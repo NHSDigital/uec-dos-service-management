@@ -75,7 +75,7 @@ jobs:
       with:
         github_environment: dev
         stack: capacity_management
-        action: apply
+        action: plan
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit
   deploy-support-tools-infrastructure:
