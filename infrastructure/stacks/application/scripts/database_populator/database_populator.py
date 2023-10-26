@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pandas as pd
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import boto3
 from io import BytesIO
+import datetime
 
 # Initialize the S3 and DynamoDB clients
 s3 = boto3.client("s3")
@@ -61,82 +62,234 @@ def copy_data_to_dynamodb(table_name, df):
         insert_into_table(table, data_item)
 
 
-def transpose_into_schema(table_name, row):
-    print("Row Data:", row)
-    if table_name == "organisation_affiliations":
-        schema = {
-            "resourceType": "OrganizationAffiliation",
-            "id": str(row["Identifier"]),
-            "participatingOrganization": row["ParticipatingOrganization"],
-            "organizationIdentifier": row["FHIROrganizationIdentifier"],
-            "organization": row["Organization"],
-            "healthcareService": {
-                str(row["HealthcareService"])
-                if pd.notna(row["HealthcareService"])
-                else "N/A"
-            },
-            "healthcareServiceIdentifier": row["FHIRHealthcareServiceIdentifier"],
-            "locationName": {
-                str(row["LocationName"]) if pd.notna(row["LocationName"]) else "N/A"
-            },
-            "locationIdentifier": row["FHIRLocationIdentifier"],
-            "createdBy": row["CreatedBy"],
-            "createdDateTime": row["CreatedDateTime"],
-            "modifiedBy": row["ModifiedBy"],
-            "modifiedDateTime": row["ModifiedDateTime"],
-        }
+# Define a function to get the current date and time in UK format
+def get_formatted_datetime():
+    current_datetime = datetime.datetime.now()
+    return current_datetime.strftime("%d-%m-%Y %H:%M:%S")
 
+
+def split_telecom_numbers(telecom_str):
+    telecom_numbers = []
+    if isinstance(telecom_str, str):
+        # Split the "telecom" field by ',' to get individual telephone numbers
+        telecom_list = telecom_str.split(",")
+        for telecom_item in telecom_list:
+            telecom_item = telecom_item.strip()  # Remove leading/trailing spaces
+            telecom_numbers.append({"system": "phone", "value": telecom_item})
+    return telecom_numbers
+
+
+def filter_empty_address_fields(address):
+    filtered_address = {}
+    for k, v in address.items():
+        if isinstance(v, str) and v.strip() != "" and v.strip().lower() != "nan":
+            filtered_address[k] = v
+    return filtered_address
+
+
+def transpose_into_schema(table_name, row):
+    formatted_datetime = get_formatted_datetime()
+    print("Row Data:", row)
+
+    if table_name == "organisation_affiliations":
+        return transpose_organisation_affiliations(row, formatted_datetime)
     elif table_name == "healthcare_services":
-        schema = {
-            "resourceType": "HealthcareService",
-            "id": str(row["Identifier"]),
-            "Status": "Active",
-            "name": row["Name"],
-            "description": row["Description"],
-            "phoneNumber": {
-                str(row["PhoneNumber"]) if pd.notna(row["PhoneNumber"]) else "N/A"
-            },
-            "address": "N/A",
-            "location": row["Location"],
-            "createdBy": row["CreatedBy"],
-            "createdDateTime": row["CreatedDateTime"],
-            "modifiedBy": row["ModifiedBy"],
-            "modifiedDateTime": row["ModifiedDateTime"],
-            "providedBy": row["ProvidedBy"],
-        }
+        return transpose_healthcare_services(row, formatted_datetime)
     elif table_name == "organisations":
-        schema = {
-            "resourceType": "Organization",
-            "id": str(row["Identifier"]),
-            "type": row["OrgType"],
-            "name": str(row["Name"]),
-            "description": str(row["Name"]),
-            "phoneNumber": {
-                str(row["PhoneNumber"]) if pd.notna(row["PhoneNumber"]) else "N/A"
-            },
-            "Address": {str(row["Address"]) if pd.notna(row["Address"]) else "N/A"},
-            "createdDateTime": row["CreatedDateTime"],
-            "partOf": {str(row["PartOf"]) if pd.notna(row["PartOf"]) else "N/A"},
-            "createdBy": row["CreatedBy"],
-            "modifiedBy": row["ModifiedBy"],
-            "modifiedDateTime": row["ModifiedDateTime"],
-        }
+        return transpose_organisations(row, formatted_datetime)
     elif table_name == "locations":
-        schema = {
-            "resourceType": "Location",
-            "id": str(row["Identifier"]),
-            "status": "Active",
-            "name": row["Name"],
-            "address": row["Address"],
-            "latitude": str(Decimal(row["Latitude"])),
-            "longitude": str(Decimal(row["Longitude"])),
-            "createdBy": row["CreatedBy"],
-            "createdDateTime": row["CreatedDateTime"],
-            "modifiedBy": row["ModifiedBy"],
-            "modifiedDateTime": row["ModifiedDateTime"],
-        }
+        return transpose_locations(row, formatted_datetime)
+    else:
+        raise ValueError("Unsupported table name: {}".format(table_name))
+
+
+def transpose_organisation_affiliations(row, formatted_datetime):
+    schema = {
+        "resourceType": "OrganizationAffiliation",
+        "id": str(row["Identifier"]),
+        "active": "true",
+        "identifier": [
+            {
+                "value": str(row["Identifier"]),
+            }
+        ],
+        "participatingOrganization": str(
+            row["FHIRParticipatingOrganizationnIdentifier"]
+        ),
+        "organization": row["FHIROrganizationIdentifier"],
+        "healthcareService": row["FHIRHealthcareServiceIdentifier"],
+        "location": row["FHIRLocationIdentifier"],
+        "createdBy": "Admin",
+        "createdDateTime": formatted_datetime,
+        "modifiedBy": "Admin",
+        "modifiedDateTime": formatted_datetime,
+    }
+
+    # Create a list of the keys in the schema
+    schema_keys = list(schema.keys())
+
+    # Remove empty keys from the schema
+    for key in schema_keys:
+        if (
+            schema[key] is None
+            or schema[key] == ""
+            or schema[key] == "NO ID"
+            or schema[key] == "NOT FOUND"
+        ):
+            schema.pop(key)
 
     return schema
+
+
+def transpose_healthcare_services(row, formatted_datetime):
+    telecom_numbers = split_telecom_numbers(row["Telecom"])
+    schema = {
+        "resourceType": "HealthcareService",
+        "id": str(row["Identifier"]),
+        "identifier": [
+            {
+                "use": "official",
+                "value": str(row["Identifier"]),
+            }
+        ],
+        "active": "True",
+        "name": row["Name "],
+        "type": row["Type"],
+        "location": row["LocationID"],
+        "createdBy": "Admin",
+        "createdDateTime": formatted_datetime,
+        "modifiedBy": "Admin",
+        "modifiedDateTime": formatted_datetime,
+        "providedBy": row["ProvidedByID"],
+    }
+
+    # Add the telecom field to the schema if it has a value
+    if telecom_numbers:
+        schema["telecom"] = telecom_numbers
+
+    # Remove empty keys from the schema
+    for key in schema.keys():
+        if (
+            schema[key] is None
+            or schema[key] == ""
+            or schema[key] == "N/A"
+            or schema[key] == "NO ID"
+        ):
+            schema.pop(key)
+
+    return schema
+
+
+def transpose_organisations(row, formatted_datetime):
+    telecom_numbers = split_telecom_numbers(row["Telecom"])
+    address = {
+        "line1": str(row["Line1"]),
+        "line2": str(row["Line2"]),
+        "line3": str(row["Line3"]),
+        "city": str(row["City"]),
+        "district": str(row["Discrict"]),
+        "postalcode": str(row["PostalCode"]),
+    }
+    filtered_address = filter_empty_address_fields(address)
+    schema = {
+        "resourceType": "Organization",
+        "id": str(row["Identifier"]),
+        "identifier": [
+            {
+                "use": "official",
+                "value": str(row["Identifier"]),
+            }
+        ],
+        "active": "true",
+        "type": row["Type"],
+        "name": str(row["Name"]),
+        "createdDateTime": formatted_datetime,
+        "partOf": str(row["partof"]),
+        "createdBy": "Admin",
+        "modifiedBy": "Admin",
+        "modifiedDateTime": formatted_datetime,
+    }
+
+    # Add the telecom field to the schema if it has a value
+    if telecom_numbers:
+        schema["telecom"] = telecom_numbers
+
+    if filtered_address:
+        schema["Address"] = filtered_address
+
+    # Remove empty keys from the schema
+    schema_copy = schema.copy()
+    schema_keys = list(schema_copy.keys())
+    for key in schema_keys:
+        if (
+            schema_copy[key] is None
+            or schema_copy[key] == ""
+            or schema_copy[key] == "N/A"
+            or schema_copy[key] == "NO ID"
+            or schema_copy[key] == "0"
+        ):
+            schema_copy.pop(key)
+
+    return schema_copy
+
+
+def transpose_locations(row, formatted_datetime):
+    address = {
+        "line1": str(row["Line1"]),
+        "line2": str(row["Line2"]),
+        "line3": str(row["Line3"]),
+        "city": str(row["City"]),
+        "district": str(row["District"]),
+        "postalcode": str(row["PostalCode"]),
+    }
+    filtered_address = filter_empty_address_fields(address)
+    schema = {
+        "resourceType": "Location",
+        "id": str(row["Identifier"]),
+        "identifier": [
+            {
+                "use": "official",
+                "value": str(row["Identifier"]),
+            }
+        ],
+        "status": "Active",
+        "name": row["Name"],
+        "position": {
+            "latitude": str(
+                Decimal(row["Latitude"]).quantize(
+                    Decimal("0.0000001"), rounding=ROUND_HALF_UP
+                )
+            ),
+            "longitude": str(
+                Decimal(row["Longitude"]).quantize(
+                    Decimal("0.0000001"), rounding=ROUND_HALF_UP
+                )
+            ),
+        },
+        "createdBy": "Admin",
+        "createdDateTime": formatted_datetime,
+        "modifiedBy": "Admin",
+        "modifiedDateTime": formatted_datetime,
+        "managingOrganization": str(row["ManagingOrg"]),
+    }
+
+    if filtered_address:
+        schema["Address"] = filtered_address
+
+    # Remove empty keys from the schema
+    schema_copy = schema.copy()
+    schema_keys = list(schema_copy.keys())
+    for key in schema_keys:
+        if (
+            schema_copy[key] is None
+            or schema_copy[key] == ""
+            or schema_copy[key] == "N/A"
+            or schema_copy[key] == "NO ID"
+            or schema_copy[key] == "0"
+        ):
+            schema_copy.pop(key)
+
+    return schema_copy
 
 
 def insert_into_table(table, data_item):
