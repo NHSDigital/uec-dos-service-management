@@ -72,7 +72,7 @@ else
 fi
 
 # deploy stack
-/bin/bash ./scripts/infra-deploy.sh
+/bin/bash ./scripts/action-infra-stack.sh
 
 # having build the stack using a local backend we need to push
 # the state to the remote
@@ -112,6 +112,6 @@ export TF_VAR_oidc_provider_url="https://token.actions.githubusercontent.com"
 export TF_VAR_oidc_thumbprint=$THUMBPRINT
 export TF_VAR_oidc_client="sts.amazonaws.com"
 export STACK=github-runner
-/bin/bash ./scripts/infra-deploy.sh
+/bin/bash ./scripts/action-infra-stack.sh
 
 
