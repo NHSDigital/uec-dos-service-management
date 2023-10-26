@@ -1,0 +1,128 @@
+name: Pipeline Deployment Application Development Environment
+
+on:
+  push:
+    branches:
+      - main
+      - 'task/*'
+
+jobs:
+  derive-tf-versions:
+    uses: ./.github/workflows/derive-tf-version.yaml
+  get-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
+      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
+      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
+    steps:
+      - id: metadata
+        run: |
+          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
+          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
+          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
+          echo "triggering action: ${{ github.event_name }}"
+          echo "ref type: ${{ github.ref_type }}"
+          echo "triggering reference: ${{ github.ref_name }}"
+  scan-secrets:
+    uses: ./.github/workflows/scan-secrets.yaml
+  check-file-format:
+    uses: ./.github/workflows/check-file-format.yaml
+  check-markdown-format:
+    uses: ./.github/workflows/check-markdown-format.yaml
+  check-terraform-format:
+      uses: ./.github/workflows/check-terraform-format.yaml
+  validate-terraform:
+    name: Validate terraform code
+    uses: ./.github/workflows/validate-terraform.yaml
+    needs: derive-tf-versions
+    with:
+      ENV: dev
+      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+    secrets: inherit
+  check-python-black-format:
+      uses: ./.github/workflows/check-python-black-format.yaml
+  check-python-flake-rules:
+      uses: ./.github/workflows/check-python-flake-rules.yaml
+  cloc-repository:
+    uses: ./.github/workflows/cloc-repository.yaml
+  unit-tests:
+    needs:
+      [
+        get-metadata,
+        scan-secrets,
+        check-file-format,
+        check-markdown-format,
+        check-terraform-format,
+        check-python-black-format,
+        check-python-flake-rules,
+        cloc-repository,
+      ]
+    name: Run unit test
+    uses: ./.github/workflows/unit-test.yaml
+    with:
+      github_environment: dev
+    secrets: inherit
+  deploy-application-infrastructure:
+      needs:
+        [
+          unit-tests,
+          validate-terraform,
+          derive-tf-versions,
+        ]
+      uses: ./.github/workflows/action-infrastructure-stack.yaml
+      with:
+        github_environment: dev
+        stack: application
+        action: apply
+        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      secrets: inherit
+  deploy-support-tools-infrastructure:
+      needs:
+        [
+          validate-terraform,
+          derive-tf-versions,
+        ]
+      uses: ./.github/workflows/action-infrastructure-stack.yaml
+      with:
+        github_environment: dev
+        stack: support_tools
+        action: apply
+        deployment_workspace: default
+        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      secrets: inherit
+  build-and-deploy-application-code:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      [
+        deploy-application-infrastructure,
+      ]
+    strategy:
+      matrix:
+        service-name:
+          - healthcare-services-data-manager
+          - locations-data-manager
+          - organisation-affiliations-data-manager
+          - organisations-data-manager
+          - questionnaire-responses-data-manager
+          - questionnaires-data-manager
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Build and deploy application code
+        run: |
+          export SERVICE_NAME=${{ matrix.service-name }}
+          /bin/bash ./scripts/app-build-deploy.sh

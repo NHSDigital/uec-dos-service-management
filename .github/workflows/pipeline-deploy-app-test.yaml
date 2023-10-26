@@ -1,0 +1,58 @@
+name: Pipeline Deployment Application Test Environment
+
+on:
+  push:
+    tags:
+      - '[A-Z][A-Z]-[0-9][0-9]?[0-9]?[0-9]?-test-[0-9][0-9]?'
+
+jobs:
+  derive-tf-versions:
+    uses: ./.github/workflows/derive-tf-version.yaml
+  get-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
+      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
+      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
+    steps:
+      - id: metadata
+        run: |
+          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
+          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
+          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
+          echo "triggering action: ${{ github.event_name }}"
+          echo "ref type: ${{ github.ref_type }}"
+          echo "triggering reference: ${{ github.ref_name }}"
+  deploy-application-infrastructure:
+    needs:
+      [
+        derive-tf-versions,
+      ]
+    uses: ./.github/workflows/action-infrastructure-stack.yaml
+    with:
+      github_environment: "test"
+      deployment_workspace: ${{ github.ref_name }}
+      stack: application
+      action: apply
+      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+    secrets: inherit
+  integration-test:
+    runs-on: ubuntu-latest
+    needs:
+      [
+        get-metadata,
+        deploy-application-infrastructure,
+      ]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Variables
+        run: |
+          export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
+          export BUILD_TIMESTAMP="${{ needs.get-metadata.outputs.build_timestamp }}"
+          export BUILD_EPOCH="${{ needs.get-metadata.outputs.build_epoch }}"
+          echo "Integration tests invoked"
+      # - name: Run Tests ...
+      #   run: |
+      #     ?

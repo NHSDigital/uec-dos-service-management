@@ -1,0 +1,67 @@
+name: Action Infrastructure Stack
+
+on:
+  workflow_call:
+    inputs:
+      github_environment:
+        description: "Defines the Github environment in which to pull environment variables from"
+        required: true
+        type: string
+      deployment_workspace:
+        description: 'Name of the terraform workspace to spin up the service infrastructure'
+        required: false
+        default: 'not-set'
+        type: string
+      stack:
+        required: true
+        type: string
+      action:
+        required: true
+        type: string
+      tf_vers:
+        description: "Version of terraform used"
+        required: true
+        type: string
+
+jobs:
+  echo-workflow-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo workflow inputs
+        run: |
+          echo "github environment: ${{ inputs.github_environment }}"
+          echo "deployment workspace: ${{ inputs.deployment_workspace }}"
+          echo "stack: ${{ inputs.stack }}"
+          echo "action: ${{ inputs.action }}"
+  action-stack:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.github_environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ inputs.tf_vers }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Action Infrastructure Stack
+        run: |
+          export ACTION=${{ inputs.action }}
+          export STACK=${{ inputs.stack }}
+          export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
+          if [ ${{ inputs.deployment_workspace }} != 'not-set' ]
+          then
+            export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
+          fi
+          /bin/bash ./scripts/action-infra-stack.sh

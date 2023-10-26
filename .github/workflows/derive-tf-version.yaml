@@ -1,0 +1,24 @@
+name: Derive max version of terraform
+
+on:
+  workflow_call:
+    outputs:
+      maxVersion:
+        description: "The max acceptable vers of terraform"
+        value: ${{ jobs.derive-tf-versions.outputs.maxVersion }}
+
+jobs:
+  derive-tf-versions:
+    name: Derive Max Terraform Versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Terraform min/max versions
+        id: minMax
+        uses: clowdhaus/terraform-min-max@main
+        with:
+          directory: ./infrastructure/remote
+    outputs:
+      maxVersion: ${{ steps.minMax.outputs.maxVersion }}

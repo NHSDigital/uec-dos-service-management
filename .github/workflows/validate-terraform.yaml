@@ -6,40 +6,23 @@ on:
       ENV:
         required: true
         type: string
+      tf_vers:
+        required: true
+        type: string
 
 jobs:
-
-  derive-tf-versions:
-    name: Derive Min/Max Terraform Versions
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Extract Terraform min/max versions
-        id: minMax
-        uses: clowdhaus/terraform-min-max@main
-        with:
-          directory: ./infrastructure/remote
-    outputs:
-      minVersion: ${{ steps.minMax.outputs.minVersion }}
-      maxVersion: ${{ steps.minMax.outputs.maxVersion }}
-
   validate-against-tf-versions:
-    name: Validate terraform against the min/max versions
+    name: Validate terraform against the max version
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENV }}
     permissions:
       id-token: write
       contents: read
-    needs: derive-tf-versions
     strategy:
       matrix:
-        version:
-          - ${{ needs.versionExtract.outputs.minVersion }}
-          - ${{ needs.versionExtract.outputs.maxVersion }}
         stack:
-          - github-runner
+          - application
+          - support_tools
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,14 +34,14 @@ jobs:
           role-session-name: github-pipeline-session
           aws-region: eu-west-2
 
-      - name: Install Terraform v${{ matrix.version }}
+      - name: Install Terraform v${{ inputs.tf_vers }}
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ matrix.version }}
+          terraform_version: ${{ inputs.tf_vers }}
 
-      - name: Initialize terraform and validate stack ${{ matrix.stack }} against v${{ matrix.version }}
+      - name: Initialize terraform and validate stack ${{ matrix.stack }} against v${{ inputs.tf_vers }}
         run: |
           export ACTION=validate
           export STACK=${{ matrix.stack }}
           export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
-          /bin/bash ./scripts/infra-deploy.sh
+          /bin/bash ./scripts/action-infra-stack.sh
