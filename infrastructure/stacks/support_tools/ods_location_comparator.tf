@@ -21,9 +21,8 @@ module "ods-location-comparator-lambda" {
                     "Sid": "S3",
                     "Effect": "Allow",
                     "Action": [
-                        "s3:PutItem",
-                        "s3:GetItem",
-                        "s3:UpdateItem"
+                        "s3:PutOject",
+                        "s3:GetObject"
                     ],
                     "Resource": [
                         "*"
