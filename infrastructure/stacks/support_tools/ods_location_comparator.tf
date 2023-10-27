@@ -5,12 +5,12 @@ module "ods-location-comparator-lambda" {
   description   = "Lambda for checking ODS locations against DoS"
 
   environment_variables = {
-      "BASE_URL":"",
-      "GP_LOCATION_JSON_FILE":"gp_locations.json",
-      "PHARMACY_LOCATION_JSON_FILE":"pharmacy_locations.json",
-      "S3_DATA_BUCKET":"nhse-uec-dos-dev-databucket",
-      "TOKEN":""
-    }
+    "BASE_URL" : "",
+    "GP_LOCATION_JSON_FILE" : "gp_locations.json",
+    "PHARMACY_LOCATION_JSON_FILE" : "pharmacy_locations.json",
+    "S3_DATA_BUCKET" : "nhse-uec-dos-dev-databucket",
+    "TOKEN" : ""
+  }
 
   policy_jsons = [
     <<-EOT
