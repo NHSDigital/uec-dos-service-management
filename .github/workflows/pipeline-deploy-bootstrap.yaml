@@ -12,10 +12,3 @@ jobs:
       with:
         ENV: dev
       secrets: inherit
-    # deploy-bootstrap-dos-test:
-    #   name: Run bootstrap for dos test account
-    #   uses: ./.github/workflows/deploy-bootstrap.yaml
-    #   with:
-    #     ENV: test
-    #   secrets: inherit
-    # TODO add other dos related accounts as required

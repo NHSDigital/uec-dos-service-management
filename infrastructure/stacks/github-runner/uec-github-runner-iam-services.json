@@ -24,6 +24,9 @@
               "iam:CreatePolicyVersion",
               "iam:DeletePolicyVersion",
               "iam:TagOpenIDConnectProvider"
+              "iam:DeleteRolePolicy",
+              "iam:PutRolePolicy",
+              "iam:UpdateOpenIDConnectProviderThumbprint"
           ],
           "Resource": "*"
       }
