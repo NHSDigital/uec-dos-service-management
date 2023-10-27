@@ -34,3 +34,7 @@ variable "attach_policy_jsons" {
 variable "number_of_policy_jsons" {
   default = "1"
 }
+
+variable "environment_variables" {
+  default = {}
+}
