@@ -13,6 +13,7 @@ jobs:
   run-bootstrap:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENV }}
+    needs: derive-tf-versions
     permissions:
       id-token: write
       contents: read
