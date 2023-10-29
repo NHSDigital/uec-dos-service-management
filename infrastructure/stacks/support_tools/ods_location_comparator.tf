@@ -1,4 +1,4 @@
-  data "archive_file" "lambda_deployment_file" {
+data "archive_file" "lambda_deployment_file" {
   type        = "zip"
   source_file = "../../../scripts/ods_location_comparator/ods_location_comparator.py"
   output_path = "../../../scripts/ods_location_comparator/ods_location_comparator.zip"
