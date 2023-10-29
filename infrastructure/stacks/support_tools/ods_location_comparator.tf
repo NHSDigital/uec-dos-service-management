@@ -1,8 +1,16 @@
+  data "archive_file" "lambda_deployment_file" {
+  type        = "zip"
+  source_file = "../../../scripts/ods_location_comparator/ods_location_comparator.py"
+  output_path = "../../../scripts/ods_location_comparator/ods_location_comparator.zip"
+}
+
 module "ods-location-comparator-lambda" {
   source = "../../modules/lambda"
 
   function_name = "ods-location-comparator"
   description   = "Lambda for checking ODS locations against DoS"
+
+  local_existing_package = data.archive_file.lambda_deployment_file.output_path
 
   environment_variables = {
     "BASE_URL" : "",
