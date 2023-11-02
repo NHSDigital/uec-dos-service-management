@@ -35,12 +35,20 @@ select
               ),
               'service_name',
               (case
-              when length(s.odscode) = 5 then 'General Pharmacy Service'
-              when s.name like 'DSP%' then 'Distance Selling Service'
-              when s.name like 'CPCS%' then 'Community Pharmacy Service'
-              when s.name like 'Pharm+%' then 'Community Pharmacy Service'
-              when s.name = s.publicname then split_part(s.name,'-',1)
-              else s.name end) ,
+                when s.typeid=134 then 'Distance Selling Pharmacy Service'
+                when length(s.odscode) = 5 then 'General Pharmacy Service'
+                when s.name like '%CPCS%' then 'Community Pharmacy Consultation Service'
+                when s.publicname like '%CPCS%' then 'Community Pharmacy Consultation Service'
+                when lower(s.name) like '%pharm+%' then 'Community Pharmacy Consultation Service'
+                when s.name like '%UTI%' then 'UTI Care Service'
+                when s.typeid=148 then 'Blood Pressure Service'
+                when s.typeid=149 then 'Contraception Service'
+                when s.name like '%inor%ilments%' then 'Minor Ailments Service'
+                when s.name like '%ervice%' and position (':' in lower(s.name))>0 then split_part(s.name,':',1)
+                when s.name like '%ervice%' and position ('-' in lower(s.name))>0 then split_part(s.name,'-',1)
+                when position (':' in lower(s.name))>0 then split_part(s.name,':',1)||' Service'
+                when position ('-' in lower(s.name))>0 then split_part(s.name,'-',1)||' Service'
+                else s.name end) ,
               'telecom',
               json_build_array(
                 json_build_object('system','phone','value',s.publicphone, 'use', 'public'),
@@ -92,12 +100,5 @@ left join
             pathwaysdos.servicereferrals sr on s.id=sr.referralserviceid
             group by s.id,uid) gpReferral
 on s.id = gpReferral.serviceid
-where s.id in
-
-
-(169621,
-143973,
-127423,
-107275,
-107273)
-;
+inner join  (select distinct serviceid from pathwaysdos.servicesgsds) sgsd on s.id=sgsd.serviceid
+where s.typeid in ( 13, 131,134,132,148,149) and s.statusid=1
