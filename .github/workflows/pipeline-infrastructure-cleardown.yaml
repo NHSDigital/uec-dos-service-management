@@ -4,8 +4,12 @@ on:
     delete
 jobs:
   destroy:
-    if: github.event.ref_type =='branch' && startswith(github.event.ref, 'task/*')
-
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean up
+        run: |
+          echo "Clean up for branch ${{ github.event.ref }}"
   derive-tf-versions:
     uses: ./.github/workflows/derive-tf-version.yaml
   get-metadata:
