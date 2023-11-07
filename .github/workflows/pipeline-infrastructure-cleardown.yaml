@@ -1,7 +1,7 @@
 name: Pipeline Cleardown Application Development Environment
 
 on:
-  delete
+  delete:
     branches:
       - main
       - 'task/*'
