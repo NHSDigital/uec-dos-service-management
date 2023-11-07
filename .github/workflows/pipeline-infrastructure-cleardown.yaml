@@ -1,0 +1,39 @@
+name: Pipeline Cleardown Application Development Environment
+
+on:
+  delete:
+    branches:
+      - 'task/*'
+
+jobs:       
+  derive-tf-versions:
+    uses: ./.github/workflows/derive-tf-version.yaml
+  get-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
+      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
+      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
+    steps:
+      - id: metadata
+        run: |
+          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
+          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
+          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
+          echo "triggering action: ${{ github.event_name }}"
+          echo "ref type: ${{ github.ref_type }}"
+          echo "triggering reference: ${{ github.ref_name }}"
+  destroy-application-infrastructure:
+      needs:
+        [
+          validate-terraform,
+          derive-tf-versions,
+        ]
+      uses: ./.github/workflows/action-infrastructure-stack.yaml
+      with:
+        github_environment: dev
+        stack: application
+        action: plan
+        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      secrets: inherit
