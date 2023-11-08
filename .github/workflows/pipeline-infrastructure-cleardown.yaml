@@ -10,4 +10,3 @@ jobs:
         run: |
           echo "I am the ref for a branch deletion: ${{ github.event.ref }}"
           echo "I am the ref_type for a branch deletion: ${{ github.event.ref_type }}"
- 
