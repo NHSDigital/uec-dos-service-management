@@ -1,0 +1,12 @@
+name: Pipeline Cleardown Application Development Environment
+
+on:
+  delete:
+jobs:
+  destroy:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/*')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean up
+        run: |
+          echo "Clean up for branch ${{ github.event.ref }}"
