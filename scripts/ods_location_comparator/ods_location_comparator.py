@@ -7,7 +7,7 @@ import boto3
 
 import json
 
-result_file = "/tmp/location_compare_gp_results.txt"
+result_file = "/tmp/location_compare_results.txt"
 result_file_handle = open(result_file, "w")
 dubious_services = set()
 dubious_services_group_map = {}
@@ -17,7 +17,7 @@ s3 = boto3.resource("s3")
 
 def lambda_handler(event, context):
     # Get a list of ods codes from file in s3 bucket
-    json_content = read_dos_locations(os.getenv("GP_LOCATION_JSON_FILE"))
+    json_content = read_dos_locations(os.getenv("DOS_LOCATIONS_JSON_FILE"))
 
     log("Comparing DoS location details with ODS API...")
     process_count = perform_comparision(json_content)
@@ -211,7 +211,7 @@ def upload_results_to_s3():
 
     # Upload file to S3
     s3.Bucket(os.getenv("S3_DATA_BUCKET")).upload_file(
-        result_file, "location_compare_results/location_compare_gp_results.txt"
+        result_file, "location_compare_results/location_compare_results.txt"
     )
 
 

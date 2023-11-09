@@ -1,3 +1,6 @@
+-- These SQL statements are used to build the JSON response that can be loaded into S3 for
+-- the ODS comparison Lambda.
+
 -- Pharmacy
 select json_build_object(
   'odscodes', json_agg(
