@@ -38,3 +38,7 @@ variable "number_of_policy_jsons" {
 variable "environment_variables" {
   default = {}
 }
+
+variable "layers" {
+  default = []
+}

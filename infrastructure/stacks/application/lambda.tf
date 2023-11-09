@@ -169,6 +169,7 @@ module "healthcare-services-data-manager-lambda" {
 
   function_name = var.healthcare_services_function_name
   description   = "Microservice for interacting with healthcare services dynamodb table"
+  layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
