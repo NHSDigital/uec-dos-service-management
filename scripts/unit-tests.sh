@@ -29,7 +29,7 @@ for path in "$APPLICATION_DIR"/*/ ; do
     dirs=$(echo "$path" | tr "\/" '\n')
     for dir in $dirs
         do
-            if ! [ "$dir" == $APPLICATION_DIR ] ; then
+            if ! [ "$dir" == $APPLICATION_DIR ] || ! [ "$dir" == "healthcare-services-data-manager"  ] ; then
                 echo "Preparing tests for $dir"
                 mkdir $APPLICATION_DIR/"$dir"/test
                 mkdir $APPLICATION_DIR/"$dir"/chalicelib/common
