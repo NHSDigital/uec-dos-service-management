@@ -49,3 +49,6 @@ sbom-spdx*.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# ZIP files
+*ods_location_comparator.zip

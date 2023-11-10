@@ -8,6 +8,7 @@ omit =
         */*/chalicelib/common/utilities.py
         */app.py
         **/*database_populator.py
+        **/*ods_location_comparator.py
 
 [report]
 omit =
@@ -17,3 +18,4 @@ omit =
         */*/chalicelib/common/utilities.py
         */app.py
         **/*database_populator.py
+        **/*ods_location_comparator.py
