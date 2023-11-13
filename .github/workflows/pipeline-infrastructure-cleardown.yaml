@@ -1,7 +1,7 @@
 name: Pipeline Cleardown Application Development Environment
 
-on: delete
-
+on:
+    delete
 jobs:
   destroy:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/')
@@ -52,7 +52,6 @@ jobs:
           export BRANCH_NAME=${{ github.head_ref }}
           $WORKSPACE=./scripts/branch-name-workspace.sh
           echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
-
   destroy-application-infrastructure:
         needs:
           [
