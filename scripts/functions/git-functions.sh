@@ -79,7 +79,7 @@ function export_terraform_workspace_name {
           TERRAFORM_WORKSPACE_NAME=$(echo "$DEPLOYMENT_WORKSPACE" | tr "." "-")
         fi
     else
-      BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+      BRANCH_NAME="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
       if [ "$BRANCH_NAME" != 'main' ] && [[ $BRANCH_NAME =~ $GIT_BRANCH_PATTERN ]]  ; then
         IFS='/' read -r -a name_array <<< "$BRANCH_NAME"
         IFS='_' read -r -a ref <<< "${name_array[1]}"
@@ -89,7 +89,3 @@ function export_terraform_workspace_name {
 
     export TERRAFORM_WORKSPACE_NAME
 }
-
-#
-
-
