@@ -1,7 +1,6 @@
 name: Pipeline Cleardown Application Development Environment
 
-on:
-    delete
+on: delete
 
 jobs:
   destroy:
