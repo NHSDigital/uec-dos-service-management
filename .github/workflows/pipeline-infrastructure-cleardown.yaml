@@ -44,9 +44,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-            fetch-depth: 0
-      -  id: derive-workspace
+
+      - name: derive-workspace
+      - id: derive-workspace
         run: |
           export BRANCH_NAME=${{ github.head_ref }}
           $WORKSPACE=./scripts/branch-name-workspace.sh
