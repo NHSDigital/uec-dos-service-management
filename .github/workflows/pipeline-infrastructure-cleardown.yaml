@@ -37,30 +37,33 @@ jobs:
           echo "triggering action: ${{ github.event_name }}"
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
-  deploy-application-infrastructure:
-      needs:
-        [
-          validate-terraform,
-          derive-tf-versions,
-        ]
-      uses: ./.github/workflows/action-infrastructure-stack.yaml
-      with:
-        github_environment: dev
-        stack: application
-        action: plan
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-      secrets: inherit
-  deploy-support-tools-infrastructure:
-      needs:
-        [
-          validate-terraform,
-          derive-tf-versions,
-        ]
-      uses: ./.github/workflows/action-infrastructure-stack.yaml
-      with:
-        github_environment: dev
-        stack: support_tools
-        action: plan
-        deployment_workspace: default
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-      secrets: inherit
+  derive-terraform-workspace-from-branch-name:
+    runs-on: ubuntu-latest
+    outputs:
+        workspace: ${{ steps.derive-workspace.outputs.workspace }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive Workspace
+        id: derive-workspace
+        run: |
+          export BRANCH_NAME=${{ github.head_ref }}
+          $WORKSPACE=./scripts/branch-name-workspace.sh
+          echo "workspace=$WORKSPACE" >> $GITHUB_OUTPUT
+  destroy-application-infrastructure:
+        needs:
+          [
+            derive-terraform-workspace-from-branch-name,
+            validate-terraform,
+            derive-tf-versions,
+          ]
+        uses: ./.github/workflows/action-infrastructure-stack.yaml
+        with:
+          github_environment: dev
+          stack: application
+          action: plan
+          deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+          tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+          secrets: inherit
