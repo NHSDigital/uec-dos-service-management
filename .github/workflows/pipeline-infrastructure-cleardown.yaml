@@ -66,4 +66,4 @@ jobs:
           action: plan
           deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
           tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-          secrets: inherit
+        secrets: inherit
