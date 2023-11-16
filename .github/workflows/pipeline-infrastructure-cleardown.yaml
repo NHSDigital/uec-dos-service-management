@@ -51,7 +51,9 @@ jobs:
         id: derive-workspace
         run: |
           export BRANCH_NAME=${{ github.event.ref }}
-          /bin/bash ./scripts/branch-name-workspace.sh
+          workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
+          echo "Setting workspace to $workspace"
+          echo "workspace=$workspace" >> $GITHUB_OUTPUT
   destroy-application-infrastructure:
         needs:
           [
@@ -67,14 +69,14 @@ jobs:
           deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
           tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
         secrets: inherit
-  # cleardown-terraform-state:
-  #     needs:
-  #       [
-  #         destroy-application-infrastructure,
-  #         derive-terraform-workspace-from-branch-name,
-  #       ]
-  #     uses: ./.github/workflows/cleardown-terraform-state.yaml
-  #     with:
-  #       github_environment: dev
-  #       deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-  #     secrets: inherit
+  cleardown-terraform-state:
+      needs:
+        [
+          destroy-application-infrastructure,
+          derive-terraform-workspace-from-branch-name,
+        ]
+      uses: ./.github/workflows/cleardown-terraform-state.yaml
+      with:
+        github_environment: dev
+        deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+      secrets: inherit
