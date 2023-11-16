@@ -37,6 +37,7 @@ jobs:
           echo "triggering action: ${{ github.event_name }}"
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
+          echo "branch to delete: ${{ github.event.ref }}"
   derive-terraform-workspace-from-branch-name:
     runs-on: ubuntu-latest
     outputs:
@@ -49,8 +50,10 @@ jobs:
       - name: Derive Workspace
         id: derive-workspace
         run: |
-          export BRANCH_NAME=${{ github.head_ref }}
-          /bin/bash ./scripts/branch-name-workspace.sh
+          export BRANCH_NAME=${{ github.event.ref }}
+          workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
+          echo "Setting workspace to $workspace"
+          echo "workspace=$workspace" >> $GITHUB_OUTPUT
   destroy-application-infrastructure:
         needs:
           [
