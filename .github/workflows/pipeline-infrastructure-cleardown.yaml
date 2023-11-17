@@ -1,7 +1,9 @@
 name: Pipeline Cleardown Application Development Environment
 
 on:
-    delete
+  delete:
+    branches:
+      - 'task/*'
 jobs:
   destroy:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/')
