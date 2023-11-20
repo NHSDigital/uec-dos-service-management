@@ -9,6 +9,8 @@ jobs:
     # if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Clean up
         uses: ./.github/workflows/action-infrastructure-cleardown.yaml
       - name: echo Ref and Ref type for branch deletion
