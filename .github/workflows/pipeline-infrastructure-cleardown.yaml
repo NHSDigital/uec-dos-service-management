@@ -10,7 +10,10 @@ jobs:
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
     with:
       github_environment: dev
-  # echo-Ref-and-Ref:
-  #   run: |
-  #     echo "Ref for a branch deletion: ${{ github.event.ref }}"
-  #     echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
+  echo-Ref-and-Ref:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean up
+        run: |
+          echo "Ref for a branch deletion: ${{ github.event.ref }}"
+          echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
