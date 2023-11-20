@@ -8,6 +8,8 @@ jobs:
   destroy:
     # if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+    with:
+      github_environment: dev
   # echo-Ref-and-Ref:
   #   run: |
   #     echo "Ref for a branch deletion: ${{ github.event.ref }}"
