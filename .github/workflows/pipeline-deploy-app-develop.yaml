@@ -26,6 +26,8 @@ jobs:
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
           echo "github event ref: ${{ github.event.ref }}"
+          echo "username of user triggering the workflow: ${{ github.actor }}"
+          echo "user that triggered the event: ${{ github.event.sender }}"
   scan-secrets:
     uses: ./.github/workflows/scan-secrets.yaml
   check-file-format:
@@ -76,7 +78,7 @@ jobs:
       with:
         github_environment: dev
         stack: application
-        action: apply
+        action: plan
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit
   deploy-support-tools-infrastructure:
@@ -89,7 +91,7 @@ jobs:
       with:
         github_environment: dev
         stack: support_tools
-        action: apply
+        action: plan
         deployment_workspace: default
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit
