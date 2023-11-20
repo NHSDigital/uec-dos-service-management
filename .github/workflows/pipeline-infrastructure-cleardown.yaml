@@ -40,6 +40,8 @@ jobs:
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
           echo "branch to delete: ${{ github.event.ref }}"
+          echo "username of user triggering the workflow: ${{ github.actor }}"
+          echo "user that triggered the event: ${{ github.event.sender }}"
   derive-terraform-workspace-from-branch-name:
     runs-on: ubuntu-latest
     outputs:
@@ -56,29 +58,29 @@ jobs:
           workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
           echo "Setting workspace to $workspace"
           echo "workspace=$workspace" >> $GITHUB_OUTPUT
-  destroy-application-infrastructure:
-        needs:
-          [
-            derive-terraform-workspace-from-branch-name,
-            validate-terraform,
-            derive-tf-versions,
-          ]
-        uses: ./.github/workflows/action-infrastructure-stack.yaml
-        with:
-          github_environment: dev
-          stack: application
-          action: destroy
-          deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-          tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-        secrets: inherit
-  cleardown-terraform-state:
-      needs:
-        [
-          destroy-application-infrastructure,
-          derive-terraform-workspace-from-branch-name,
-        ]
-      uses: ./.github/workflows/cleardown-terraform-state.yaml
-      with:
-        github_environment: dev
-        deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-      secrets: inherit
+  # destroy-application-infrastructure:
+  #       needs:
+  #         [
+  #           derive-terraform-workspace-from-branch-name,
+  #           validate-terraform,
+  #           derive-tf-versions,
+  #         ]
+  #       uses: ./.github/workflows/action-infrastructure-stack.yaml
+  #       with:
+  #         github_environment: dev
+  #         stack: application
+  #         action: destroy
+  #         deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+  #         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+  #       secrets: inherit
+  # cleardown-terraform-state:
+  #     needs:
+  #       [
+  #         destroy-application-infrastructure,
+  #         derive-terraform-workspace-from-branch-name,
+  #       ]
+  #     uses: ./.github/workflows/cleardown-terraform-state.yaml
+  #     with:
+  #       github_environment: dev
+  #       deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+  #     secrets: inherit
