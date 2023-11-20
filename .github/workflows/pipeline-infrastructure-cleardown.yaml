@@ -1,7 +1,7 @@
 name: Pipeline Cleardown Application Development Environment
 
 on:
-  delete:
+  push:
     branches:
       - 'task/*'
 jobs:
@@ -10,77 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clean up
+        uses: ./.github/workflows/action-infrastructure-cleardown.yaml
         run: |
           echo "Ref for a branch deletion: ${{ github.event.ref }}"
           echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
-  validate-terraform:
-        name: Validate terraform code
-        uses: ./.github/workflows/validate-terraform.yaml
-        needs: derive-tf-versions
-        with:
-          ENV: dev
-          tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-        secrets: inherit
-  derive-tf-versions:
-    uses: ./.github/workflows/derive-tf-version.yaml
-  get-metadata:
-    runs-on: ubuntu-latest
-    outputs:
-      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
-      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
-      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
-    steps:
-      - id: metadata
-        run: |
-          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
-          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
-          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
-          echo "triggering action: ${{ github.event_name }}"
-          echo "ref type: ${{ github.ref_type }}"
-          echo "triggering reference: ${{ github.ref_name }}"
-          echo "branch to delete: ${{ github.event.ref }}"
-          echo "username of user triggering the workflow: ${{ github.actor }}"
-          echo "user that triggered the event: ${{ github.event.sender }}"
-  derive-terraform-workspace-from-branch-name:
-    runs-on: ubuntu-latest
-    outputs:
-        workspace: ${{ steps.derive-workspace.outputs.workspace }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Derive Workspace
-        id: derive-workspace
-        run: |
-          export BRANCH_NAME=${{ github.event.ref }}
-          workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
-          echo "Setting workspace to $workspace"
-          echo "workspace=$workspace" >> $GITHUB_OUTPUT
-  # destroy-application-infrastructure:
-  #       needs:
-  #         [
-  #           derive-terraform-workspace-from-branch-name,
-  #           validate-terraform,
-  #           derive-tf-versions,
-  #         ]
-  #       uses: ./.github/workflows/action-infrastructure-stack.yaml
-  #       with:
-  #         github_environment: dev
-  #         stack: application
-  #         action: destroy
-  #         deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-  #         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-  #       secrets: inherit
-  # cleardown-terraform-state:
-  #     needs:
-  #       [
-  #         destroy-application-infrastructure,
-  #         derive-terraform-workspace-from-branch-name,
-  #       ]
-  #     uses: ./.github/workflows/cleardown-terraform-state.yaml
-  #     with:
-  #       github_environment: dev
-  #       deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-  #     secrets: inherit
