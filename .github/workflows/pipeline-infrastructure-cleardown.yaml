@@ -11,6 +11,7 @@ jobs:
     with:
       github_environment: dev
   echo-Ref-and-Ref:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/')
     runs-on: ubuntu-latest
     steps:
       - name: Clean up
