@@ -77,7 +77,7 @@ jobs:
       with:
         github_environment: dev
         stack: application
-        action: apply
+        action: plan
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit
   deploy-support-tools-infrastructure:
@@ -90,7 +90,7 @@ jobs:
       with:
         github_environment: dev
         stack: support_tools
-        action: apply
+        action: plan
         deployment_workspace: default
         tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       secrets: inherit
