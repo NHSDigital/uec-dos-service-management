@@ -1,7 +1,11 @@
 name: Populate Database
-
 on:
   workflow_call:
+    inputs:
+      git_ref:
+        description: "The git tag to checkout or current branch if not passed in"
+        required: false
+        type: string
 
 jobs:
   populate-database:
@@ -10,6 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.git_ref}}
           fetch-depth: 0
 
       - name: Set up Python

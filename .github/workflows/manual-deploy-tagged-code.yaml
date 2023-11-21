@@ -1,0 +1,16 @@
+name: Manually deploy tagged code to test
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: "Specify the git commit tag to be used for deployment"
+        required: true
+        type: string
+
+jobs:
+  deploy-to-test:
+    name: Deploy tagged code to test
+    uses: ./.github/workflows/pipeline-deploy-app-test.yaml
+    with:
+      git_tag: ${{ inputs.git_tag }}
+    secrets: inherit

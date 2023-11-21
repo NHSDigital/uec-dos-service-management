@@ -22,9 +22,14 @@ on:
         description: "Version of terraform used"
         required: true
         type: string
+      git_ref:
+        description: "Git tag or not set to use head of current branch"
+        required: false
+        type: string
 
 jobs:
   echo-workflow-inputs:
+    name: List inputs
     runs-on: ubuntu-latest
     steps:
       - name: echo workflow inputs
@@ -33,7 +38,9 @@ jobs:
           echo "deployment workspace: ${{ inputs.deployment_workspace }}"
           echo "stack: ${{ inputs.stack }}"
           echo "action: ${{ inputs.action }}"
+          echo "git ref ${{ inputs.git_ref }}"
   action-stack:
+    name: Run terraform
     runs-on: ubuntu-latest
     environment: ${{ inputs.github_environment }}
     permissions:
@@ -42,6 +49,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
