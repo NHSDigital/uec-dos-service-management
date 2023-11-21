@@ -1,7 +1,11 @@
 name: Derive max version of terraform
-
 on:
   workflow_call:
+    inputs:
+      git_ref:
+        description: "The git tag to checkout or current branch if not passed in"
+        required: false
+        type: string
     outputs:
       maxVersion:
         description: "The max acceptable vers of terraform"
@@ -14,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{inputs.git_ref}}
 
       - name: Extract Terraform min/max versions
         id: minMax
