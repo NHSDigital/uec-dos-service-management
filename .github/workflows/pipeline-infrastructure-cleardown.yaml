@@ -1,17 +1,16 @@
 name: Pipeline Cleardown Application Development Environment
 
 on:
-  push:
+  delete:
     branches:
       - 'task/*'
 jobs:
   destroy:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/')
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
     with:
       github_environment: dev
-  echo-Ref-and-Ref:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/')
+  echo-ref-and-ref-type:
     runs-on: ubuntu-latest
     steps:
       - name: Clean up

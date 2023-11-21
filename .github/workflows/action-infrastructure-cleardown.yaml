@@ -41,7 +41,6 @@ jobs:
           echo "triggering reference: ${{ github.ref_name }}"
           echo "branch to delete: ${{ github.event.ref }}"
           echo "username of user triggering the workflow: ${{ github.actor }}"
-          echo "user that triggered the event: ${{ github.event.sender }}"
   derive-terraform-workspace-from-branch-name:
     runs-on: ubuntu-latest
     outputs:
