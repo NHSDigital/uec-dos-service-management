@@ -1,5 +1,4 @@
-name: Cleardown Terraform state
-
+name: Cleardown Infrastructure
 on:
   workflow_call:
     inputs:
