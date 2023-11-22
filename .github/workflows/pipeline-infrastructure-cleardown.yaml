@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
     with:
       github_environment: dev
+    secrets: inherit
   echo-ref-and-ref-type:
     runs-on: ubuntu-latest
     steps:
