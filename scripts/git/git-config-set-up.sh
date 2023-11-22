@@ -12,7 +12,7 @@ git config branch.autosetupmerge false
 git config branch.autosetuprebase always    
 git config commit.gpgsign true    
 git config core.autocrlf input    
-git config core.filemode true    
+git config core.filemode false    
 git config core.hidedotfiles false    
 git config core.ignorecase false    
 git config pull.rebase true    
