@@ -1,14 +1,21 @@
 name: Pipeline Deployment Application Test Environment
 
 on:
-  push:
-    tags:
-      - '[A-Z][A-Z]-[0-9][0-9]?[0-9]?[0-9]?-test-[0-9][0-9]?'
+  workflow_call:
+    inputs:
+      git_tag:
+        description: "Defines git commit tag to be used for deployment"
+        required: true
+        type: string
 
 jobs:
   derive-tf-versions:
+    name: Derive terraform version
     uses: ./.github/workflows/derive-tf-version.yaml
+    with:
+      git_ref: ${{ inputs.git_tag }}
   get-metadata:
+    name: Get metadata
     runs-on: ubuntu-latest
     outputs:
       build_datetime: ${{ steps.metadata.outputs.build_datetime }}
@@ -23,21 +30,86 @@ jobs:
           echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
           echo "triggering action: ${{ github.event_name }}"
           echo "ref type: ${{ github.ref_type }}"
-          echo "triggering reference: ${{ github.ref_name }}"
+          echo "triggering git reference: ${{ github.ref_name }}"
+          echo "deploying from git tag ${{ inputs.git_tag }}"
+  derive-deployment-workspace:
+    name: Derive deployment workspace
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_workspace: ${{ steps.derive-workspace-from-tag.outputs.deployment_workspace }}
+    steps:
+      - id: derive-workspace-from-tag
+        name: Extract deployment workspace from git tag
+        run: |
+            echo "deployment_workspace=$(awk -F- '{print $1}' <<< ${{ inputs.git_tag }})-$(awk -F- '{print $2}' <<< ${{ inputs.git_tag }})" >> $GITHUB_OUTPUT
   deploy-application-infrastructure:
+    name: Deploy application infrastructure
+    needs:
+      [
+        derive-tf-versions,
+        derive-deployment-workspace,
+      ]
+    uses: ./.github/workflows/action-infrastructure-stack.yaml
+    with:
+      github_environment: "test"
+      deployment_workspace: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
+      stack: application
+      action: apply
+      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      git_ref: ${{ inputs.git_tag }}
+    secrets: inherit
+
+  deploy-support-tools-infrastructure:
     needs:
       [
         derive-tf-versions,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
     with:
-      github_environment: "test"
-      deployment_workspace: ${{ github.ref_name }}
-      stack: application
-      action: apply
+      github_environment: test
+      stack: support_tools
+      action: plan
+      deployment_workspace: default
       tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
     secrets: inherit
+  build-and-deploy-application-code:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      [
+        deploy-application-infrastructure,
+      ]
+    strategy:
+      matrix:
+        service-name:
+          - healthcare-services-data-manager
+          - locations-data-manager
+          - organisation-affiliations-data-manager
+          - organisations-data-manager
+          - questionnaire-responses-data-manager
+          - questionnaires-data-manager
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Build and deploy application code
+        run: |
+          export SERVICE_NAME=${{ matrix.service-name }}
+          /bin/bash ./scripts/app-build-deploy.sh
   integration-test:
+    name: Run integration tests
     runs-on: ubuntu-latest
     needs:
       [
@@ -47,6 +119,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
       - name: List Variables
         run: |
           export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
