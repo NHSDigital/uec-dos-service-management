@@ -85,7 +85,7 @@ if ! $USE_REMOTE_STATE_STORE  ; then
     ROOT_DIR=$PWD
     STACK_DIR=$PWD/$INFRASTRUCTURE_DIR/stacks/$STACK
     cd "$STACK_DIR" || exit
-    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/versions.tf "$STACK_DIR"
+    cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/remote/versions.tf "$STACK_DIR"
     cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/locals.tf "$STACK_DIR"
     cp "$ROOT_DIR"/"$INFRASTRUCTURE_DIR"/common/provider.tf "$STACK_DIR"
     # run terraform init with migrate flag set
