@@ -72,6 +72,8 @@ jobs:
       unit-tests,
     ]
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - run: |
           export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
           export SONAR_ORGANISATION_KEY=${{ vars.SONAR_ORGANISATION_KEY }}
