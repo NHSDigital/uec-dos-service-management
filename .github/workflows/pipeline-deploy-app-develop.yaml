@@ -77,7 +77,7 @@ jobs:
           export SONAR_ORGANISATION_KEY=${{ vars.SONAR_ORGANISATION_KEY }}
           export SONAR_PROJECT_KEY=${{ vars.SONAR_PROJECT_KEY }}
           export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
-          /bin/bash ./scripts/reports/perform-static-analysis.sh
+          ./scripts/perform-static-analysis.sh
   deploy-application-infrastructure:
       needs:
         [
