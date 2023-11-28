@@ -67,6 +67,7 @@ jobs:
       github_environment: dev
     secrets: inherit
   sonar-cloud-check:
+    name: Perform static analysis
     runs-on: ubuntu-latest
     needs: [
       unit-tests,
