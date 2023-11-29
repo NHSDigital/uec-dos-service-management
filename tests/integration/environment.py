@@ -9,7 +9,8 @@ def before_all(context):
 
     # get the api gateway name env var and then the api gateway id
     apigateway_name = userdata.get("apigateway")
-    apigateway_name = apigateway_name + "-" + workspace
+    if workspace != "default":
+        apigateway_name = apigateway_name + "-" + workspace
     agts = ApiGatewayToService()
     apigatewayid = agts.get_rest_api_id(apigateway_name)
 
