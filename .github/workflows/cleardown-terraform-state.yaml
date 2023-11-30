@@ -41,4 +41,5 @@ jobs:
       - name: Cleardown Terraform State
         run: |
             export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
+            export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
             /bin/bash ./scripts/cleardown-terraform-state.sh
