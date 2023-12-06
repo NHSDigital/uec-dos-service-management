@@ -1,24 +1,22 @@
-from chalice import Chalice
-from chalicelib import service
+import service
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
-app = Chalice(app_name="healthcare-services-data-manager")
+app = APIGatewayRestResolver()
 
+# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# fields
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    return app.resolve(event, context)
 
-@app.route("/healthcare_services", methods=["GET"])
-def get_healthcareservice():
-    hs_id = app.current_request.query_params["id"]
-    print("Get hs_id record..." + hs_id)
-    response = service.get_record_by_id(hs_id)
-    return {"statusCode": 200, "body": response}
-
-
-@app.route("/healthcare_services", methods=["POST"])
+@app.post("/healthcare_services")
 def create_healthcareservice():
-    request = app.current_request.json_body
+    post_data: dict = app.current_event.json_body
+
     data = {
-        "id": request["id"],
-        "hospitalName": request["hospitalname"],
-        "hospitalLocation": request["hospitallocation"],
+        "id": post_data["id"],
+        "hospitalName": post_data["hospitalname"],
+        "hospitalLocation": post_data["hospitallocation"],
     }
 
     print(data)
@@ -26,8 +24,26 @@ def create_healthcareservice():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
+# Dynamic get using URL path rather than query string
+# @app.get("/healthcare_services/<id>")
+# def get_healthcareservice(id):
+#     print("ID from Get: " + str(id))
+#     print("Get hs_id record..." + id)
+#     response = service.get_record_by_id(id)
+#     return {"statusCode": 200, "body": response}
 
-@app.route("/healthcare_services", methods=["PUT"])
+
+# Get using query string approach
+@app.get("/healthcare_services")
+def get_healthcareservice():
+    hs_id = app.current_event.get_query_string_value(name="id", default_value="")
+    print("Get hs_id record..." + hs_id)
+    response = service.get_record_by_id(hs_id)
+    return {"statusCode": 200, "body": response}
+
+
+
+@app.put("/healthcare_services")
 def update_healthcareservices():
     #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
     print("Updating healthcare_service record...")
@@ -38,7 +54,7 @@ def update_healthcareservices():
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
 
-@app.route("/healthcare_services", methods=["DELETE"])
+@app.delete("/healthcare_services")
 def delete_healthcareservices():
     #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
     print("Delete healthcareservice record...")

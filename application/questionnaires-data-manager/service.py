@@ -1,5 +1,5 @@
 import boto3
-from chalicelib.common import utilities
+import utilities
 
 TABLE_NAME = "questionnaires"
 

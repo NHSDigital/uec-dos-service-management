@@ -52,3 +52,4 @@ sbom-spdx*.json
 
 # ZIP files
 *ods_location_comparator.zip
+*deployment.zip
