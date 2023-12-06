@@ -26,6 +26,13 @@ def create_questionnaireresponses():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
+# Dynamic get using URL path rather than query string
+# @app.get("/questionnaire_responses/<id>")
+# def get_questionnaireresponses(id):
+#     print("ID from Get: " + str(id))
+#     print("Get hs_id record..." + id)
+#     response = service.get_record_by_id(id)
+#     return {"statusCode": 200, "body": response}
 
 # Get using query string approach
 @app.get("/questionnaire_responses")

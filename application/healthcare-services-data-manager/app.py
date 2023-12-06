@@ -4,6 +4,10 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 app = APIGatewayRestResolver()
 
+# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# fields
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    return app.resolve(event, context)
 
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
 # fields
@@ -28,6 +32,13 @@ def create_healthcareservices():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
+# Dynamic get using URL path rather than query string
+# @app.get("/healthcare_services/<id>")
+# def get_healthcareservice(id):
+#     print("ID from Get: " + str(id))
+#     print("Get hs_id record..." + id)
+#     response = service.get_record_by_id(id)
+#     return {"statusCode": 200, "body": response}
 
 # Get using query string approach
 @app.get("/healthcare_services")
