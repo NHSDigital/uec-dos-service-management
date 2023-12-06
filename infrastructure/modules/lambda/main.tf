@@ -15,5 +15,5 @@ module "lambda" {
   policy_jsons            = var.policy_jsons
 
   environment_variables = merge(var.environment_variables, { WORKSPACE = "${local.environment_workspace}" })
-  layers = var.layers
+  layers                = var.layers
 }
