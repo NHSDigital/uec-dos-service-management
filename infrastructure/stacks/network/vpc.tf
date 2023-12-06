@@ -6,8 +6,8 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "private_zone" {
-  count = length(data.aws_availability_zones.azs.names)
-  vpc_id     = aws_vpc.main.id
+  count             = length(data.aws_availability_zones.azs.names)
+  vpc_id            = aws_vpc.main.id
   availability_zone = data.aws_availability_zones.azs.names[count.index]
-  cidr_block = "10.${var.vpc_cidr_block_marker}.${var.vpc_cidr_block_range_private[count.index]}.0/23"
+  cidr_block        = "10.${var.vpc_cidr_block_marker}.${var.vpc_cidr_block_range_private[count.index]}.0/23"
 }

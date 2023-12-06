@@ -4,10 +4,10 @@ variable "vpc_cidr_block_marker" {
 
 variable "vpc_cidr_block_range_private" {
   description = "Third element to CIDR block range marker to use with VPC"
-  type        = list
-  default     = [0,2,4]
+  type        = list(any)
+  default     = [0, 2, 4]
 }
-variable vpc_name {
+variable "vpc_name" {
   description = "Name of vpc"
   type        = string
 }
