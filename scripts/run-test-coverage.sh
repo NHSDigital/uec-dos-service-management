@@ -7,7 +7,10 @@ set -e
 APPLICATION_DIR=application
 APPLICATION_UTIL_DIR=application-utils
 
+
+# cleardown cache from previous run needs
 echo "Precautionary removal of temporary files"
+rm .coverage
 for path in "$APPLICATION_DIR"/*/ ; do
     dirs=$(echo "$path" | tr "\/" '\n')
     for dir in $dirs
@@ -19,8 +22,8 @@ for path in "$APPLICATION_DIR"/*/ ; do
         done
 done
 
-# cleardown cache from previous run
-coverage erase
+# cleardown cache from previous run needs pip install first
+# coverage erase
 
 # find each directory under application
 # if test code exists copy it from sub-dir in prep for running it
