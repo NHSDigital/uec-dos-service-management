@@ -9,8 +9,8 @@ APPLICATION_UTIL_DIR=application-utils
 
 
 # cleardown cache from previous run needs
+rm -f .coverage
 echo "Precautionary removal of temporary files"
-rm .coverage
 for path in "$APPLICATION_DIR"/*/ ; do
     dirs=$(echo "$path" | tr "\/" '\n')
     for dir in $dirs
