@@ -15,10 +15,12 @@ for path in "$APPLICATION_DIR"/*/ ; do
             if [ -d $APPLICATION_DIR/"$dir"/test/ ]; then
                 echo "Clearing down temp test files for $dir"
                 rm -rf $APPLICATION_DIR/"$dir"/common
-                rm -f $APPLICATION_DIR/"$dir"/test_*.py
             fi
         done
 done
+
+# cleardown cache from previous run
+coverage erase
 
 # find each directory under application
 # if test code exists copy it from sub-dir in prep for running it
@@ -60,9 +62,9 @@ for path in "$APPLICATION_UTIL_DIR"/*/ ; do
 done
 
 #  use requirements defined for tests/unit
-coverage report -i
-coverage html -i
-coverage xml -i
+coverage report
+coverage html
+coverage xml
 
 # now clear down copied test code after testing
 echo "Removing temporary files"
@@ -73,7 +75,6 @@ for path in "$APPLICATION_DIR"/*/ ; do
             if [ -d $APPLICATION_DIR/"$dir"/test/ ]; then
                 echo "Clearing down temp test files for $dir"
                 rm -rf $APPLICATION_DIR/"$dir"/common
-                rm -f $APPLICATION_DIR/"$dir"/test_*.py
             fi
         done
 done
