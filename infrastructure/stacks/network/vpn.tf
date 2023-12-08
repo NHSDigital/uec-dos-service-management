@@ -54,8 +54,8 @@ resource "aws_security_group" "vpn_secgroup" {
 
 # one vpn
 resource "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
-  description            = "service-management-vpn"
-  vpc_id                 = resource.aws_vpc.main.id
+  description = "service-management-vpn"
+  vpc_id      = resource.aws_vpc.main.id
 
   security_group_ids     = [aws_security_group.vpn_secgroup.id]
   split_tunnel           = true
@@ -72,7 +72,7 @@ resource "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
     cloudwatch_log_group  = aws_cloudwatch_log_group.sm_log_group.name
     cloudwatch_log_stream = aws_cloudwatch_log_stream.sm_log_stream.name
   }
-# stuff that has to exist first
+  # stuff that has to exist first
   depends_on = [
     aws_acm_certificate.server_vpn_cert,
     aws_acm_certificate.client_vpn_cert
