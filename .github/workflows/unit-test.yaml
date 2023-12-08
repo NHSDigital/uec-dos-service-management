@@ -36,4 +36,4 @@ jobs:
       - name: Run unit test script
         run: |
           export AWS_DEFAULT_REGION=${{ vars.AWS_REGION }}
-          ./scripts/unit-tests.sh
+          ./scripts/run-test-coverage.sh

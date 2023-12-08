@@ -2,7 +2,7 @@
 
 # fail on first error
 set -e
-# This script runs python unit tests
+# This script runs python unit tests and produces coverage report
 #
 APPLICATION_DIR=application
 APPLICATION_UTIL_DIR=application-utils
