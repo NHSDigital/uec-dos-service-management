@@ -22,9 +22,6 @@ for path in "$APPLICATION_DIR"/*/ ; do
         done
 done
 
-# cleardown cache from previous run needs pip install first
-# coverage erase
-
 # find each directory under application
 # if test code exists copy it from sub-dir in prep for running it
 for path in "$APPLICATION_DIR"/*/ ; do
