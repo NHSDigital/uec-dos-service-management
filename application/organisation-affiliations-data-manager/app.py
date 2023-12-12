@@ -26,13 +26,6 @@ def create_organisationaffiliations():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
-# Dynamic get using URL path rather than query string
-# @app.get("/organisation_affiliations/<id>")
-# def get_organisationaffiliations(id):
-#     print("ID from Get: " + str(id))
-#     print("Get hs_id record..." + id)
-#     response = service.get_record_by_id(id)
-#     return {"statusCode": 200, "body": response}
 
 # Get using query string approach
 @app.get("/organisation_affiliations")

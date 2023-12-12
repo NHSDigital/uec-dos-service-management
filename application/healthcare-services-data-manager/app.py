@@ -32,13 +32,6 @@ def create_healthcareservices():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
-# Dynamic get using URL path rather than query string
-# @app.get("/healthcare_services/<id>")
-# def get_healthcareservice(id):
-#     print("ID from Get: " + str(id))
-#     print("Get hs_id record..." + id)
-#     response = service.get_record_by_id(id)
-#     return {"statusCode": 200, "body": response}
 
 # Get using query string approach
 @app.get("/healthcare_services")
@@ -56,7 +49,6 @@ def update_healthcareservices():
         put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
-
 
 @app.delete("/healthcare_services")
 def delete_healthcareservices():
