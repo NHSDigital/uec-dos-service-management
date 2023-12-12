@@ -4,8 +4,11 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 app = APIGatewayRestResolver()
 
+
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
 # fields
+
+
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
 
@@ -49,6 +52,7 @@ def update_healthcareservices():
         put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
+
 
 @app.delete("/healthcare_services")
 def delete_healthcareservices():
