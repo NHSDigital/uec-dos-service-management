@@ -40,7 +40,7 @@ def get_questionnaires():
 def update_questionnaires():
     put_data: dict = app.current_event.json_body
     service.update_record(
-    put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
+        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
