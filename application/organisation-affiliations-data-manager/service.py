@@ -25,7 +25,7 @@ def add_record(item):
     return response
 
 
-def update_record(id: str, hospital_location: str, hospital_name: str):
+def update_record(id: str, hospital_name: str, hospital_location: str):
     dynamodb = get_table_resource()
     oa_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
     response = oa_table.update_item(

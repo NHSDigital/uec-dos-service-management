@@ -1,49 +1,52 @@
-from chalice import Chalice
-from chalicelib import service
+import service
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
+app = APIGatewayRestResolver()
 
-app = Chalice(app_name="locations-data-manager")
+# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# fields
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    return app.resolve(event, context)
 
-
-@app.route("/locations", methods=["GET"])
-def get_locations():
-    print("Get locations record...")
-    l_id = app.current_request.query_params["id"]
-    print("Get l_id record..." + l_id)
-    response = service.get_record_by_id(l_id)
-    return {"statusCode": 200, "body": response}
-
-
-@app.route("/locations", methods=["POST"])
+@app.post("/locations")
 def create_locations():
-    request = app.current_request.json_body
+    post_data: dict = app.current_event.json_body
+
     data = {
-        "id": request["id"],
-        "address": request["address"],
+        "id": post_data["id"],
+        "HospitalName": post_data["HospitalName"],
+        "HospitalLocation": post_data["HospitalLocation"],
     }
+
     print(data)
     service.add_record(data)
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
 
-@app.route("/locations", methods=["PUT"])
+# Get using query string approach
+@app.get("/locations")
+def get_locations():
+    l_id = app.current_event.get_query_string_value(name="id", default_value="")
+    print("Get l_id record..." + l_id)
+    response = service.get_record_by_id(l_id)
+    return {"statusCode": 200, "body": response}
+
+
+
+@app.put("/locations")
 def update_locations():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Updating locations record...")
-    request = app.current_request.json_body
+    put_data: dict = app.current_event.json_body
     service.update_record(
-        request["id"], request["HospitalName"], request["HospitalLocation"]
+    put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
-
-@app.route("/locations", methods=["DELETE"])
+@app.delete("/locations")
 def delete_locations():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
+    delete_data: dict = app.current_event.json_body
     print("Delete locations record...")
-    request = app.current_request.json_body
-    l_id = request["id"]
+    l_id =  delete_data["id"]
     service.delete_record(l_id)
-
     return {"statusCode": 200, "body": "Item Deleted Successfully"}

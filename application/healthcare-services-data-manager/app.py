@@ -10,13 +10,13 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
 
 @app.post("/healthcare_services")
-def create_healthcareservice():
+def create_healthcareservices():
     post_data: dict = app.current_event.json_body
 
     data = {
         "id": post_data["id"],
-        "hospitalName": post_data["hospitalname"],
-        "hospitalLocation": post_data["hospitallocation"],
+        "HospitalName": post_data["HospitalName"],
+        "HospitalLocation": post_data["HospitalLocation"],
     }
 
     print(data)
@@ -24,18 +24,10 @@ def create_healthcareservice():
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
-# Dynamic get using URL path rather than query string
-# @app.get("/healthcare_services/<id>")
-# def get_healthcareservice(id):
-#     print("ID from Get: " + str(id))
-#     print("Get hs_id record..." + id)
-#     response = service.get_record_by_id(id)
-#     return {"statusCode": 200, "body": response}
-
 
 # Get using query string approach
 @app.get("/healthcare_services")
-def get_healthcareservice():
+def get_healthcareservices():
     hs_id = app.current_event.get_query_string_value(name="id", default_value="")
     print("Get hs_id record..." + hs_id)
     response = service.get_record_by_id(hs_id)
@@ -45,21 +37,16 @@ def get_healthcareservice():
 
 @app.put("/healthcare_services")
 def update_healthcareservices():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Updating healthcare_service record...")
-    request = app.current_request.json_body
+    put_data: dict = app.current_event.json_body
     service.update_record(
-        request["id"], request["HospitalName"], request["HospitalLocation"]
+    put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
-
 @app.delete("/healthcare_services")
 def delete_healthcareservices():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Delete healthcareservice record...")
-    request = app.current_request.json_body
-    hs_id = request["id"]
+    delete_data: dict = app.current_event.json_body
+    print("Delete healthcareservices record...")
+    hs_id =  delete_data["id"]
     service.delete_record(hs_id)
-
     return {"statusCode": 200, "body": "Item Deleted Successfully"}

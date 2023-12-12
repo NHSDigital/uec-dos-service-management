@@ -15,22 +15,14 @@ def create_questionnaireresponses():
 
     data = {
         "id": post_data["id"],
-        "hospitalName": post_data["hospitalname"],
-        "hospitalLocation": post_data["hospitallocation"],
+        "HospitalName": post_data["HospitalName"],
+        "HospitalLocation": post_data["HospitalLocation"],
     }
 
     print(data)
     service.add_record(data)
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
-
-# Dynamic get using URL path rather than query string
-# @app.get("/questionnaire_responses/<id>")
-# def get_questionnaireresponses(id):
-#     print("ID from Get: " + str(id))
-#     print("Get hs_id record..." + id)
-#     response = service.get_record_by_id(id)
-#     return {"statusCode": 200, "body": response}
 
 
 # Get using query string approach
@@ -45,21 +37,17 @@ def get_questionnaireresponses():
 
 @app.put("/questionnaire_responses")
 def update_questionnaireresponses():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Updating questionnaire_responses record...")
-    request = app.current_request.json_body
+    put_data: dict = app.current_event.json_body
     service.update_record(
-        request["id"], request["HospitalName"], request["HospitalLocation"]
+        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
 
 @app.delete("/questionnaire_responses")
 def delete_questionnaireresponses():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
+    delete_data: dict = app.current_event.json_body
     print("Delete questionnaireresponses record...")
-    request = app.current_request.json_body
-    hs_id = request["id"]
-    service.delete_record(hs_id)
-
+    qr_id = delete_data["id"]
+    service.delete_record(qr_id)
     return {"statusCode": 200, "body": "Item Deleted Successfully"}
