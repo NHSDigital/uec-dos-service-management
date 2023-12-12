@@ -4,10 +4,12 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 app = APIGatewayRestResolver()
 
+
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
 # fields
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
+
 
 @app.post("/questionnaire_responses")
 def create_questionnaireresponses():
@@ -34,12 +36,11 @@ def get_questionnaireresponses():
     return {"statusCode": 200, "body": response}
 
 
-
 @app.put("/questionnaire_responses")
 def update_questionnaireresponses():
     put_data: dict = app.current_event.json_body
     service.update_record(
-        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
+    put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 

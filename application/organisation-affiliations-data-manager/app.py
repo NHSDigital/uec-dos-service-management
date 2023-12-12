@@ -4,10 +4,12 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 app = APIGatewayRestResolver()
 
+
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
 # fields
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
+
 
 @app.post("/organisation_affiliations")
 def create_organisationaffiliations():
@@ -32,7 +34,6 @@ def get_organisationaffiliations():
     print("Get oa_id record..." + oa_id)
     response = service.get_record_by_id(oa_id)
     return {"statusCode": 200, "body": response}
-
 
 
 @app.put("/organisation_affiliations")

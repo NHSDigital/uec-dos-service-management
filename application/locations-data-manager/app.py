@@ -34,7 +34,6 @@ def get_locations():
     return {"statusCode": 200, "body": response}
 
 
-
 @app.put("/locations")
 def update_locations():
     put_data: dict = app.current_event.json_body
@@ -47,6 +46,6 @@ def update_locations():
 def delete_locations():
     delete_data: dict = app.current_event.json_body
     print("Delete locations record...")
-    l_id =  delete_data["id"]
+    l_id = delete_data["id"]
     service.delete_record(l_id)
     return {"statusCode": 200, "body": "Item Deleted Successfully"}

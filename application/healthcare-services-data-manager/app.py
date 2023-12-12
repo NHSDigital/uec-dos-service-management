@@ -34,12 +34,11 @@ def get_healthcareservices():
     return {"statusCode": 200, "body": response}
 
 
-
 @app.put("/healthcare_services")
 def update_healthcareservices():
     put_data: dict = app.current_event.json_body
     service.update_record(
-    put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
+        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
@@ -47,6 +46,6 @@ def update_healthcareservices():
 def delete_healthcareservices():
     delete_data: dict = app.current_event.json_body
     print("Delete healthcareservices record...")
-    hs_id =  delete_data["id"]
+    hs_id = delete_data["id"]
     service.delete_record(hs_id)
     return {"statusCode": 200, "body": "Item Deleted Successfully"}
