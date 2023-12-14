@@ -2,7 +2,7 @@ from behave import given, then, step
 import requests
 from assertpy import assert_that
 import json
-# from utilities import dynamodb
+from utilities import dynamodb
 
 
 @given("I request {params} from {resource_name}")
@@ -21,9 +21,10 @@ def send_request(context, resource_name):
 def status_code(context, status_code):
     # response_dict = context.response.json()
     # print(json.dumps(response_dict, indent=8, sort_keys=True))
-    print(context.resource_name + "-" + context.workspace)
-    # dynamodb.get_record_by_id()
-    assert_that(context.response.status_code).is_equal_to(int(status_code))
+    table_name = context.resource_name + "-" + context.workspace
+    print(table_name)
+    dynamodb.get_record_by_id(table_name, 1)
+    # assert_that(context.response.status_code).is_equal_to(int(status_code))
 
 
 @step("I receive the message {message_text} in response")

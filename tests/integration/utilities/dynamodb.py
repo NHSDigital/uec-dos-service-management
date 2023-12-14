@@ -1,16 +1,26 @@
 import boto3
+import logging
+logger = logging.getLogger("dynamo-logger")
 
-
-def get_table_resource():
-    dynamodb_resource = boto3.resource("dynamodb")
-    return dynamodb_resource
+dynamodb = boto3.resource("dynamodb")
 
 
 def get_record_by_id(tablename, id: str):
-    dynamodb = get_table_resource()
-    table = dynamodb.Table(tablename)
-    response = table.get_item(Key={"id": id})
-    return response
+    # dynamodb = get_table_resource()
+    #
+    # table = dynamodb.Table(tablename)
+    # logger.info("table name %s", table)
+    # response = table.get_item(Key={"id": id})
+    # logger.info("Found key %s.", response)
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('healthcare_services-dr-559')
+    response = table.get_item(
+    Key={
+        'id': '1'
+    }
+    )
+    print(response)
+    # return response
 
 
 def add_record(tablename, item):
