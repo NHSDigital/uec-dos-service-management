@@ -1,5 +1,5 @@
 import boto3
-import utilities
+from common import utilities
 
 TABLE_NAME = "organisation_affiliations"
 
