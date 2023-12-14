@@ -26,8 +26,6 @@ def status_code(context, status_code):
     dynamodb.get_record_by_id(table_name, '1')
     # assert_that(context.response.status_code).is_equal_to(int(status_code))
 
-@then("I can find data for {params} in the dynamoDB")
-
 
 @step("I receive the message {message_text} in response")
 def response_msg(context, message_text):
