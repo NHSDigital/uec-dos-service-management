@@ -10,6 +10,6 @@ Feature: healthcare_services
 
 @tag1
   Scenario: Basic healthcare_services request
-    Given I request id=1 from healthcare_services
+    Given I request data for id=1 from healthcare_services
     Then I receive a status code 200 in response
     # And I receive the message Item Deleted Successfully in response

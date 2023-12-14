@@ -5,7 +5,7 @@ import json
 from utilities import dynamodb
 
 
-@given("I request {params} from {resource_name}")
+@given("I request data for {params} from {resource_name}")
 def send_request_with_params(context, params, resource_name):
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
@@ -23,8 +23,10 @@ def status_code(context, status_code):
     print(json.dumps(response_dict, indent=8, sort_keys=True))
     table_name = context.resource_name + "-" + context.workspace
     print(table_name)
-    dynamodb.get_record_by_id(table_name, 1)
+    dynamodb.get_record_by_id(table_name, '1')
     # assert_that(context.response.status_code).is_equal_to(int(status_code))
+
+@then("I can find data for {params} in the dynamoDB")
 
 
 @step("I receive the message {message_text} in response")

@@ -7,8 +7,8 @@ dynamodb = boto3.resource("dynamodb")
 
 
 def get_record_by_id(tablename, id: str):
-    table = dynamodb.Table("healthcare_services-dr-559")
-    response = table.get_item(Key={"id": "1"})
+    table = dynamodb.Table(tablename)
+    response = table.get_item(Key={"id": id})
     logger.info("Found key %s.", response)
     return response
 
