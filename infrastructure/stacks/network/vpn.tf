@@ -1,11 +1,21 @@
 # three routes - one per subnet
-resource "aws_ec2_client_vpn_route" "client_route" {
-  count                  = length(data.aws_availability_zones.azs.names)
-  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.service_management_vpn.id
-  description            = "Client route for internet access to service management vpn"
-  destination_cidr_block = "0.0.0.0/0"
-  target_vpc_subnet_id   = aws_ec2_client_vpn_network_association.network_assoc_service_management[count.index].subnet_id
-}
+
+#  default routes created by vpc ?
+# resource "aws_ec2_client_vpn_route" "client_route" {
+#   count                  = length(resource.aws_subnet.private_zone)
+#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.service_management_vpn.id
+#   description            = "Client route for internet access to service management vpn"
+#   destination_cidr_block = resource.aws_vpc.main.cidr_block
+#   target_vpc_subnet_id   = resource.aws_subnet.private_zone[count.index].id
+# }
+
+# resource "aws_ec2_client_vpn_route" "client_route" {
+#   count                  = length(data.aws_availability_zones.azs.names)
+#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.service_management_vpn.id
+#   description            = "Client route for internet access to service management vpn"
+#   destination_cidr_block = "0.0.0.0/0"
+#   target_vpc_subnet_id   = aws_ec2_client_vpn_network_association.network_assoc_service_management[count.index].subnet_id
+# }
 # three associations - one per subnet
 resource "aws_ec2_client_vpn_network_association" "network_assoc_service_management" {
   count                  = length(data.aws_availability_zones.azs.names)
@@ -44,7 +54,7 @@ resource "aws_security_group" "vpn_secgroup" {
   }
 
   tags = {
-    Name = "vpn-sg"
+    Name = "vpn-sm-sg"
   }
 }
 
@@ -56,7 +66,8 @@ resource "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
   security_group_ids     = [aws_security_group.vpn_secgroup.id]
   split_tunnel           = true
   server_certificate_arn = data.aws_acm_certificate.vpn_sm_server_cert.arn
-  client_cidr_block      = "10.0.0.0/22"
+  client_cidr_block      = "11.${var.vpc_cidr_block_marker}.0.0/22"
+
 
   authentication_options {
     type                       = "certificate-authentication"
@@ -99,12 +110,12 @@ resource "aws_cloudwatch_log_stream" "sm_log_stream" {
 
 # secrets manager to hold ca cert
 resource "aws_secretsmanager_secret" "cert_secret" {
-  name = "${var.repo_name}/vpn_cert"
+  name                    = "${var.repo_name}/vpn_ca_cert"
   recovery_window_in_days = var.recovery_window_in_days
 }
 
 # secrets manager to hold private key
 resource "aws_secretsmanager_secret" "pk_secret" {
-  name = "${var.repo_name}/vpn_pk"
+  name                    = "${var.repo_name}/vpn_ca_pk"
   recovery_window_in_days = var.recovery_window_in_days
 }
