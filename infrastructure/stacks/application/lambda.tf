@@ -10,7 +10,6 @@ module "organisations-data-manager-lambda" {
 
   function_name = var.organisations_function_name
   description   = "Microservice for interacting with organisations dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
@@ -64,7 +63,6 @@ module "organisation-affiliation-data-manager-lambda" {
 
   function_name = var.organisation_affiliations_function_name
   description   = "Microservice for interacting with organisation affiliation dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
@@ -118,7 +116,6 @@ module "locations-data-manager-lambda" {
 
   function_name = var.locations_function_name
   description   = "Microservice for interacting with locations dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
@@ -172,7 +169,6 @@ module "healthcare-services-data-manager-lambda" {
 
   function_name = var.healthcare_services_function_name
   description   = "Microservice for interacting with healthcare services dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:47"]
 
   policy_jsons = [
     <<-EOT
@@ -226,7 +222,6 @@ module "questionnaire-data-manager-lambda" {
 
   function_name = var.questionnaires_function_name
   description   = "Microservice for interacting with questionnaire dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
@@ -280,7 +275,6 @@ module "questionnaire-response-data-manager-lambda" {
 
   function_name = var.questionnaire_responses_function_name
   description   = "Microservice for interacting with questionnaire response dynamodb table"
-  # layers        = ["arn:aws:lambda:eu-west-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:46"]
 
   policy_jsons = [
     <<-EOT
