@@ -14,7 +14,11 @@ export_terraform_workspace_name
 SERVICE_NAME_WORKPACE="${SERVICE_NAME}-${TERRAFORM_WORKSPACE_NAME}"
 echo "Service Name Workspace: ${SERVICE_NAME_WORKPACE}"
 
-cd ./application/${SERVICE_NAME}
+echo "Copy utility code"
+# copy util code but not the test code
+rsync -av --exclude='test/' ./application-utils/* ./application/"${SERVICE_NAME}"
+
+cd ./application/"${SERVICE_NAME}"
 
 zip -r deployment.zip .
 
@@ -23,6 +27,8 @@ LATEST_VERSION=$(jq -r '.Version' --compact-output <<< "$LAMBDA_OUTPUT" )
 PREVIOUS_VERSION=$(expr $LATEST_VERSION - 1)
 echo "Latest version: ${LATEST_VERSION}"
 echo "Previous version: ${PREVIOUS_VERSION}"
+echo "Tidy up temporary files"
+rm -rf ../../application/"${SERVICE_NAME}"/common/
 
 #PLEASE NOTE THAT FOR EXPEDIENCY, THE COMMANDS BELOW SIMPLY UPDATE THE FUNCTION CODE AND PUBLISH A NEW VERSION.
 #IN FUTURE, IT WOULD BE MORE APPROPRIATE TO BUILD AN IMAGE OF THE SERVICE, NAME IT WITH THE COMMIT HASH
@@ -36,3 +42,4 @@ echo "Previous version: ${PREVIOUS_VERSION}"
 # else
 #     aws lambda update-alias --function-name=$SERVICE_NAME --name live-service --function-version $LATEST_VERSION  --routing-config '{}'
 # fi           #
+
