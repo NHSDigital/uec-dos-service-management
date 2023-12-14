@@ -19,8 +19,8 @@ def send_request(context, resource_name):
 
 @then("I receive a status code {status_code} in response")
 def status_code(context, status_code):
-    # response_dict = context.response.json()
-    # print(json.dumps(response_dict, indent=8, sort_keys=True))
+    response_dict = context.response.json()
+    print(json.dumps(response_dict, indent=8, sort_keys=True))
     table_name = context.resource_name + "-" + context.workspace
     print(table_name)
     dynamodb.get_record_by_id(table_name, 1)
