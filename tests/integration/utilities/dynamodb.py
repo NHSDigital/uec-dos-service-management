@@ -1,3 +1,4 @@
+import json
 import boto3
 import logging
 
@@ -16,6 +17,14 @@ def get_record_by_id(tablename, id: str):
 def add_record(tablename, item):
     table = dynamodb.Table(tablename)
     response = table.put_item(Item=item, TableName=tablename)
+    return response
+
+
+def add_record_from_file(tablename):
+    with open("data_json/location_post_body.json") as json_file:
+        json_data = json.load(json_file)
+    table = dynamodb.Table(tablename)
+    response = table.put_item(Item=json_data, TableName=tablename)
     return response
 
 
