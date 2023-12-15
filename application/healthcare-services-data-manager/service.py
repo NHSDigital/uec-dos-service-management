@@ -1,7 +1,7 @@
 import boto3
-from chalicelib.common import utilities
+from common import utilities
 
-TABLE_NAME = "questionnaires"
+TABLE_NAME = "healthcare_services"
 
 
 def get_table_resource():
@@ -11,24 +11,24 @@ def get_table_resource():
 
 def get_record_by_id(id: str):
     dynamodb = get_table_resource()
-    q_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = q_table.get_item(Key={"id": id})
+    hcs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hcs_table.get_item(Key={"id": id})
     return response
 
 
 def add_record(item):
     dynamodb = get_table_resource()
-    q_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = q_table.put_item(
+    hcs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hcs_table.put_item(
         Item=item, TableName=utilities.get_table_name(TABLE_NAME)
     )
     return response
 
 
-def update_record(id: str, hospital_location: str, hospital_name: str):
+def update_record(id: str, hospital_name: str, hospital_location: str):
     dynamodb = get_table_resource()
-    q_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = q_table.update_item(
+    hcs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hcs_table.update_item(
         Key={"id": id},
         UpdateExpression="SET HospitalLocation= :h_location, HospitalName = :h_name",
         ExpressionAttributeValues={
@@ -42,8 +42,8 @@ def update_record(id: str, hospital_location: str, hospital_name: str):
 
 def delete_record(id):
     dynamodb = get_table_resource()
-    q_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = q_table.delete_item(
+    hcs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hcs_table.delete_item(
         Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
     )
     return response

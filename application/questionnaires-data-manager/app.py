@@ -1,49 +1,54 @@
-from chalice import Chalice
-from chalicelib import service
+import service
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
+app = APIGatewayRestResolver()
 
 
-app = Chalice(app_name="questionnaires-data-manager")
+# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# fields
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    return app.resolve(event, context)
 
 
-@app.route("/questionnaires", methods=["GET"])
-def get_questionnaires():
-    print("Get questionnaires record...")
-    q_id = app.current_request.query_params["id"]
-    print("Get q_id record..." + q_id)
-    response = service.get_record_by_id(q_id)
-    return {"statusCode": 200, "body": response}
-
-
-@app.route("/questionnaires", methods=["POST"])
+@app.post("/questionnaires")
 def create_questionnaires():
-    request = app.current_request.json_body
+    post_data: dict = app.current_event.json_body
+
     data = {
-        "id": request["id"],
-        "name": request["name"],
+        "id": post_data["id"],
+        "HospitalName": post_data["HospitalName"],
+        "HospitalLocation": post_data["HospitalLocation"],
     }
+
     print(data)
     service.add_record(data)
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
 
-@app.route("/questionnaires", methods=["PUT"])
+# Get using query string approach
+@app.get("/questionnaires")
+def get_questionnaires():
+    hs_id = app.current_event.get_query_string_value(name="id", default_value="")
+    print("Get hs_id record..." + hs_id)
+    response = service.get_record_by_id(hs_id)
+    return {"statusCode": 200, "body": response}
+
+
+@app.put("/questionnaires")
 def update_questionnaires():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Updating questionnaires record...")
-    request = app.current_request.json_body
+    put_data: dict = app.current_event.json_body
     service.update_record(
-        request["id"], request["HospitalName"], request["HospitalLocation"]
+        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
 
-@app.route("/questionnaires", methods=["DELETE"])
+@app.delete("/questionnaires")
 def delete_questionnaires():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
+    delete_data: dict = app.current_event.json_body
     print("Delete questionnaires record...")
-    request = app.current_request.json_body
-    q_id = request["id"]
+    q_id = delete_data["id"]
     service.delete_record(q_id)
-
     return {"statusCode": 200, "body": "Item Deleted Successfully"}

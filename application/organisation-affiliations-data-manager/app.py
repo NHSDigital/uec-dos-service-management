@@ -1,49 +1,54 @@
-from chalice import Chalice
-from chalicelib import service
+import service
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
+app = APIGatewayRestResolver()
 
 
-app = Chalice(app_name="organisation-affiliations-data-manager")
+# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# fields
+def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    return app.resolve(event, context)
 
 
-@app.route("/organisation_affiliations", methods=["GET"])
-def get_organisationaffiliations():
-    print("Get organisationaffiliations record...")
-    oa_id = app.current_request.query_params["id"]
-    print("Get oa_id record..." + oa_id)
-    response = service.get_record_by_id(oa_id)
-    return {"statusCode": 200, "body": response}
-
-
-@app.route("/organisation_affiliations", methods=["POST"])
+@app.post("/organisation_affiliations")
 def create_organisationaffiliations():
-    request = app.current_request.json_body
+    post_data: dict = app.current_event.json_body
+
     data = {
-        "id": request["id"],
-        "healthcareService": request["healthcareservice"],
+        "id": post_data["id"],
+        "HospitalName": post_data["HospitalName"],
+        "HospitalLocation": post_data["HospitalLocation"],
     }
+
     print(data)
     service.add_record(data)
 
     return {"statusCode": 200, "body": "Item Added Successfully"}
 
 
-@app.route("/organisation_affiliations", methods=["PUT"])
-def update_organisationaffiliations():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Updating organisation_affiliations record...")
-    request = app.current_request.json_body
+# Get using query string approach
+@app.get("/organisation_affiliations")
+def get_organisationaffiliations():
+    oa_id = app.current_event.get_query_string_value(name="id", default_value="")
+    print("Get oa_id record..." + oa_id)
+    response = service.get_record_by_id(oa_id)
+    return {"statusCode": 200, "body": response}
+
+
+@app.put("/organisation_affiliations")
+def update_organisationaffiliationss():
+    put_data: dict = app.current_event.json_body
     service.update_record(
-        request["id"], request["HospitalName"], request["HospitalLocation"]
+        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
     )
     return {"statusCode": 200, "body": "Item Updated Successfully"}
 
 
-@app.route("/organisation_affiliations", methods=["DELETE"])
-def delete_organisationaffiliations():
-    #    request = app.current_request.json_body  // Required to get request from the API Gateway once it's set up.
-    print("Delete healthcareservice record...")
-    request = app.current_request.json_body
-    oa_id = request["id"]
+@app.delete("/organisation_affiliations")
+def delete_organisationaffiliationss():
+    delete_data: dict = app.current_event.json_body
+    print("Delete organisationaffiliations record...")
+    oa_id = delete_data["id"]
     service.delete_record(oa_id)
-
     return {"statusCode": 200, "body": "Item Deleted Successfully"}
