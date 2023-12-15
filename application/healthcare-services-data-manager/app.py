@@ -12,13 +12,6 @@ app = APIGatewayRestResolver()
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
 
-# Auto resolves the type of request comming through and sets APIGatewayRestResolver
-# fields
-
-
-def lambda_handler(event: dict, context: LambdaContext) -> dict:
-    return app.resolve(event, context)
-
 
 @app.post("/healthcare_services")
 def create_healthcareservices():

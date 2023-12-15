@@ -10,7 +10,7 @@ dynamodb = boto3.resource("dynamodb")
 def get_record_by_id(tablename, id: str):
     table = dynamodb.Table(tablename)
     response = table.get_item(Key={"id": id})
-    logger.info("Found key %s.", response)
+    logger.info("Found key %s.", id)
     return response
 
 
@@ -42,7 +42,8 @@ def update_record(tablename, id: str, hospital_name: str, hospital_location: str
     return response
 
 
-def delete_record(tablename, id):
+def delete_record_by_id(tablename, id):
     table = dynamodb.Table(tablename)
-    response = table.delete_item(Key={"id": id}, TableName=table)
+    response = table.delete_item(Key={"id": id})
+    logger.info("Deleted key %s.", id)
     return response
