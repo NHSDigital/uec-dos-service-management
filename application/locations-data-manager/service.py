@@ -25,25 +25,10 @@ def add_record(item):
     return response
 
 
-""" def update_record(id: str, hospital_name: str, hospital_location: str):
-    dynamodb = get_table_resource()
-    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = l_table.update_item(
-        Key={"id": id},
-        UpdateExpression="SET HospitalLocation= :h_location, HospitalName = :h_name",
-        ExpressionAttributeValues={
-            ":h_location": hospital_location,
-            ":h_name": hospital_name,
-        },
-        ReturnValues="UPDATED_NEW",
-    )
-    return response """
-
-
 def update_record(id: str, hospital_name: str, hospital_location: str):
     dynamodb = get_table_resource()
     l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-
+  
     item = {
         "id": id,
         "HospitalLocation": hospital_location,

@@ -38,6 +38,7 @@ def build_mock_data(id, hospital_name, hospital_location):
     }
     return data
 
+
 # TODO doesn't work
 @mock_dynamodb
 def load_mock_data(data: map):
@@ -74,6 +75,7 @@ def test_add_record():
     assert response["Item"]["HospitalName"] == mock_post_hospital_name
     assert response["Item"]["HospitalLocation"] == mock_post_hospital_location
 
+
 @mock_dynamodb
 def test_update_record():
     "Test update record method - eg used by PUT"
@@ -87,7 +89,9 @@ def test_update_record():
     assert response["Item"]["HospitalName"] == mock_hospital_name
     assert response["Item"]["HospitalLocation"] == mock_hospital_location
     # Update the record using the revised method
-    revised_data = build_mock_data(mock_id, mock_revised_hospital_name, mock_revised_hospital_location)
+    revised_data = build_mock_data(
+        mock_id, mock_revised_hospital_name, mock_revised_hospital_location
+    )
     # Use put_item to update the record
     table.put_item(Item=revised_data, TableName=service.TABLE_NAME)
     # Verify that the item has been updated successfully
@@ -95,6 +99,7 @@ def test_update_record():
     assert response["Item"]["id"] == mock_id
     assert response["Item"]["HospitalName"] == mock_revised_hospital_name
     assert response["Item"]["HospitalLocation"] == mock_revised_hospital_location
+
 
 @mock_dynamodb
 def test_delete_record_by_id():
