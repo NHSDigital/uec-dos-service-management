@@ -5,15 +5,13 @@ Feature: healthcare_services
 @tag4
   Scenario: Basic healthcare_services request
     Given I send a request to the resource healthcare_services
-    # Then I receive a status code 200 in response
-    #And I receive the message Item Deleted Successfully in response
+    Then I receive a status code 200 in response
 
 @tag4
   Scenario: Basic healthcare_services request
     Given I request data for id=1 from healthcare_services
     Then I receive a status code 200 in response
     And I can get data for id 1 in the dynamoDB table
-    # And I receive the message Item Deleted Successfully in response
 
 @tag1
   Scenario: Basic healthcare_services request
@@ -21,4 +19,4 @@ Feature: healthcare_services
     And I post a request to the resource healthcare_services
     Then I receive a status code 200 in response
     And I can get data for id 4 in the dynamoDB table
-    # And I receive the message Item Deleted Successfully in response
+
