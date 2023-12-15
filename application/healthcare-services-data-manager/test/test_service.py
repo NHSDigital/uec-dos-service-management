@@ -1,4 +1,4 @@
-from chalicelib import service
+import service
 import boto3
 
 from moto import mock_dynamodb
@@ -87,7 +87,7 @@ def test_update_record():
     assert response["Item"]["HospitalName"] == mock_hospital_name
     assert response["Item"]["HospitalLocation"] == mock_hospital_location
     response = service.update_record(
-        mock_id, mock_revised_hospital_location, mock_revised_hospital_name
+        mock_id, mock_revised_hospital_name, mock_revised_hospital_location
     )
     assert response["Attributes"]["HospitalName"] == mock_revised_hospital_name
     assert response["Attributes"]["HospitalLocation"] == mock_revised_hospital_location

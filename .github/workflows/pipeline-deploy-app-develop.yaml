@@ -49,42 +49,27 @@ jobs:
       uses: ./.github/workflows/check-python-flake-rules.yaml
   cloc-repository:
     uses: ./.github/workflows/cloc-repository.yaml
-  # unit-tests:
-  #   needs:
-  #     [
-  #       get-metadata,
-  #       scan-secrets,
-  #       check-file-format,
-  #       check-markdown-format,
-  #       check-terraform-format,
-  #       check-python-black-format,
-  #       check-python-flake-rules,
-  #       cloc-repository,
-  #     ]
-  #   name: Run unit test
-  #   uses: ./.github/workflows/unit-test.yaml
-  #   with:
-  #     github_environment: dev
-  #   secrets: inherit
-  # sonar-cloud-check:
-  #   name: Perform static analysis
-  #   runs-on: ubuntu-latest
-  #   needs: [
-  #     unit-tests,
-  #   ]
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #     - run: |
-  #         export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
-  #         export SONAR_ORGANISATION_KEY=${{ vars.SONAR_ORGANISATION_KEY }}
-  #         export SONAR_PROJECT_KEY=${{ vars.SONAR_PROJECT_KEY }}
-  #         export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
-  #         ./scripts/reports/perform-static-analysis.sh
+  unit-tests:
+    needs:
+      [
+        get-metadata,
+        scan-secrets,
+        check-file-format,
+        check-markdown-format,
+        check-terraform-format,
+        check-python-black-format,
+        check-python-flake-rules,
+        cloc-repository,
+      ]
+    name: Run unit test
+    uses: ./.github/workflows/unit-test.yaml
+    with:
+      github_environment: dev
+    secrets: inherit
   deploy-application-infrastructure:
       needs:
         [
-          # unit-tests,
+          unit-tests,
           validate-terraform,
           derive-tf-versions,
         ]

@@ -1,5 +1,5 @@
 import os
-from chalicelib.common import utilities
+from common import utilities
 
 from unittest import mock
 
