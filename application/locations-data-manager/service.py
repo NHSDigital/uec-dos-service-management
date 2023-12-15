@@ -25,7 +25,7 @@ def add_record(item):
     return response
 
 
-def update_record(id: str, hospital_name: str, hospital_location: str):
+""" def update_record(id: str, hospital_name: str, hospital_location: str):
     dynamodb = get_table_resource()
     l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
     response = l_table.update_item(
@@ -37,7 +37,21 @@ def update_record(id: str, hospital_name: str, hospital_location: str):
         },
         ReturnValues="UPDATED_NEW",
     )
+    return response """
+
+def update_record(id: str, hospital_name: str, hospital_location: str):
+    dynamodb = get_table_resource()
+    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+
+    item = {
+        "id": id,
+        "HospitalLocation": hospital_location,
+        "HospitalName": hospital_name,
+    }
+
+    response = l_table.put_item(Item=item, TableName=utilities.get_table_name(TABLE_NAME))
     return response
+
 
 
 def delete_record(id):
