@@ -3,6 +3,7 @@
 branch = True
 omit =
         */test/*
+        */application/*/common/*
         */usr/local/lib*
         */__init__.py
         */app.py
@@ -12,6 +13,7 @@ omit =
 [report]
 omit =
         */test/*
+        */application/*/common/*
         */usr/local/lib*
         */__init__.py
         */app.py
