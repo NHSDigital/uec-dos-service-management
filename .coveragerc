@@ -1,6 +1,7 @@
 
 [run]
 branch = True
+relative_files = True
 omit =
         */test/*
         */application/*/common/*
