@@ -5,7 +5,6 @@ omit =
         */test/*
         */usr/local/lib*
         */__init__.py
-        */*/chalicelib/common/utilities.py
         */app.py
         **/*database_populator.py
         **/*ods_location_comparator.py
@@ -15,7 +14,6 @@ omit =
         */test/*
         */usr/local/lib*
         */__init__.py
-        */*/chalicelib/common/utilities.py
         */app.py
         **/*database_populator.py
         **/*ods_location_comparator.py
