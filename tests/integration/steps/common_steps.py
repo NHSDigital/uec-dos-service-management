@@ -1,26 +1,40 @@
-from behave import given, then
+from behave import given, then, when
 import requests
 from assertpy import assert_that
 import json
+from config import config_dev
 
 
 @given("I request data for {params} from {resource_name}")
-def send_request_with_params(context, params, resource_name):
+def send_get_with_params(context, params, resource_name):
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
     context.response = requests.get(url, params)
 
 
-@given("I send a request to the resource {resource_name}")
-def send_arequest(context, resource_name):
-    context.response = requests.get(context.URL + "/" + resource_name + "?id=1")
+@when("I delete data for {params} from the resource {resource_name}")
+def send_delete_with_params(context, params, resource_name):
+    context.resource_name = resource_name
+    url = context.URL + "/" + resource_name
+    context.response = requests.delete(url, json=params)
 
 
 @given("I post a request to the resource {resource_name}")
-def send_request(context, resource_name):
+def send_post(context, resource_name):
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
     with open("data_json/location_post_body.json") as json_file:
+        json_data = json.load(json_file)
+    context.response = requests.post(url, json=json_data)
+
+
+@when("I post the json {file_name} to the resource {resource_name}")
+def send_post_with_file(context, file_name, resource_name):
+    body = config_dev.locations_body
+    context.resource_name = resource_name
+    url = context.URL + "/" + resource_name
+    # with open("data_json/location_post_body.json") as json_file:
+    with open(body) as json_file:
         json_data = json.load(json_file)
     context.response = requests.post(url, json=json_data)
 

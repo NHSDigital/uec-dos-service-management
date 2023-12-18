@@ -3,20 +3,15 @@ Feature: healthcare_services
   I want to perform a CRUD action on the healthcare_services resource
 
 @tag4
-  Scenario: Basic healthcare_services request
-    Given I send a request to the resource healthcare_services
-    Then I receive a status code 200 in response
-
-@tag4
-  Scenario: Basic healthcare_services request
+  Scenario: Basic healthcare_services get request
     Given I request data for id=1 from healthcare_services
     Then I receive a status code 200 in response
-    And I can get data for id 1 in the dynamoDB table
+    And I can retrieve data for id 1 in the dynamoDB table
 
 @tag1
-  Scenario: Basic healthcare_services request
-    Given I can delete data for id 4 in the dynamoDB table healthcare_services
-    And I post a request to the resource healthcare_services
+  Scenario: Basic healthcare_services post request
+    Given I reset the data by deleting id 9 in the dynamoDB table healthcare_services
+    When I post the json healthcareservices_body to the resource healthcare_services
     Then I receive a status code 200 in response
-    And I can get data for id 4 in the dynamoDB table
+    And I can retrieve data for id 9 in the dynamoDB table
 

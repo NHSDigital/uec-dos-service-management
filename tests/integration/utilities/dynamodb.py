@@ -20,7 +20,7 @@ def add_record(tablename, item):
     return response
 
 
-def add_record_from_file(tablename):
+def add_record_from_file(tablename, file_name):
     with open("data_json/location_post_body.json") as json_file:
         json_data = json.load(json_file)
     table = dynamodb.Table(tablename)
