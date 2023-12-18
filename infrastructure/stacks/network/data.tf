@@ -10,10 +10,10 @@ data "aws_acm_certificate" "vpn_sm_server_cert" {
   statuses    = ["ISSUED"]
   most_recent = true
 }
-data "aws_acm_certificate" "vpn_sm_client_cert" {
-  domain      = "client1.domain.tld"
-  types       = ["IMPORTED"]
-  statuses    = ["ISSUED"]
-  most_recent = true
-}
+# data "aws_acm_certificate" "vpn_sm_client_cert" {
+#   domain      = "client1.domain.tld"
+#   types       = ["IMPORTED"]
+#   statuses    = ["ISSUED"]
+#   most_recent = true
+# }
 
