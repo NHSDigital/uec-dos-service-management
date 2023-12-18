@@ -1,21 +1,4 @@
-# three routes - one per subnet
 
-#  default routes created by vpc ?
-# resource "aws_ec2_client_vpn_route" "client_route" {
-#   count                  = length(resource.aws_subnet.private_zone)
-#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.service_management_vpn.id
-#   description            = "Client route for internet access to service management vpn"
-#   destination_cidr_block = resource.aws_vpc.main.cidr_block
-#   target_vpc_subnet_id   = resource.aws_subnet.private_zone[count.index].id
-# }
-
-# resource "aws_ec2_client_vpn_route" "client_route" {
-#   count                  = length(data.aws_availability_zones.azs.names)
-#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.service_management_vpn.id
-#   description            = "Client route for internet access to service management vpn"
-#   destination_cidr_block = "0.0.0.0/0"
-#   target_vpc_subnet_id   = aws_ec2_client_vpn_network_association.network_assoc_service_management[count.index].subnet_id
-# }
 # three associations - one per subnet
 resource "aws_ec2_client_vpn_network_association" "network_assoc_service_management" {
   count                  = length(data.aws_availability_zones.azs.names)
@@ -79,11 +62,6 @@ resource "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
     cloudwatch_log_group  = aws_cloudwatch_log_group.sm_log_group.name
     cloudwatch_log_stream = aws_cloudwatch_log_stream.sm_log_stream.name
   }
-  # stuff that has to exist first
-  # depends_on = [
-  #   aws_acm_certificate.server_vpn_cert,
-  #   aws_acm_certificate.client_vpn_cert
-  # ]
 }
 
 resource "aws_cloudwatch_log_group" "sm_log_group" {
@@ -95,18 +73,6 @@ resource "aws_cloudwatch_log_stream" "sm_log_stream" {
   name           = "sm-vpn-log-stream"
   log_group_name = aws_cloudwatch_log_group.sm_log_group.name
 }
-
-# resource "aws_acm_certificate" "server_vpn_cert" {
-#   certificate_body  = "TBA"
-#   private_key       = "TBA"
-#   certificate_chain = "TBA"
-# }
-
-# resource "aws_acm_certificate" "client_vpn_cert" {
-#   certificate_body  = "TBA"
-#   private_key       = "TBA"
-#   certificate_chain = "TBA"
-# }
 
 # secrets manager to hold ca cert
 resource "aws_secretsmanager_secret" "cert_secret" {

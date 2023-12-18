@@ -5,7 +5,7 @@ data "aws_availability_zones" "azs" {
 }
 
 data "aws_acm_certificate" "vpn_sm_server_cert" {
-  domain      = "server"
+  domain      = "uec-dos-sm-vpn"
   types       = ["IMPORTED"]
   statuses    = ["ISSUED"]
   most_recent = true

@@ -21,3 +21,7 @@ variable "recovery_window_in_days" {
   description = "Days before perm deletion"
   default     = 7
 }
+
+variable "vpn_tld_bucket_name" {
+  description = "Name of bucket used to hold developer certs "
+}
