@@ -66,6 +66,20 @@ jobs:
     with:
       github_environment: dev
     secrets: inherit
+  deploy-vpc-vpn-infrastructure:
+    needs:
+      [
+        validate-terraform,
+        derive-tf-versions,
+      ]
+    uses: ./.github/workflows/action-infrastructure-stack.yaml
+    with:
+      github_environment: dev
+      stack: network
+      action: plan
+      deployment_workspace: default
+      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+    secrets: inherit
   deploy-application-infrastructure:
       needs:
         [
