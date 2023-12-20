@@ -30,7 +30,6 @@ def update_record(item):
     return add_record(item)
 
 
-
 def delete_record(id):
     dynamodb = get_table_resource()
     l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
