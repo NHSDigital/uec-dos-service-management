@@ -90,6 +90,7 @@ def test_get_record_by_id():
     assert response["Item"]["position"]["longitude"] == mock_long
 
 
+
 @mock_dynamodb
 def test_get_missing_record_by_id():
     "Test get_record_by_id method"
@@ -135,6 +136,7 @@ def test_update_record():
     response = table.get_item(Key={"id": mock_id})
     assert response["Item"]["active"] == mock_status_update
     assert response["Item"]["name"] == mock_updated_name
+
 
 
 @mock_dynamodb
