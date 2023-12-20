@@ -1,6 +1,6 @@
 from behave import given, then
 from utilities import dynamodb
-from config import config_dev
+from utilities.config_reader import read_config
 
 
 @given("I reset the data by deleting id {id} in the dynamoDB table {resource_name}")
@@ -10,10 +10,10 @@ def dynamodb_delete(context, id, resource_name):
 
 
 @given(
-    "I setup the data by inserting from file into the dynamoDB table {resource_name}"
+    "I setup the data by inserting from file {file_name} into the dynamoDB table {resource_name}"
 )
-def dynamodb_add(context, resource_name):
-    body = config_dev.locations_body
+def dynamodb_add(context, file_name, resource_name):
+    body = read_config('json_schema', file_name)
     table_name = resource_name + "-" + context.workspace
     dynamodb.add_record_from_file(table_name, body)
 

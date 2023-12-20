@@ -2,7 +2,7 @@ from behave import given, then, when
 import requests
 from assertpy import assert_that
 import json
-from config import config_dev
+from utilities.config_reader import read_config
 
 
 @given("I request data for {params} from {resource_name}")
@@ -30,7 +30,7 @@ def send_post(context, resource_name):
 
 @when("I post the json {file_name} to the resource {resource_name}")
 def send_post_with_file(context, file_name, resource_name):
-    body = config_dev.locations_body
+    body = read_config('json_schema', file_name)
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
     # with open("data_json/location_post_body.json") as json_file:

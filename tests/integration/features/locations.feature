@@ -11,5 +11,6 @@ Feature: location
 
 @tag6
   Scenario: Add data to locations table
-    Given I setup the data by inserting from file into the dynamoDB table locations
+    Given I setup the data by inserting from file locations_body into the dynamoDB table locations
     When I delete data for id 1025655242481332 from the resource locations
+
