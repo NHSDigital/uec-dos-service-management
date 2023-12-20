@@ -3,7 +3,7 @@
   "resource": "/locations",
   "path": "/locations",
   "httpMethod": "DELETE",
-  "headers": "{\"content-type\": \"application/json\" }",
+  "headers": {"context-type": "application/json"},
   "multiValueHeaders": "None",
   "queryStringParameters": "None",
   "multiValueQueryStringParameters": "None",
