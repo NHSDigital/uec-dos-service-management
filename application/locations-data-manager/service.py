@@ -25,25 +25,18 @@ def add_record(item):
     return response
 
 
-def update_record(id: str, hospital_name: str, hospital_location: str):
-    dynamodb = get_table_resource()
-    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    item = {
-        "id": id,
-        "HospitalLocation": hospital_location,
-        "HospitalName": hospital_name,
-    }
-
-    response = l_table.put_item(
-        Item=item, TableName=utilities.get_table_name(TABLE_NAME)
-    )
-    return response
+def update_record(item):
+    return add_record(item)
 
 
 def delete_record(id):
     dynamodb = get_table_resource()
     l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = l_table.delete_item(
-        Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
-    )
+    try:
+        response = l_table.delete_item(
+            Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
+        )
+    except Exception:
+        print("error")
+        response = {}
     return response

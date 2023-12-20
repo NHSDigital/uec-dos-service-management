@@ -7,7 +7,6 @@ omit =
         */application/*/common/*
         */usr/local/lib*
         */__init__.py
-        */app.py
         **/*database_populator.py
         **/*ods_location_comparator.py
 
@@ -17,6 +16,5 @@ omit =
         */application/*/common/*
         */usr/local/lib*
         */__init__.py
-        */app.py
         **/*database_populator.py
         **/*ods_location_comparator.py
