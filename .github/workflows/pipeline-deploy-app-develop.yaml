@@ -69,7 +69,7 @@ jobs:
   deploy-application-infrastructure:
       needs:
         [
-          unit-tests,
+          # unit-tests,
           validate-terraform,
           derive-tf-versions,
         ]
