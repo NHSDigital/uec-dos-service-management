@@ -13,7 +13,7 @@ def dynamodb_delete(context, id, resource_name):
     "I setup the data by inserting from file {file_name} into the dynamoDB table {resource_name}"
 )
 def dynamodb_add(context, file_name, resource_name):
-    body = read_config('json_schema', file_name)
+    body = read_config("json_schema", file_name)
     table_name = resource_name + "-" + context.workspace
     dynamodb.add_record_from_file(table_name, body)
 

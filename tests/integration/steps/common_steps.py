@@ -30,10 +30,10 @@ def send_post(context, resource_name):
 
 @when("I post the json {file_name} to the resource {resource_name}")
 def send_post_with_file(context, file_name, resource_name):
-    body = read_config('json_schema', file_name)
+    body = read_config("json_schema", file_name)
+    print(body)
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
-    # with open("data_json/location_post_body.json") as json_file:
     with open(body) as json_file:
         json_data = json.load(json_file)
     context.response = requests.post(url, json=json_data)
