@@ -28,3 +28,4 @@ def delete_record_by_id(tablename, id):
     table = dynamodb.Table(tablename)
     response = table.delete_item(Key={"id": id})
     return response
+
