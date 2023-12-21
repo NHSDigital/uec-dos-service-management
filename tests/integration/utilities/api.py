@@ -3,9 +3,6 @@ from utilities.api_gateway import ApiGatewayToService
 
 
 def get_url(context):
-    # userdata = context.config.userdata
-    # workspace = userdata.get("workspace")
-
     # get the api gateway name env var and then the api gateway id
     apigateway_name = context.apigateway
     if context.workspace != "default":
