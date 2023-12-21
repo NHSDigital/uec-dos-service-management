@@ -25,6 +25,7 @@ mock_post_id = "998"
 mock_updated_name = "Updated name"
 mock_status_update = "false"
 
+
 @mock_dynamodb
 def create_mock_dynamodb():
     "Create a mock implementation of the dynamodb location table"
@@ -62,6 +63,7 @@ def build_mock_location_item():
         "position": {"latitude": mock_lat, "longitude": mock_long},
     }
     return data
+
 
 @mock_dynamodb
 def test_get_record_by_id():
@@ -137,6 +139,7 @@ def test_delete_record_by_id():
     service.delete_record(mock_id)
     response = table.get_item(Key={"id": mock_id})
     assert ("Item" in response) is False
+
 
 @mock_dynamodb
 def test_delete_missing_record():

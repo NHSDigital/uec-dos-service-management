@@ -89,6 +89,7 @@ def test_get_record_by_id():
     assert response_body["Item"]["position"]["latitude"] == mock_lat
     assert response_body["Item"]["position"]["longitude"] == mock_long
 
+
 @mock_dynamodb
 def test_put_record():
     table = create_mock_dynamodb()
@@ -101,6 +102,7 @@ def test_put_record():
     assert location_record["Item"]["id"] == mock_id
     assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
+
 
 @mock_dynamodb
 def test_post_record():
@@ -115,6 +117,7 @@ def test_post_record():
     assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs POST Integrated Care Board"
 
+
 @mock_dynamodb
 def test_delete_record_by_id():
     table = create_mock_dynamodb()
@@ -123,9 +126,10 @@ def test_delete_record_by_id():
     "Test DELETE method"
     mock_context = None
     mock_load = load_sample_event_from_file("mock_proxy_delete_event.json")
-    response = app.lambda_handler(mock_load, mock_context)
+    app.lambda_handler(mock_load, mock_context)
     location_record = table.get_item(Key={"id": mock_id})
-    assert ("Item" not in location_record)
+    assert "Item" not in location_record
+
 
 def load_sample_event_from_file(filename) -> dict:
     """
