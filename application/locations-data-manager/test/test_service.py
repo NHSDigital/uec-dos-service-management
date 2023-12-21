@@ -24,12 +24,6 @@ mock_long = "-3.488450"
 mock_post_id = "998"
 mock_updated_name = "Updated name"
 mock_status_update = "false"
-# mock_post_hospital_name = "PostName"
-# mock_post_hospital_location = "PostTown"
-
-# mock_revised_hospital_name = "RevisedName"
-# mock_revised_hospital_location = "RevisedLocation"
-
 
 @mock_dynamodb
 def create_mock_dynamodb():
@@ -68,16 +62,6 @@ def build_mock_location_item():
         "position": {"latitude": mock_lat, "longitude": mock_long},
     }
     return data
-
-
-# # TODO doesn't work
-# @mock_dynamodb
-# def load_mock_data(data: map, table):
-#     "Load mock data to the table"
-#     dynamodb = boto3.resource("dynamodb")
-#     # table = dynamodb.Table(service.TABLE_NAME)
-#     table.put_item(Item=data, TableName=service.TABLE_NAME)
-
 
 @mock_dynamodb
 def test_get_record_by_id():
@@ -153,3 +137,9 @@ def test_delete_record_by_id():
     service.delete_record(mock_id)
     response = table.get_item(Key={"id": mock_id})
     assert ("Item" in response) is False
+
+@mock_dynamodb
+def test_delete_missing_record():
+    "Test delete_record method if no record exists"
+    response = service.delete_record(mock_id)
+    assert response == {}

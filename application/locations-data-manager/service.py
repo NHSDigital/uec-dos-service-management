@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 from common import utilities
 
 TABLE_NAME = "locations"
@@ -36,7 +37,7 @@ def delete_record(id):
         response = l_table.delete_item(
             Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
         )
-    except Exception:
-        print("error")
+    except ClientError as ce:
+        print(ce)
         response = {}
     return response

@@ -2,12 +2,9 @@ import app
 import service
 import boto3
 
-# from unittest.mock import Mock, patch
-# import pytest
 import json
 from moto import mock_dynamodb
 
-# from dataclasses import dataclass
 mock_id = "2690664379947884"
 mock_active = "true"
 mock_postcode = "EX2 5SE"
@@ -41,7 +38,7 @@ def create_mock_dynamodb():
 
 
 def build_mock_location_item():
-    "Return an item record for insert"
+    "Return a test item record for insert"
     data = {
         "id": mock_id,
         "active": mock_active,
@@ -70,7 +67,7 @@ def test_get_record_by_id():
     table = create_mock_dynamodb()
     location_record = build_mock_location_item()
     table.put_item(Item=location_record, TableName=service.TABLE_NAME)
-    "Test get_location"
+    "Test GET method"
     mock_context = None
     mock_load = load_sample_event_from_file("mock_proxy_get_event.json")
     response = app.lambda_handler(mock_load, mock_context)
@@ -92,40 +89,43 @@ def test_get_record_by_id():
     assert response_body["Item"]["position"]["latitude"] == mock_lat
     assert response_body["Item"]["position"]["longitude"] == mock_long
 
+@mock_dynamodb
+def test_put_record():
+    table = create_mock_dynamodb()
+    "Test PUT method"
+    mock_context = None
+    mock_load = load_sample_event_from_file("mock_proxy_put_event.json")
+    response = app.lambda_handler(mock_load, mock_context)
+    assert str(response["statusCode"]) == "HTTPStatus.OK"
+    location_record = table.get_item(Key={"id": mock_id})
+    assert location_record["Item"]["id"] == mock_id
+    assert location_record["Item"]["active"] == mock_active
+    assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
+
+@mock_dynamodb
+def test_post_record():
+    table = create_mock_dynamodb()
+    "Test POST method"
+    mock_context = None
+    mock_load = load_sample_event_from_file("mock_proxy_post_event.json")
+    response = app.lambda_handler(mock_load, mock_context)
+    assert str(response["statusCode"]) == "HTTPStatus.OK"
+    location_record = table.get_item(Key={"id": mock_id})
+    assert location_record["Item"]["id"] == mock_id
+    assert location_record["Item"]["active"] == mock_active
+    assert location_record["Item"]["name"] == "Nhs POST Integrated Care Board"
 
 @mock_dynamodb
 def test_delete_record_by_id():
     table = create_mock_dynamodb()
     location_record = build_mock_location_item()
     table.put_item(Item=location_record, TableName=service.TABLE_NAME)
-    "Test delete_locations"
+    "Test DELETE method"
     mock_context = None
     mock_load = load_sample_event_from_file("mock_proxy_delete_event.json")
     response = app.lambda_handler(mock_load, mock_context)
-    print(str(response))
-    # print(str(response))
-
-    # assert str(response['statusCode']) == 'HTTPStatus.OK'
-    # response_body = json.loads(response['body'])
-
-
-#     # print(response_body)
-#     # assert response_body["Item"]["active"] == mock_active
-#     # assert response_body["Item"]["createdBy"] == mock_created_by
-#     # assert response_body["Item"]["createdDateTime"] == mock_timestamp_created
-#     # assert response_body["Item"]["lookup_field"] == mock_lookup_field
-#     # assert response_body["Item"]["managingOrganization"] == mock_managing_organisation
-#     # assert response_body["Item"]["modifiedBy"] == mock_modified_by
-#     # assert response_body["Item"]["modifiedDateTime"] == mock_timestamp_modified
-#     # assert response_body["Item"]["name"] == mock_name
-#     # assert response_body["Item"]["Address"][0]["city"] == mock_city
-#     # assert response_body["Item"]["Address"][0]["country"] == mock_country
-#     # assert response_body["Item"]["Address"][0]["line"][0] == mock_line_1
-#     # assert response_body["Item"]["Address"][0]["line"][1] == mock_line_2
-#     # assert response_body["Item"]["Address"][0]["postalCode"] == mock_postcode
-#     # assert response_body["Item"]["position"]["latitude"] == mock_lat
-#     # assert response_body["Item"]["position"]["longitude"] == mock_long
-
+    location_record = table.get_item(Key={"id": mock_id})
+    assert ("Item" not in location_record)
 
 def load_sample_event_from_file(filename) -> dict:
     """
