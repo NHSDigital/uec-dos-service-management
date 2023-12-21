@@ -40,4 +40,4 @@ def status_code(context, status_code):
 @then("I receive data for id {id} in the response")
 def response_id_get(context, id):
     response = context.response.json()
-    assert_that(response["body"]["Item"]["id"]).is_equal_to(id)
+    assert_that(response["Item"]["id"]).is_equal_to(id)
