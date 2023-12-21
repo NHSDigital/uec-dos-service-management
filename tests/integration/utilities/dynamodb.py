@@ -29,3 +29,5 @@ def delete_record_by_id(tablename, id):
     response = table.delete_item(Key={"id": id})
     return response
 
+
+
