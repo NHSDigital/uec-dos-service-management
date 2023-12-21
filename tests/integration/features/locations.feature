@@ -4,13 +4,15 @@ Feature: location
 
 @tag5
   Scenario: Post data to locations table
-    Given I reset the data by deleting id 1025655242481332 in the dynamoDB table locations
+    Given I reset the data by deleting id 9 in the dynamoDB table locations
     When I post the json locations_body to the resource locations
     Then I receive a status code 200 in response
-    And I can retrieve data for id 1025655242481332 in the dynamoDB table
+    And I can retrieve data for id 9 in the dynamoDB table
 
 @tag6
   Scenario: Add data to locations table
-    Given I setup the data by inserting from file locations_body into the dynamoDB table locations
-    When I delete data for id 1025655242481332 from the resource locations
+    Given I setup the data by inserting from file healthcareservices_body into the dynamoDB table healthcare_services
+    When I delete data for id 9 from the resource healthcare_services
+    Then data for id 9 in the dynamoDB table has been deleted
+
 

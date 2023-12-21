@@ -12,20 +12,14 @@ def send_get_with_params(context, params, resource_name):
     context.response = requests.get(url, params)
 
 
-@when("I delete data for {params} from the resource {resource_name}")
-def send_delete_with_params(context, params, resource_name):
+@when("I delete data for id {id} from the resource {resource_name}")
+def send_delete_with_params(context, id, resource_name):
+    body = {}
+    body['id'] = id
+    json_body = json.dumps(body)
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
-    context.response = requests.delete(url, json=params)
-
-
-@given("I post a request to the resource {resource_name}")
-def send_post(context, resource_name):
-    context.resource_name = resource_name
-    url = context.URL + "/" + resource_name
-    with open("data_json/location_post_body.json") as json_file:
-        json_data = json.load(json_file)
-    context.response = requests.post(url, json=json_data)
+    context.response = requests.delete(url, data=json_body)
 
 
 @when("I post the json {file_name} to the resource {resource_name}")
@@ -48,8 +42,3 @@ def response_msg(context, message_text):
     response_content = context.response.text
     assert_that(str(response_content)).is_equal_to(str(message_text))
 
-
-@then("I receive a field {fielddata} in response")
-def fielddata(context, fielddata):
-    response_dict = context.response.json()
-    print(json.dumps(response_dict, indent=8, sort_keys=True))

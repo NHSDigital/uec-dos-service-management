@@ -1,4 +1,5 @@
 from behave import given, then
+from assertpy import assert_that
 from utilities import dynamodb
 from utilities.config_reader import read_config
 
@@ -22,3 +23,12 @@ def dynamodb_add(context, file_name, resource_name):
 def dynamodb_get(context, id):
     table_name = context.resource_name + "-" + context.workspace
     dynamodb.get_record_by_id(table_name, id)
+
+
+@then("data for id {id} in the dynamoDB table has been deleted")
+def dynamodb_check_delete(context, id):
+    table_name = context.resource_name + "-" + context.workspace
+    response = dynamodb.get_record_by_id(table_name, id)
+    assert_that(response["ResponseMetadata"]["HTTPHeaders"]["content-length"]).is_equal_to("2")
+
+
