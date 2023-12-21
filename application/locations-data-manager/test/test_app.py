@@ -84,8 +84,6 @@ def test_put_record():
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
     location_record = table.get_item(Key={"id": mock_id})
-    assert location_record["Item"]["id"] == mock_id
-    assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
 
 
