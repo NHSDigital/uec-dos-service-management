@@ -15,7 +15,7 @@ def send_get_with_params(context, params, resource_name):
 @when("I delete data for id {id} from the resource {resource_name}")
 def send_delete_with_params(context, id, resource_name):
     body = {}
-    body['id'] = id
+    body["id"] = id
     json_body = json.dumps(body)
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
@@ -41,4 +41,3 @@ def status_code(context, status_code):
 def response_msg(context, message_text):
     response_content = context.response.text
     assert_that(str(response_content)).is_equal_to(str(message_text))
-

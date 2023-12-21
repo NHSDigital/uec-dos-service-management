@@ -29,6 +29,6 @@ def dynamodb_get(context, id):
 def dynamodb_check_delete(context, id):
     table_name = context.resource_name + "-" + context.workspace
     response = dynamodb.get_record_by_id(table_name, id)
-    assert_that(response["ResponseMetadata"]["HTTPHeaders"]["content-length"]).is_equal_to("2")
-
-
+    assert_that(
+        response["ResponseMetadata"]["HTTPHeaders"]["content-length"]
+    ).is_equal_to("2")
