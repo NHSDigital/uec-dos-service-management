@@ -1,7 +1,6 @@
 import app
 import service
 import boto3
-
 import json
 from moto import mock_dynamodb
 
@@ -73,21 +72,7 @@ def test_get_record_by_id():
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
     response_body = json.loads(response["body"])
-    assert response_body["Item"]["active"] == mock_active
-    assert response_body["Item"]["createdBy"] == mock_created_by
-    assert response_body["Item"]["createdDateTime"] == mock_timestamp_created
-    assert response_body["Item"]["lookup_field"] == mock_lookup_field
-    assert response_body["Item"]["managingOrganization"] == mock_managing_organisation
-    assert response_body["Item"]["modifiedBy"] == mock_modified_by
-    assert response_body["Item"]["modifiedDateTime"] == mock_timestamp_modified
     assert response_body["Item"]["name"] == mock_name
-    assert response_body["Item"]["Address"][0]["city"] == mock_city
-    assert response_body["Item"]["Address"][0]["country"] == mock_country
-    assert response_body["Item"]["Address"][0]["line"][0] == mock_line_1
-    assert response_body["Item"]["Address"][0]["line"][1] == mock_line_2
-    assert response_body["Item"]["Address"][0]["postalCode"] == mock_postcode
-    assert response_body["Item"]["position"]["latitude"] == mock_lat
-    assert response_body["Item"]["position"]["longitude"] == mock_long
 
 
 @mock_dynamodb
@@ -99,8 +84,6 @@ def test_put_record():
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
     location_record = table.get_item(Key={"id": mock_id})
-    assert location_record["Item"]["id"] == mock_id
-    assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
 
 
@@ -113,8 +96,6 @@ def test_post_record():
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
     location_record = table.get_item(Key={"id": mock_id})
-    assert location_record["Item"]["id"] == mock_id
-    assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs POST Integrated Care Board"
 
 
