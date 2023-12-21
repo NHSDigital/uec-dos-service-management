@@ -1,4 +1,3 @@
-# from utilities import secrets
 from utilities.api_gateway import ApiGatewayToService
 
 
