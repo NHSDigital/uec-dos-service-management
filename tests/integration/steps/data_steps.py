@@ -22,7 +22,8 @@ def dynamodb_add(context, file_name, resource_name):
 @then("I can retrieve data for id {id} in the dynamoDB table")
 def dynamodb_get(context, id):
     table_name = context.resource_name + "-" + context.workspace
-    dynamodb.get_record_by_id(table_name, id)
+    response = dynamodb.get_record_by_id(table_name, id)
+    assert_that(response["Item"]["id"]).is_equal_to(id)
 
 
 @then("data for id {id} in the dynamoDB table has been deleted")
@@ -32,3 +33,4 @@ def dynamodb_check_delete(context, id):
     assert_that(
         response["ResponseMetadata"]["HTTPHeaders"]["content-length"]
     ).is_equal_to("2")
+    assert_that(response).does_not_contain("Item")

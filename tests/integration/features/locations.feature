@@ -1,18 +1,26 @@
+@locations
 Feature: location
   As a user,
   I want to perform a CRUD action on the locations resource
 
+@tag4
+  Scenario: Basic get request for locations
+    Given I setup the data by inserting from file locations_body into the dynamoDB table locations
+    When I request data for id=6 from locations
+    Then I receive a status code 200 in response
+    And I receive data for id 6 in the response
+
 @tag5
-  Scenario: Post data to locations table
-    Given I reset the data by deleting id 9 in the dynamoDB table locations
+  Scenario: Basic post request for locations
+    Given I reset the data by deleting id 6 in the dynamoDB table locations
     When I post the json locations_body to the resource locations
     Then I receive a status code 200 in response
-    And I can retrieve data for id 9 in the dynamoDB table
+    And I can retrieve data for id 6 in the dynamoDB table
 
 @tag6
-  Scenario: Add data to locations table
-    Given I setup the data by inserting from file healthcareservices_body into the dynamoDB table healthcare_services
-    When I delete data for id 9 from the resource healthcare_services
-    Then data for id 9 in the dynamoDB table has been deleted
+  Scenario: Basic delete request for locations
+    Given I setup the data by inserting from file locations_body into the dynamoDB table locations
+    When I delete data for id 6 from the resource locations
+    Then data for id 6 in the dynamoDB table has been deleted
 
 

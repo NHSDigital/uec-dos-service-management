@@ -1,11 +1,11 @@
-from behave import given, then, when
+from behave import then, when
 import requests
 from assertpy import assert_that
 import json
 from utilities.config_reader import read_config
 
 
-@given("I request data for {params} from {resource_name}")
+@when("I request data for {params} from {resource_name}")
 def send_get_with_params(context, params, resource_name):
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
@@ -37,7 +37,7 @@ def status_code(context, status_code):
     assert_that(context.response.status_code).is_equal_to(int(status_code))
 
 
-@then("I receive the message {message_text} in response")
-def response_msg(context, message_text):
-    response_content = context.response.text
-    assert_that(str(response_content)).is_equal_to(str(message_text))
+@then("I receive data for id {id} in the response")
+def response_id_get(context, id):
+    response = context.response.json()
+    assert_that(response["body"]["Item"]["id"]).is_equal_to(id)
