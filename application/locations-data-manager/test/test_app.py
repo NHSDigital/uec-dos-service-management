@@ -74,6 +74,7 @@ def test_get_record_by_id():
     response_body = json.loads(response["body"])
     assert response_body["Item"]["name"] == mock_name
 
+
 @mock_dynamodb
 def test_put_record():
     table = create_mock_dynamodb()
@@ -86,6 +87,7 @@ def test_put_record():
     assert location_record["Item"]["id"] == mock_id
     assert location_record["Item"]["active"] == mock_active
     assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
+
 
 @mock_dynamodb
 def test_put_record():
