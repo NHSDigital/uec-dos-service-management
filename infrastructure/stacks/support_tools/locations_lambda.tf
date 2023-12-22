@@ -34,8 +34,8 @@ module "locations-lambda" {
                         "ssm:GetParameters"
                     ],
                     "Resource": [
-                        "arn:aws:ssm:${var.aws_region}:${var.account_id}:parameter/data/api/lambda/client_id",
-                        "arn:aws:ssm:${var.aws_region}:${var.account_id}:parameter/data/api/lambda/client_secret"
+                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_id",
+                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_secret"
                     ]
                 },
                 {
@@ -47,7 +47,7 @@ module "locations-lambda" {
                       "kms:GenerateDataKey*",
                       "kms:DescribeKey"
                     ],
-                    "Resource": "arn:aws:kms:${var.aws_region}:${var.account_id}:key/*",
+                    "Resource": "arn:aws:kms:${var.aws_region}:${local.account_id}:key/*",
                     "Condition": {
                       "StringEquals": {
                         "kms:ResourceAliases": "alias/aws/ssm"
@@ -69,7 +69,7 @@ module "locations-lambda" {
                                 "dynamodb:UpdateItem"
                             ],
                             "Resource": [
-                                "arn:aws:dynamodb:${var.aws_region}:${var.account_id}:table/locations"
+                                "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations"
                             ]
                         }
                     ]

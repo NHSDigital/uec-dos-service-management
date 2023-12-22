@@ -42,7 +42,3 @@ variable "environment_variables" {
 variable "layers" {
   default = []
 }
-
-variable "account_id" {
-  description = "Id of AWS account"
-}
