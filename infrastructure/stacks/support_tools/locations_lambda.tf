@@ -55,24 +55,17 @@ module "locations-lambda" {
                     }
                 },
                 {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Sid": "DynamodbTable",
-                            "Effect": "Allow",
-                            "Action": [
-                                "dynamodb:PutItem",
-                                "dynamodb:DeleteItem",
-                                "dynamodb:GetItem",
-                                "dynamodb:Scan",
-                                "dynamodb:Query",
-                                "dynamodb:UpdateItem"
-                            ],
-                            "Resource": [
-                                "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations"
-                            ]
-                        }
-                    ]
+                    "Sid": "DynamodbTable",
+                    "Effect": "Allow",
+                    "Action": [
+                        "dynamodb:PutItem",
+                        "dynamodb:DeleteItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Scan",
+                        "dynamodb:Query",
+                        "dynamodb:UpdateItem"
+                    ],
+                    "Resource": "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations"
                 }
             ]
         }
