@@ -155,4 +155,3 @@ def test_delete_missing_record():
     "Test delete_record method if no  record exists"
     response = service.delete_record(mock_id)
     assert response == {}
-
