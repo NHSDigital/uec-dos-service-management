@@ -1,5 +1,5 @@
 data "archive_file" "locations_lambda_deployment_file" {
-  type        = "zip"
+  type = "zip"
   source_file = [
     "../../../scripts/locations_data_load/locations_lambda.py",
     "../../../scripts/locations_data_load/ODS_Codes.xlsx"
