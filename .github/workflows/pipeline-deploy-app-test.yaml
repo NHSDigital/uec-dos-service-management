@@ -118,6 +118,7 @@ jobs:
         get-metadata,
         deploy-application-infrastructure,
         build-and-deploy-application-code,
+        derive-deployment-workspace,
       ]
     permissions:
       id-token: write
