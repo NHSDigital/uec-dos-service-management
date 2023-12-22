@@ -38,7 +38,6 @@ def build_mock_healthcare_services_item():
         "createdBy": mock_created_by,
         "createdDateTime": mock_timestamp_created,
         "lookup_field": mock_lookup_field,
-        "managingOrganization": mock_managing_organisation,
         "modifiedBy": mock_modified_by,
         "modifiedDateTime": mock_timestamp_modified,
         "name": mock_name,
@@ -50,7 +49,7 @@ def build_mock_healthcare_services_item():
 def test_get_record_by_id():
     "Test get_record_by_id method"
     table = create_mock_dynamodb()
-    healthcare_service_record = build_mock_healthcare_service_record_item()
+    healthcare_service_record = build_mock_healthcare_services_item()
     table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     assert response["Item"]["id"] == mock_id
@@ -58,7 +57,6 @@ def test_get_record_by_id():
     assert response["Item"]["createdBy"] == mock_created_by
     assert response["Item"]["createdDateTime"] == mock_timestamp_created
     assert response["Item"]["lookup_field"] == mock_lookup_field
-    assert response["Item"]["managingOrganization"] == mock_managing_organisation
     assert response["Item"]["modifiedBy"] == mock_modified_by
     assert response["Item"]["modifiedDateTime"] == mock_timestamp_modified
     assert response["Item"]["name"] == mock_name
@@ -81,7 +79,7 @@ def test_add_record():
     response = table.get_item(Key={"id": mock_post_id})
     assert ("Item" in response) is False
     # build record to add
-    healthcare_service_record = build_mock_healthcare_service_item()
+    healthcare_service_record = build_mock_healthcare_services_item()
     healthcare_service_record["active"] = mock_status_update
     healthcare_service_record["id"] = mock_post_id
     service.add_record(healthcare_service_record)
@@ -95,7 +93,7 @@ def test_update_record():
     "Test update record method - eg used by PUT"
     table = create_mock_dynamodb()
     # Create and add a mock item to the table
-    healthcare_service_record = build_mock_healthcare_service_item()
+    healthcare_service_record = build_mock_healthcare_services_item()
     table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     # check it has been saved correctly
@@ -115,7 +113,7 @@ def test_update_record():
 def test_delete_record_by_id():
     "Test delete_record method first adding and then checking it exists"
     table = create_mock_dynamodb()
-    healthcare_service_record = build_mock_lhealthcare_service_item()
+    healthcare_service_record = build_mock_healthcare_services_item()
     table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     assert response["Item"]["id"] == mock_id
