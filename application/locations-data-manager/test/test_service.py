@@ -91,6 +91,14 @@ def test_get_record_by_id():
 
 
 @mock_dynamodb
+def test_get_missing_record_by_id():
+    "Test get_record_by_id method"
+    create_mock_dynamodb()
+    response = service.get_record_by_id(mock_id)
+    assert ("Item" in response) is False
+    assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
+
+@mock_dynamodb
 def test_add_record():
     "Test add record method - eg used by POST"
     table = create_mock_dynamodb()
