@@ -98,6 +98,7 @@ def test_get_missing_record_by_id():
     assert ("Item" in response) is False
     assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
+
 @mock_dynamodb
 def test_add_record():
     "Test add record method - eg used by POST"
