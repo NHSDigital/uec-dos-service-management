@@ -1,7 +1,7 @@
 data "archive_file" "locations_lambda_deployment_file" {
-  type = "zip"
-  source_dir = "../../../scripts/locations_data_load"
-  excludes = ["../../../scripts/locations_data_load/locations_lambda.zip"]
+  type        = "zip"
+  source_dir  = "../../../scripts/locations_data_load"
+  excludes    = ["../../../scripts/locations_data_load/locations_lambda.zip"]
   output_path = "../../../scripts/locations_data_load/locations_lambda.zip"
 }
 
@@ -9,8 +9,8 @@ module "locations-lambda" {
   source = "../../modules/lambda"
 
   function_name = "locations_lambda"
-  description = "To pull ODS locations data nad write to DynamoDB Locations table"
-  handler = "locations_lambda.lambda_handler"
+  description   = "To pull ODS locations data nad write to DynamoDB Locations table"
+  handler       = "locations_lambda.lambda_handler"
 
   local_existing_package = data.archive_file.locations_lambda_deployment_file.output_path
 
