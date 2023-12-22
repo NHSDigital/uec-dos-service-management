@@ -12,15 +12,15 @@ def get_table_resource():
 
 def get_record_by_id(id: str):
     dynamodb = get_table_resource()
-    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = l_table.get_item(Key={"id": id})
+    hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hs_table.get_item(Key={"id": id})
     return response
 
 
 def add_record(item):
     dynamodb = get_table_resource()
-    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = l_table.put_item(
+    hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    response = hs_table.put_item(
         Item=item, TableName=utilities.get_table_name(TABLE_NAME)
     )
     return response
@@ -32,9 +32,9 @@ def update_record(item):
 
 def delete_record(id):
     dynamodb = get_table_resource()
-    l_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
+    hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
     try:
-        response = l_table.delete_item(
+        response = hs_table.delete_item(
             Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
         )
     except ClientError as ce:
