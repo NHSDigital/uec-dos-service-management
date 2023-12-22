@@ -81,6 +81,7 @@ jobs:
     needs:
       [
         deploy-application-infrastructure,
+        derive-deployment-workspace,
       ]
     strategy:
       matrix:
@@ -107,6 +108,7 @@ jobs:
       - name: Build and deploy application code
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
+          export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
           /bin/bash ./scripts/app-build-deploy.sh
   integration-test:
     name: Run integration tests
@@ -115,18 +117,27 @@ jobs:
       [
         get-metadata,
         deploy-application-infrastructure,
+        build-and-deploy-application-code,
       ]
+    permissions:
+      id-token: write
+      contents: read
+    environment: "test"
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.git_tag }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
       - name: List Variables
         run: |
           export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
           export BUILD_TIMESTAMP="${{ needs.get-metadata.outputs.build_timestamp }}"
           export BUILD_EPOCH="${{ needs.get-metadata.outputs.build_epoch }}"
           echo "Integration tests invoked"
-      # - name: Run Tests ...
-      #   run: |
-      #     ?
+          /bin/bash ./scripts/integration-tests.sh
