@@ -122,14 +122,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.git_tag }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
       - name: List Variables
         run: |
           export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
           export BUILD_TIMESTAMP="${{ needs.get-metadata.outputs.build_timestamp }}"
           export BUILD_EPOCH="${{ needs.get-metadata.outputs.build_epoch }}"
-          export AWS_DEFAULT_REGION=${{ vars.AWS_REGION }}
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
-      # - name: Run Tests ...
-      #   run: |
-      #     ?
