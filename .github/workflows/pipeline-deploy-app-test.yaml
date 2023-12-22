@@ -107,6 +107,7 @@ jobs:
       - name: Build and deploy application code
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
+          export DEPLOYMENT_WORKSPACE=${{ steps.derive-workspace-from-tag.outputs.deployment_workspace }}
           /bin/bash ./scripts/app-build-deploy.sh
   integration-test:
     name: Run integration tests
