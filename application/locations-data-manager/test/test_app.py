@@ -88,18 +88,6 @@ def test_put_record():
 
 
 @mock_dynamodb
-def test_put_record():
-    table = create_mock_dynamodb()
-    "Test PUT method"
-    mock_context = None
-    mock_load = load_sample_event_from_file("mock_proxy_put_event.json")
-    response = app.lambda_handler(mock_load, mock_context)
-    assert str(response["statusCode"]) == "HTTPStatus.OK"
-    location_record = table.get_item(Key={"id": mock_id})
-    assert location_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
-
-
-@mock_dynamodb
 def test_post_record():
     table = create_mock_dynamodb()
     "Test POST method"
