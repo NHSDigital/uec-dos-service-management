@@ -1,9 +1,7 @@
 data "archive_file" "locations_lambda_deployment_file" {
   type = "zip"
-  source_file = [
-    "../../../scripts/locations_data_load/locations_lambda.py",
-    "../../../scripts/locations_data_load/ODS_Codes.xlsx"
-  ]
+  source_dir = "../../../scripts/locations_data_load"
+  excludes    = "../../../scripts/locations_data_load/locations_lambda.zip"
   output_path = "../../../scripts/locations_data_load/locations_lambda.zip"
 }
 
