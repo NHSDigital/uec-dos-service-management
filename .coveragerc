@@ -4,6 +4,7 @@ branch = True
 relative_files = True
 omit =
         */test/*
+        **/tests/integration/**
         */application/*/common/*
         */usr/local/lib*
         */__init__.py
@@ -13,6 +14,7 @@ omit =
 [report]
 omit =
         */test/*
+        **/tests/integration/**
         */application/*/common/*
         */usr/local/lib*
         */__init__.py
