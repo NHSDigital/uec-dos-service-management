@@ -117,6 +117,7 @@ jobs:
         deploy-application-infrastructure,
         build-and-deploy-application-code,
       ]
+    environment: "test"
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
