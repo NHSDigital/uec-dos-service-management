@@ -4,7 +4,6 @@ from utilities import dynamodb
 from utilities.config_reader import read_config
 
 
-
 @given("I reset the data by deleting id {id} in the dynamoDB table {resource_name}")
 def dynamodb_delete(context, id, resource_name):
     context.resource_name = resource_name
