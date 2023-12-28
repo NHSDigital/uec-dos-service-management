@@ -32,6 +32,7 @@ jobs:
         run: |
           echo "github environment: ${{ inputs.github_environment }}"
           echo "deployment workspace: ${{ inputs.deployment_workspace }}"
+          echo "branch: ${{ github.event.ref }}"
   integration-tests:
     runs-on: ubuntu-latest
     environment: test
@@ -79,5 +80,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         if: always()
         with:
-          publish_branch: ${{ inputs.deployment_workspace }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: ${{ github.event.ref }}
           publish_dir: ./tests/integration/reports
