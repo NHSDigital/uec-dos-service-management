@@ -59,3 +59,25 @@ jobs:
           export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: ${{ inputs.deployment_workspace }}
+          path: ./tests/integration/reports
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: ./tests/integration/reports
+          allure_history: ./tests/integration/reports
+          allure_results: ./tests/integration/reports
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          publish_branch: ${{ inputs.deployment_workspace }}
+          publish_dir: ./tests/integration/reports
