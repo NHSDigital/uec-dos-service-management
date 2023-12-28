@@ -20,6 +20,7 @@ def send_delete_with_params(context, id, resource_name):
     context.resource_name = resource_name
     url = context.URL + "/" + resource_name
     context.response = requests.delete(url, data=json_body)
+    assert_that(context.response.status_code).is_equal_to(200)
 
 
 @when("I post the json {file_name} to the resource {resource_name}")

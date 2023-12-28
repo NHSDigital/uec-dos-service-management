@@ -21,5 +21,5 @@ Feature: healthcare_services
   Scenario: Basic delete request for healthcare_services
     Given I setup the data by inserting from file healthcareservices_body into the dynamoDB table healthcare_services
     When I delete data for id 9 from the resource healthcare_services
-    Then data for id 9 in the dynamoDB table has been deleted
+    Then the data for id 9 in the dynamoDB table has been deleted
 

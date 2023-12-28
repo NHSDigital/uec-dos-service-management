@@ -1,0 +1,45 @@
+name: Run integration tests
+
+on:
+  workflow_call:
+    inputs:
+      github_environment:
+        description: "Defines the Github environment in which to pull environment variables from"
+        required: true
+        type: string
+
+jobs:
+  echo-workflow-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo workflow inputs
+        run: |
+          echo "github environment: ${{ inputs.github_environment }}"
+          echo "deployment workspace: ${{ inputs.deployment_workspace }}"
+  integration-tests:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Run integration test script
+        run: |
+          export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
+          export BUILD_TIMESTAMP="${{ needs.get-metadata.outputs.build_timestamp }}"
+          export BUILD_EPOCH="${{ needs.get-metadata.outputs.build_epoch }}"
+          export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
+          echo "Integration tests invoked"
+          /bin/bash ./scripts/integration-tests.sh
