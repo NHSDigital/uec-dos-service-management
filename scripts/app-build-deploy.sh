@@ -8,7 +8,7 @@ source ./scripts/functions/git-functions.sh
 
 export SERVICE_NAME="${SERVICE_NAME:-""}"
 echo "Service Name: ${SERVICE_NAME}"
-
+echo "Deployment workspace ${DEPLOYMENT_WORKSPACE}"
 export_terraform_workspace_name
 
 SERVICE_NAME_WORKPACE="${SERVICE_NAME}-${TERRAFORM_WORKSPACE_NAME}"
