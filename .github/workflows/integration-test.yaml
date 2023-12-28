@@ -12,17 +12,9 @@ on:
         required: false
         default: 'not-set'
         type: string
-      BUILD_DATETIME:
-        description: ""
-        required: false
-        type: string
-      BUILD_TIMESTAMP:
-        description: ""
-        required: false
-        type: string
-      BUILD_EPOCH:
-        description: ""
-        required: false
+      git_reference:
+        description: 'Name of the git reference that has triggered the action'
+        required: true
         type: string
 jobs:
   echo-workflow-inputs:
@@ -32,7 +24,7 @@ jobs:
         run: |
           echo "github environment: ${{ inputs.github_environment }}"
           echo "deployment workspace: ${{ inputs.deployment_workspace }}"
-          echo "branch: ${{ github.event.ref }}"
+          echo "git_reference: ${{ inputs.git_reference }}"
   integration-tests:
     runs-on: ubuntu-latest
     environment: test
@@ -81,5 +73,5 @@ jobs:
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: ${{ github.event.ref }}
+          publish_branch: ${{ inputs.git_reference }}"
           publish_dir: ./tests/integration/reports
