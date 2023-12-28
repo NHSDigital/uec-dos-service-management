@@ -119,7 +119,7 @@ jobs:
           derive-deployment-workspace,
         ]
       name: Run integration tests
-      uses: ./.github/workflows/integation-test.yaml
+      uses: ./.github/workflows/integration-test.yaml
       with:
         github_environment: test
       secrets: inherit
