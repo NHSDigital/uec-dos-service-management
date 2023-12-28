@@ -7,7 +7,23 @@ on:
         description: "Defines the Github environment in which to pull environment variables from"
         required: true
         type: string
-
+      deployment_workspace:
+        description: 'Name of the terraform workspace to spin up the service infrastructure'
+        required: false
+        default: 'not-set'
+        type: string
+      BUILD_DATETIME:
+        description: ""
+        required: false
+        type: string
+      BUILD_TIMESTAMP:
+        description: ""
+        required: false
+        type: string
+      BUILD_EPOCH:
+        description: ""
+        required: false
+        type: string
 jobs:
   echo-workflow-inputs:
     runs-on: ubuntu-latest
@@ -37,9 +53,9 @@ jobs:
 
       - name: Run integration test script
         run: |
-          export BUILD_DATETIME="${{ needs.get-metadata.outputs.build_datetime }}"
-          export BUILD_TIMESTAMP="${{ needs.get-metadata.outputs.build_timestamp }}"
-          export BUILD_EPOCH="${{ needs.get-metadata.outputs.build_epoch }}"
-          export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
+          export BUILD_DATETIME="${{ inputs.build_datetime }}"
+          export BUILD_TIMESTAMP="${{ inputs.build_timestamp }}"
+          export BUILD_EPOCH="${{ inputs.build_epoch }}"
+          export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh

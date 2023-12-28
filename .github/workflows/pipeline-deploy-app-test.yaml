@@ -122,6 +122,10 @@ jobs:
       uses: ./.github/workflows/integration-test.yaml
       with:
         github_environment: test
+        BUILD_DATETIME: "${{ needs.get-metadata.outputs.build_datetime }}"
+        BUILD_TIMESTAMP: "${{ needs.get-metadata.outputs.build_timestamp }}"
+        BUILD_EPOCH: "${{ needs.get-metadata.outputs.build_epoch }}"
+        DEPLOYMENT_WORKSPACE: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
       secrets: inherit
     # permissions:
     #   id-token: write
