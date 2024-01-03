@@ -52,6 +52,7 @@ jobs:
           export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
+
       - name: Load test report history
         uses: actions/checkout@v3
         if: always()
