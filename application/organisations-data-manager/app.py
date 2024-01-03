@@ -17,6 +17,7 @@ def create_organisations():
     response = service.add_record(post_data)
     return response
 
+
 # Get using query string approach
 @app.get("/organisations")
 def get_organisations():
