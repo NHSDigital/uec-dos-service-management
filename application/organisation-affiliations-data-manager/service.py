@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 from common import utilities
 
 TABLE_NAME = "organisation_affiliations"
@@ -25,25 +26,18 @@ def add_record(item):
     return response
 
 
-def update_record(id: str, hospital_name: str, hospital_location: str):
-    dynamodb = get_table_resource()
-    oa_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = oa_table.update_item(
-        Key={"id": id},
-        UpdateExpression="SET HospitalLocation= :h_location, HospitalName = :h_name",
-        ExpressionAttributeValues={
-            ":h_location": hospital_location,
-            ":h_name": hospital_name,
-        },
-        ReturnValues="UPDATED_NEW",
-    )
-    return response
+def update_record(item):
+    return add_record(item)
 
 
 def delete_record(id):
     dynamodb = get_table_resource()
     oa_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
-    response = oa_table.delete_item(
-        Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
-    )
+    try:
+        response = oa_table.delete_item(
+            Key={"id": id}, TableName=utilities.get_table_name(TABLE_NAME)
+        )
+    except ClientError as ce:
+        print(ce)
+        response = {}
     return response
