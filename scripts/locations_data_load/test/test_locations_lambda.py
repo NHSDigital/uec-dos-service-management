@@ -13,7 +13,7 @@ def test_get_formatted_datetime():
 line = "random text"
 
 
-def test_capitalize_line(line):
+def test_capitalize_line():
     response = line.title()
     assert response != line
 
