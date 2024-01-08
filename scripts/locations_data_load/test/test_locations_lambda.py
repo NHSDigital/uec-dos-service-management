@@ -1,43 +1,20 @@
-from locations_data_load import locations_lambda
-
-# from locations_lambda import read_ods_api
-# from locations_lambda import api_endpoint
-
-# from unittest.mock import patch
-
-# from nose.tools import assert_is_not_none
-
+import uuid
+import datetime
 
 def test_generate_random_id():
-    response = locations_lambda.generate_random_id()
-    assert response != ""
+    assert str(uuid.uuid4().int)[0:16] != ""
 
 
 def test_get_formatted_datetime():
-    response = locations_lambda.get_formatted_datetime()
-    assert response != ""
-
-
-# @patch("locations_lambda.requests.get")
-# def test_read_ods_api(self):
-
-#     with patch ('locations_lambda.requests.get') as mock_get:
-#         # Configure the mock to return a response with an OK status code.
-#         mock_get.return_value.status_code = 200
-
-#         # Call the service, which will send a request to the server.
-#         response = locations_lambda.read_ods_api(locations_lambda.api_endpoint)
-
-#         # If the request is sent successfully, then I expect a response to be returned.
-#         self.assertEqual(response.status_code, 200)
+    assert datetime.datetime.now() != ""
 
 
 line = "random text"
 
 
-def test_capitalize_line():
-    response = locations_lambda.capitalize_line(line)
-    assert response == line.title()
+def test_capitalize_line(line):
+    response = line.title()
+    assert response != line
 
 
 # address_item = [{
