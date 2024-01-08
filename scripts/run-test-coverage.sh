@@ -6,6 +6,7 @@ set -e
 #
 APPLICATION_DIR=application
 APPLICATION_UTIL_DIR=application-utils
+LOCATION_DATA_LOAD_DIR=scripts/locations_data_load
 
 
 # cleardown cache from previous run needs
@@ -54,6 +55,24 @@ for path in "$APPLICATION_UTIL_DIR"/*/ ; do
                     echo "Running tests for $dir"
                     pip install -r $APPLICATION_UTIL_DIR/"$dir"/test/requirements.txt
                     coverage run -a --source=$APPLICATION_UTIL_DIR/"$dir" -m pytest $APPLICATION_UTIL_DIR/"$dir"
+                else
+                    echo "No tests written for $dir"
+                fi
+            fi
+        done
+done
+
+# test locations data load
+for path in "$LOCATION_DATA_LOAD_DIR"/*/ ; do
+    dirs=$(echo "$path" | tr "\/" '\n')
+    for dir in $dirs
+        do
+            if ! [ "$dir" == $LOCATION_DATA_LOAD_DIR ] ; then
+                if [ -d $LOCATION_DATA_LOAD_DIR/"$dir/test" ]; then
+                    echo "Preparing tests for $dir"
+                    echo "Running tests for $dir"
+                    pip install -r $LOCATION_DATA_LOAD_DIR/"$dir"/test/requirements.txt
+                    coverage run -a --source=$LOCATION_DATA_LOAD_DIR/"$dir" -m pytest $LOCATION_DATA_LOAD_DIR/"$dir"
                 else
                     echo "No tests written for $dir"
                 fi
