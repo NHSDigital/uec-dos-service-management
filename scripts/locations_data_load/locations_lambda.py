@@ -3,11 +3,7 @@
 import requests
 import json
 import pandas as pd
-
-# from decimal import Decimal
 import boto3
-
-# from io import BytesIO
 import uuid
 import datetime
 from boto3.dynamodb.conditions import Attr
@@ -99,8 +95,6 @@ def process_organizations(organizations):
             if uprn == "NA":
                 processed_attributes.pop("UPRN")
             processed_data.append(processed_attributes)
-        else:
-            pass
     return processed_data
 
 
@@ -229,6 +223,7 @@ dynamodb_table_name = "locations"
 
 
 # # Iterate over Excel values and make API requests
+failed_to_fetch = "Failed to fetch data from the ODS API."
 for odscode_param in odscode_params:
     # Call the function to read from the ODS API and write to the output file
     response_data = read_ods_api(api_endpoint, headers=headers, params=odscode_param)
@@ -241,13 +236,13 @@ for odscode_param in odscode_params:
         # write_to_json(output_file_path, processed_data)
 
     else:
-        print("Failed to fetch data from the ODS API.")
+        print(failed_to_fetch)
 
 if response_data:
     print("Data fetched successfully.")
 
 else:
-    print("Failed to fetch data from the ODS API.")
+    print(failed_to_fetch)
 
 # fetch Y code organizations
 Y_response_data = read_ods_api(api_endpoint_Y, headers=headers, params=params_Y)
@@ -260,10 +255,10 @@ if Y_response_data:
     # write_to_json(output_file_path, processed_data)
 
 else:
-    print("Failed to fetch data from the ODS API.")
+    print(failed_to_fetch)
 
 if Y_response_data:
     print("Y Data fetched successfully.")
 
 else:
-    print("Failed to fetch Y data from the ODS API.")
+    print(failed_to_fetch)
