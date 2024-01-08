@@ -1,9 +1,11 @@
 from locations_data_load import locations_lambda
+
 # from locations_lambda import read_ods_api
 # from locations_lambda import api_endpoint
 
-from unittest.mock import patch
-#from nose.tools import assert_is_not_none
+# from unittest.mock import patch
+
+# from nose.tools import assert_is_not_none
 
 
 def test_generate_random_id():
@@ -31,6 +33,8 @@ def test_get_formatted_datetime():
 
 
 line = "random text"
+
+
 def test_capitalize_line():
     response = locations_lambda.capitalize_line(line)
     assert response == line.title()
