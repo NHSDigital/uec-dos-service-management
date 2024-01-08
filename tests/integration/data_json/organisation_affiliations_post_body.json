@@ -1,0 +1,30 @@
+{
+  "id": "3188721443926156",
+  "active": "true",
+  "Address": [
+  {
+    "city": "Newquay",
+    "country": "England",
+    "district": "Cornwall",
+    "line": [
+    "Newquay Health Centre",
+    "St. Thomas Road"
+    ],
+    "postalCode": "TR7 1RU"
+  }
+  ],
+  "createdBy": "Admin",
+  "createdDateTime": "12-12-2023 22:16:34",
+  "identifier": {
+  "type": "ODS",
+  "use": "secondary",
+  "value": "FF901"
+  },
+  "lookup_field": "P05F",
+  "modifiedBy": "Admin",
+  "modifiedDateTime": "12-12-2023 22:16:34",
+  "name": "Day Lewis Pharmacy",
+  "partOf": "3203946975299865",
+  "resourceType": "Organization",
+  "type": "Pharmacy"
+}
