@@ -10,8 +10,9 @@ set -e
 # USER_SHORTCODE
 # OPTIONAL
 #   - VPN_DOMAIN - will default to uec-dos-sm-vpn
-#   - VPN_DESC will default to service-management-vpn - the description of the VPN
+#   - VPN_DESC - will default to service-management-vpn - the description of the VPN
 #   - TEMP_VPN_CERT_DIR - will default to sm-vpn-certs (at root)
+#   - OPEN_VPN_ROOT - will default to ~/projects/open-vpn (=path to local clone of open-vpn repo)
 
 # check required exports have been done
 EXPORTS_SET=0
