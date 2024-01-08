@@ -29,4 +29,4 @@ pip install -r $APPLICATION_TEST_DIR/requirements.txt
 
 echo "Running integration tests"
 cd $APPLICATION_TEST_DIR
-behave --tags=tag1 -D workspace=$TERRAFORM_WORKSPACE_NAME
+behave --tags=pipeline_tests -D workspace=$TERRAFORM_WORKSPACE_NAME

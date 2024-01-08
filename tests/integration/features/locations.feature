@@ -1,4 +1,4 @@
-@locations
+@locations @pipeline_tests
 Feature: location
   As a user,
   I want to perform a CRUD action on the locations resource
