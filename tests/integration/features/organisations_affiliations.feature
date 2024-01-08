@@ -1,4 +1,4 @@
-@organisation_affiliations @pipeline_tests
+@organisation_affiliations
 Feature: organisation_affiliations
   As a user,
   I want to perform a CRUD action on the organisation_affiliations resource
