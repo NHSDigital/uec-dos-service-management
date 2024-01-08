@@ -1,4 +1,4 @@
-@healthcare_services
+@healthcare_services @pipeline_tests
 Feature: healthcare_services
   As a user,
   I want to perform a CRUD action on the healthcare_services resource
