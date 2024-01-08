@@ -6,7 +6,7 @@ set -e
 #
 APPLICATION_DIR=application
 APPLICATION_UTIL_DIR=application-utils
-LOCATION_DATA_LOAD_DIR=scripts/locations_data_load
+LOCATION_DATA_LOAD_DIR=scripts
 
 
 # cleardown cache from previous run needs
