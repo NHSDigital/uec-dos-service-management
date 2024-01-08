@@ -1,6 +1,7 @@
 import uuid
 import datetime
 
+
 def test_generate_random_id():
     assert str(uuid.uuid4().int)[0:16] != ""
 
