@@ -67,7 +67,7 @@ aws acm import-certificate --certificate fileb://$USER_SHORTCODE.$VPN_DOMAIN.tld
 > /dev/null
 
 echo looking up vpn endpoint by name and protocol
-CVN_ENPOINT=$(aws ec2 describe-client-vpn-endpoints --filters Name="transport-protocol",Values="udp" \
+CVN_ENPOINT=$(aws ec2 describe-client-vpn-endpoints --filters Name="transport-protocol",Values="tcp" \
 | jq -r --arg VPN_DESC "$VPN_DESC" '.[] | .[] | select(.Description == $VPN_DESC) | .ClientVpnEndpointId')
 
 echo generating draft opvn file for $USER_SHORTCODE for vpn endpoint $CVN_ENPOINT
