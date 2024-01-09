@@ -30,7 +30,7 @@ def map_to_json_schema(row):
             {"type": "ID", "use": "oldDoS", "value": row["id"]},
         ],
         "type": {
-            "system": "http://terminology.hl7.org/CodeSystem/service-type",
+            "system": "https://terminology.hl7.org/CodeSystem/service-type",
             "code": "64",
             "display": "Pharmacy",
         },
@@ -60,7 +60,7 @@ def map_to_json_schema2(duplicate_rows, groupkey):
             {"type": "ID", "use": "oldDoS", "value": id_mapping},
         ],
         "type": {
-            "system": "http://terminology.hl7.org/CodeSystem/service-type",
+            "system": "https://terminology.hl7.org/CodeSystem/service-type",
             "code": "64",
             "display": "Pharmacy",
         },
