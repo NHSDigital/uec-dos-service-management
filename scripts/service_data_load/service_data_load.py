@@ -5,22 +5,17 @@ import datetime
 import boto3
 from boto3.dynamodb.conditions import Attr
 
-
-
 def generate_random_id():
     # Generate a random 16-digit ID
     return str(uuid.uuid4().int)[3:19]
-
 
 # Function to get the current date and time in UK format
 def get_formatted_datetime():
     current_datetime = datetime.datetime.now()
     return current_datetime.strftime("%d-%m-%Y %H:%M:%S")
 
-
 # Read the Excel file
 df = pd.read_excel("./Filtered_odscodes.xlsx")
-
 
 # Schema mapping function
 def map_to_json_schema(row):
@@ -45,7 +40,6 @@ def map_to_json_schema(row):
         "providedBy": "",
         "location": "",
     }
-
 
 def map_to_json_schema2(duplicate_rows, groupkey):
     id_mapping = []
@@ -76,13 +70,11 @@ def map_to_json_schema2(duplicate_rows, groupkey):
         "location": "",
     }
 
-
 def write_to_dynamodb(table_name, json_data_list):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(table_name)
     for json_data in json_data_list:
         table.put_item(Item=json_data)
-
 
 def update_services_providedby(table_name, json_data_list):
     dynamodb = boto3.resource("dynamodb")
@@ -107,7 +99,6 @@ def update_services_providedby(table_name, json_data_list):
                 ExpressionAttributeValues={":val": healthcare_id},
             )
 
-
 def update_services_location(table_name, json_data_list):
     dynamodb = boto3.resource("dynamodb")
     healthcare_table = dynamodb.Table(table_name)
@@ -131,7 +122,6 @@ def update_services_location(table_name, json_data_list):
                 ExpressionAttributeNames={"#location": "location"},
                 ExpressionAttributeValues={":val": location_id},
             )
-
 
 write_table_name = "healthcare_services"
 
