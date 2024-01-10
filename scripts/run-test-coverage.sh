@@ -98,4 +98,3 @@ for path in "$APPLICATION_DIR"/*/ ; do
             fi
         done
 done
-
