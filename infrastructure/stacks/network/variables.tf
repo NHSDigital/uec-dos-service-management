@@ -1,7 +1,3 @@
-variable "vpc_cidr_block_marker" {
-  description = "CIDR block range marker to use with VPC"
-}
-
 variable "vpc_cidr_block_range_private" {
   description = "Third element to CIDR block range marker to use with VPC"
   type        = list(any)
