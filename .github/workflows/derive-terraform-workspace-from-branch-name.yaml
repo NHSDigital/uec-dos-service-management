@@ -8,12 +8,12 @@ on:
         type: string
 
 jobs:
-  echo-workflow-inputs:
+  display-inputs:
     runs-on: ubuntu-latest
     steps:
       - name: echo workflow inputs
         run: |
-          echo "branch name: ${{ inputs.branch_name }}
+          echo "branch name: ${{ inputs.branch_name }}"
   derive-terraform-workspace-from-branch-name:
       runs-on: ubuntu-latest
       outputs:
