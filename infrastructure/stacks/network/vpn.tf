@@ -46,6 +46,7 @@ resource "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
   description = "service-management-vpn"
   vpc_id      = resource.aws_vpc.main.id
 
+  transport_protocol     = "tcp"
   security_group_ids     = [aws_security_group.vpn_secgroup.id]
   split_tunnel           = true
   server_certificate_arn = data.aws_acm_certificate.vpn_sm_server_cert.arn
