@@ -7,12 +7,13 @@ on:
 
 jobs:
   # destroy:
-  #   if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+  #   if: github.ref_type == 'branch' && startswith(github.head.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
   #   uses: ./.github/workflows/action-infrastructure-cleardown.yaml
   #   with:
   #     github_environment: test
   #   secrets: inherit
   echo-ref-and-ref-type:
+    if: github.ref_type == 'branch' && startswith(github.head.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
@@ -21,7 +22,4 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: Clean up
         run: |
-          echo "Ref for a branch deletion: ${{ github.event_name }}"
-          echo "base_ref: ${{ github.base_ref }}"
-          echo "head_ref: ${{ github.head_ref }}"
-          echo "Ref for a branch deletion: ${{ github.event.head.ref }}"
+          echo "Removed infrastructure in test account relating to branch: ${{ github.head_ref }}"
