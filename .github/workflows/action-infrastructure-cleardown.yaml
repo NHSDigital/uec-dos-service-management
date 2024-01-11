@@ -66,7 +66,7 @@ jobs:
           ]
         uses: ./.github/workflows/action-infrastructure-stack.yaml
         with:
-          github_environment: ${{ inputs.github_environment }}"
+          github_environment: ${{ inputs.github_environment }}
           stack: application
           action: destroy
           deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
@@ -80,6 +80,6 @@ jobs:
         ]
       uses: ./.github/workflows/cleardown-terraform-state.yaml
       with:
-        github_environment: ${{ inputs.github_environment }}"
+        github_environment: ${{ inputs.github_environment }}
         deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
       secrets: inherit
