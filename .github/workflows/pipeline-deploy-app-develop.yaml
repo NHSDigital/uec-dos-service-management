@@ -8,7 +8,7 @@ on:
 
 jobs:
   derive-tf-versions:
-    uses: ./.github/workflows/derive-tf-version.yaml
+    uses: ./.github/workflows/derive-tf-version.yaml.failme
   get-metadata:
     runs-on: ubuntu-latest
     outputs:
@@ -147,8 +147,7 @@ jobs:
     steps:
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
-        #if: failure()
-        if: always()
+        if: failure()
         with:
           status: ${{ job.status }}
           notify_when: "failure"
