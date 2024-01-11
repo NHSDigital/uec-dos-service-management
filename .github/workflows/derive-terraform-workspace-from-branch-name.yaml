@@ -6,6 +6,10 @@ on:
         description: "The branch name from which to derive the terraform workspace"
         required: true
         type: string
+    outputs:
+      workspace:
+        description: "Terraform workspace derived from branch name"
+        value: ${{ jobs.derive-terraform-workspace-from-branch-name.outputs.workspace }}
 
 jobs:
   display-inputs:
