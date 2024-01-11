@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: echo workflow inputs
         run: |
-          echo "github environment: ${{ inputs.github_environment }}"
           echo "branch name: ${{ inputs.branch_name }}
   derive-terraform-workspace-from-branch-name:
       runs-on: ubuntu-latest
