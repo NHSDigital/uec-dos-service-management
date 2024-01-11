@@ -1,0 +1,25 @@
+name: Pipeline Cleardown Application Development Environment
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  # destroy:
+  #   if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+  #   uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+  #   with:
+  #     github_environment: test
+  #   secrets: inherit
+  echo-ref-and-ref-type:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Clean up
+        run: |
+          echo "Ref for a branch deletion: ${{ github.event.ref }}"
+          echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
