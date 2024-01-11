@@ -147,7 +147,8 @@ jobs:
     steps:
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
-        if: failure()
+        #if: failure()
+        if: ${{ always() && failure() }}
         with:
           status: ${{ job.status }}
           notify_when: "failure"
