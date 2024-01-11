@@ -20,5 +20,5 @@ Feature: questionare_responses
 @tag6
   Scenario: Basic delete request for questionare_responses
     Given I setup the data by inserting from file questionare_responses_body into the dynamoDB table questionare_responses
-    When I delete data for id 1025655242481777from the resource questionare_responses
+    When I delete data for id 1025655242481777 from the resource questionare_responses
     Then data for id 1025655242481777 in the dynamoDB table has been deleted
