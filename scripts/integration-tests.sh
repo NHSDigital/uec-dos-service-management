@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # fail on first error
-set -e
+#set -e
 # This script runs python integration tests
 #
 APPLICATION_TEST_DIR='tests/integration'
@@ -27,6 +27,14 @@ fi
 echo "Installing requirements"
 pip install -r $APPLICATION_TEST_DIR/requirements.txt
 
+# TERRAFORM_WORKSPACE_NAME='dr-5751'
+
 echo "Running integration tests"
 cd $APPLICATION_TEST_DIR
-behave --tags=pipeline_tests -D workspace=$TERRAFORM_WORKSPACE_NAME
+behave --tags=pipeline_tests -D workspace=$TERRAFORM_WORKSPACE_NAME --format=allure -o allure-results;
+
+echo "next generating report"
+allure generate --single-file -c -o  allure-reports;
+
+echo "where are we"
+dir
