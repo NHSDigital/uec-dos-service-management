@@ -6,9 +6,9 @@ on:
         description: "Defines the Github environment in which to pull environment variables from"
         required: true
         type: string
-      deployment_workspace:
-        description: 'Name of the terraform workspace to tear down the service infrastructure'
-        required: false
+      branch_name:
+        description: "Name of the branch used to derive tf version and workspace"
+        required: true
         default: 'not-set'
         type: string
 
@@ -19,9 +19,12 @@ jobs:
       - name: echo workflow inputs
         run: |
           echo "github environment: ${{ inputs.github_environment }}"
-          echo "deployment workspace: ${{ inputs.deployment_workspace }}"
+          echo "branch_name: ${{ inputs.branch_name }}"
   derive-tf-versions:
     uses: ./.github/workflows/derive-tf-version.yaml
+    with:
+      git_ref: ${{ inputs.branch_name }}
+    # TODO
   get-metadata:
     runs-on: ubuntu-latest
     outputs:
@@ -38,46 +41,37 @@ jobs:
           echo "triggering action: ${{ github.event_name }}"
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
-          echo "branch to delete: ${{ github.event.ref }}"
+          echo "github.event.ref : ${{ github.event.ref }}"
+          echo "github.head_ref" ${{github.head_ref }}
           echo "username of user triggering the workflow: ${{ github.actor }}"
-  derive-terraform-workspace-from-branch-name:
-    runs-on: ubuntu-latest
-    outputs:
-        workspace: ${{ steps.derive-workspace.outputs.workspace }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Derive Workspace
-        id: derive-workspace
-        run: |
-          export BRANCH_NAME=${{ github.event.ref }}
-          workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
-          echo "Setting workspace to $workspace"
-          echo "workspace=$workspace" >> $GITHUB_OUTPUT
+  derive-workspace:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: ./.github/workflows/derive-terraform-workspace-from-branch-name.yaml
+    with:
+      branch_name: ${{ inputs.branch_name }}
+
   destroy-application-infrastructure:
         needs:
           [
-            derive-terraform-workspace-from-branch-name,
             derive-tf-versions,
+            derive-workspace
           ]
         uses: ./.github/workflows/action-infrastructure-stack.yaml
         with:
-          github_environment: dev
+          github_environment: ${{ inputs.github_environment }}
           stack: application
           action: destroy
-          deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+          deployment_workspace: ${{needs.derive-workspace.outputs.workspace}}
           tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
         secrets: inherit
   cleardown-terraform-state:
       needs:
         [
           destroy-application-infrastructure,
-          derive-terraform-workspace-from-branch-name,
+          derive-workspace
         ]
       uses: ./.github/workflows/cleardown-terraform-state.yaml
       with:
-        github_environment: dev
-        deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+        github_environment: ${{ inputs.github_environment }}
+        deployment_workspace: ${{needs.derive-workspace.outputs.workspace}}
       secrets: inherit

@@ -1,0 +1,23 @@
+name: Pipeline Cleardown Application Test Environment
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  destroy:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+    with:
+      github_environment: test
+      branch_name: ${{ github.head_ref }}
+    secrets: inherit
+  summarise:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "${{ github.actor }} closed/merged PR"
+          echo "Triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.head_ref }}"

@@ -10,11 +10,14 @@ jobs:
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
     with:
       github_environment: dev
+      branch_name: ${{ github.event.ref }}
     secrets: inherit
-  echo-ref-and-ref-type:
+  summarise:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Clean up
+      - name: Summary
         run: |
-          echo "Ref for a branch deletion: ${{ github.event.ref }}"
-          echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
+          echo "${{ github.actor }} deleted a task branch..."
+          echo "triggering cleardown of infra in dev account relating to ${{ github.ref_type }}: ${{ github.event_ref }}"
+
