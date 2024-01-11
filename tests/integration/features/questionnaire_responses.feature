@@ -1,4 +1,4 @@
-@questionnaire_responses @pipeline_tests
+@questionnaire @pipeline_tests
 Feature: questionnaire_responses
   As a user,
   I want to perform a CRUD action on the questionnaire_responses resource
@@ -21,4 +21,4 @@ Feature: questionnaire_responses
   Scenario: Basic delete request for questionnaire_responses
     Given I setup the data by inserting from file questionnaire_responses_body into the dynamoDB table questionnaire_responses
     When I delete data for id 1025655242481777 from the resource questionnaire_responses
-
+    Then data for id 1025655242481777 in the dynamoDB table has been deleted
