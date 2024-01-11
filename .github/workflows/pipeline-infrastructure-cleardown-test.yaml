@@ -13,7 +13,7 @@ jobs:
   #     github_environment: test
   #   secrets: inherit
   echo-ref-and-ref-type:
-    if: github.ref_type == 'branch' && startswith(github.head.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    # if: github.ref_type == 'branch' && startswith(github.head.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
@@ -23,3 +23,6 @@ jobs:
       - name: Clean up
         run: |
           echo "Removed infrastructure in test account relating to branch: ${{ github.head_ref }}"
+          echo "ref type ${{ github.ref_type }}"
+          echo "branch ${{ github.head.ref }}"
+          echo "actor ${{ github.actor }}"
