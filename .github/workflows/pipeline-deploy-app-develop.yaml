@@ -141,6 +141,9 @@ jobs:
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
           /bin/bash ./scripts/app-build-deploy.sh
+      #fail workflow for testing
+      - name: Intentionally fail the workflow
+        run: exit 1
   slack-notifications:
     runs-on: ubuntu-latest
     environment: dev
