@@ -23,15 +23,15 @@ jobs:
           workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
           echo "Setting workspace to $workspace"
           echo "workspace=$workspace" >> $GITHUB_OUTPUT
-  # destroy:
-  #   if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-  #   uses: ./.github/workflows/action-infrastructure-cleardown.yaml
-  #   with:
-  #     github_environment: test
-  #     deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
-  #   secrets: inherit
+  destroy:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+    with:
+      github_environment: test
+      deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+    secrets: inherit
   echo-ref-and-ref-type:
-    if: github.ref_type == 'branch' && startswith(github.head.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Clean up
