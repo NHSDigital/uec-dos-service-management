@@ -42,6 +42,8 @@ cve-scan*.json
 sbom-spdx*.json
 *.code-workspace
 !project.code-workspace
+**/allure-reports/*
+**/allure-results/*
 
 # IDE - VSCode
 .vscode/*
