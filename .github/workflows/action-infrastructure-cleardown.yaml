@@ -11,12 +11,6 @@ on:
         required: true
         default: 'not-set'
         type: string
-      # deployment_workspace:
-      #   description: 'Name of the terraform workspace to tear down the service infrastructure'
-      #   required: true
-      #   default: 'not-set'
-      #   type: string
-      # TODO pass in as optional param git ref for derive tf versions
 
 jobs:
   echo-workflow-inputs:
@@ -55,22 +49,6 @@ jobs:
     uses: ./.github/workflows/derive-terraform-workspace-from-branch-name.yaml
     with:
       branch_name: ${{ inputs.branch_name }}
-  # derive-terraform-workspace-from-branch-name:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #       workspace: ${{ steps.derive-workspace.outputs.workspace }}
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Derive Workspace
-  #       id: derive-workspace
-  #       run: |
-  #         export BRANCH_NAME=${{ github.event.ref }}
-  #         workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
-  #         echo "Setting workspace to $workspace"
-  #         echo "workspace=$workspace" >> $GITHUB_OUTPUT
 
   destroy-application-infrastructure:
         needs:

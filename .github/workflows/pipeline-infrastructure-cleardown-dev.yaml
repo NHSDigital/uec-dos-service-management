@@ -5,11 +5,6 @@ on:
     branches:
       - 'task/*'
 jobs:
-  # derive-workspace:
-  #   if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-  #   uses: ./.github/workflows/derive-terraform-workspace-from-branch-name.yaml
-  #   with:
-  #     branch_name: ${{ github.event.ref }}
   destroy:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     uses: ./.github/workflows/action-infrastructure-cleardown.yaml
@@ -17,7 +12,8 @@ jobs:
       github_environment: dev
       branch_name: ${{ github.event.ref }}
     secrets: inherit
-  echo-ref-and-ref-type:
+  summarise:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Summary
