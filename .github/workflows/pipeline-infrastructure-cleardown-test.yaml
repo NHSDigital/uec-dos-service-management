@@ -17,9 +17,11 @@ jobs:
     steps:
       - name: Dump GitHub context
         env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          GITHUB_CONTEXT: ${{ toJSON(github.event) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Clean up
         run: |
-          echo "Ref for a branch deletion: ${{ github.head.ref }}"
-          echo "Ref type for a branch deletion: ${{ github.ref_type }}"
+          echo "Ref for a branch deletion: ${{ github.event_name }}"
+          echo "base_ref: ${{ github.base_ref }}"
+          echo "head_ref: ${{ github.head_ref }}"
+          echo "Ref for a branch deletion: ${{ github.event.head.ref }}"
