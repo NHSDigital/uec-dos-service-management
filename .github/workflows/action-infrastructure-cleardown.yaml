@@ -11,6 +11,7 @@ on:
         required: false
         default: 'not-set'
         type: string
+      # TODO pass in as optional param git ref for derive tf versions
 
 jobs:
   echo-workflow-inputs:
@@ -38,7 +39,8 @@ jobs:
           echo "triggering action: ${{ github.event_name }}"
           echo "ref type: ${{ github.ref_type }}"
           echo "triggering reference: ${{ github.ref_name }}"
-          echo "branch to delete: ${{ github.event.ref }}"
+          echo "github.event.ref : ${{ github.event.ref }}"
+          echo "github.head_ref" ${{github.head_ref }}
           echo "username of user triggering the workflow: ${{ github.actor }}"
   derive-terraform-workspace-from-branch-name:
     runs-on: ubuntu-latest
@@ -64,7 +66,7 @@ jobs:
           ]
         uses: ./.github/workflows/action-infrastructure-stack.yaml
         with:
-          github_environment: dev
+          github_environment: ${{ inputs.github_environment }}"
           stack: application
           action: destroy
           deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
@@ -78,6 +80,6 @@ jobs:
         ]
       uses: ./.github/workflows/cleardown-terraform-state.yaml
       with:
-        github_environment: dev
+        github_environment: ${{ inputs.github_environment }}"
         deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
       secrets: inherit

@@ -1,0 +1,41 @@
+name: Pipeline Cleardown Application Test Environment
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  derive-terraform-workspace-from-branch-name:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+        workspace: ${{ steps.derive-workspace.outputs.workspace }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Derive Workspace
+        id: derive-workspace
+        run: |
+          export BRANCH_NAME=${{ github.head_ref }}
+          workspace=$(/bin/bash ./scripts/branch-name-workspace.sh)
+          echo "Setting workspace to $workspace"
+          echo "workspace=$workspace" >> $GITHUB_OUTPUT
+  destroy:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+    with:
+      github_environment: test
+      deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}
+    secrets: inherit
+  echo-ref-and-ref-type:
+    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean up
+        run: |
+          echo "${{ github.actor }} closed/merged PR"
+          echo "Deployment_workspace: ${{needs.derive-terraform-workspace-from-branch-name.outputs.workspace}}"
+          echo "Triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.head_ref }}"
