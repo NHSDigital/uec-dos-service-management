@@ -124,7 +124,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           status: ${{ job.status }}
-          notify_when: 'failure'
+          notify_when: 'Failure'
           notification_title: '{workflow} has failed'
           # For posting a rich message using Block Kit
           payload: |
