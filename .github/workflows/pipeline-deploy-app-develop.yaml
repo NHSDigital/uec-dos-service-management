@@ -141,13 +141,8 @@ jobs:
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
           /bin/bash ./scripts/app-build-deploy.sh
-  slack-notification:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Trigger Slack Notification Workflow
-        uses: ./.github/workflows/slack-notification.yaml
+
+
 
 
 

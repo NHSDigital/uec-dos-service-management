@@ -1,9 +1,6 @@
 name: Slack Notification
 
-on:
-  workflow_run:
-    types:
-      - completed
+on: push
 
 jobs:
   send-notification:
