@@ -1,0 +1,37 @@
+name: Slack Notification
+
+on:
+  workflow_run:
+    workflows: ["pipeline-deploy-app-develop"]
+    types:
+      - completed
+
+jobs:
+  slack-notification:
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send custom JSON data to Slack workflow on failure
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+          notification_title: "{workflow} has failed"
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n\nPushed by: @${{ github.actor }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n\nPushed by: @${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
