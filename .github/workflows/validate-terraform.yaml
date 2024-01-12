@@ -122,7 +122,7 @@ jobs:
     steps:
       - name: slack notifications
         if: always()
-        uses: ravsamhq/notify-slack-action@v1
+        uses: slackapi/slack-github-action@v1.24.0
         with:
             status: ${{ job.status }}
             notify_when: 'failure'
