@@ -9,14 +9,12 @@ on:
 jobs:
   send-notification:
     runs-on: ubuntu-latest
-    #if: failure()
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: failure()
     steps:
       - name: Send custom JSON data to Slack workflow on failure
         uses: slackapi/slack-github-action@v1.24.0
         with:
-          #status: ${{ job.status }}
-          status: ${{ github.event.workflow_run.conclusion }}
+          status: ${{ job.status }}
           notify_when: "failure"
           notification_title: "{workflow} has failed"
           # For posting a rich message using Block Kit
