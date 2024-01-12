@@ -143,9 +143,11 @@ jobs:
           /bin/bash ./scripts/app-build-deploy.sh
   slack-notification:
     runs-on: ubuntu-latest
-    needs: slack-notification
-    jobs:
-      - send-notification
+    steps:
+      - name: Trigger Slack Notification Workflow
+        uses: ./.github/workflows/slack-notification.yaml
+
+
 
 
 
