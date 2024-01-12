@@ -4,6 +4,13 @@ on:
     types: [ labeled ]
 
 jobs:
+  summary:
+    name: Test tag
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo branch
+      run: |
+        echo "${{ github.head_ref  }}"
   generate-test-ready-tag:
     name: Format test ready tag
     if: ${{ github.event.label.name == 'Test Ready' }} && startswith(github.head_ref, 'task/')
