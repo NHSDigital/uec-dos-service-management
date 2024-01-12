@@ -2,12 +2,11 @@ name: Slack Notification
 
 on:
   workflow_run:
-    workflows: ["pipeline-deploy-app-develop"]
     types:
       - completed
 
 jobs:
-  slack-notification:
+  send-notification:
     runs-on: ubuntu-latest
     if: failure()
     steps:
@@ -35,3 +34,38 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
+# slack-notification.yml
+
+name: Slack Notification
+
+on:
+  workflow_run:
+    types:
+      - completed
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send custom JSON data to Slack workflow on failure
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          status: ${{ needs.your-existing-job.outcome }}
+          notify_when: "failure"
+          notification_title: "{workflow} has failed"
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ needs.your-existing-job.outcome }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ needs.your-existing-job.outcome }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
