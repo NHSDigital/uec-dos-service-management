@@ -27,6 +27,7 @@ jobs:
           echo "triggering reference: ${{ github.ref_name }}"
           echo "github event ref: ${{ github.event.ref }}"
           echo "username of user triggering the workflow: ${{ github.actor }}"
+          echo "git hub head ref:  ${{ github.head_ref }}"
   scan-secrets:
     uses: ./.github/workflows/scan-secrets.yaml
   check-file-format:
