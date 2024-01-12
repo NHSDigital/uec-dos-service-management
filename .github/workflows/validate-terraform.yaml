@@ -31,8 +31,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2.2.0
         with:
-          # force workflow failure to trigger slack notification
-          #role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
           role-session-name: github-pipeline-session
           aws-region: ${{ vars.AWS_REGION }}
 
@@ -120,19 +119,28 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - name: Get commit info
-        id: commit_info
-        run: |
-          echo "::set-output name=commit_author::$(git log -1 --pretty=format:'%an')"
-      - name: slack notifications
+      - name: Send custom JSON data to Slack workflow
         if: always()
         uses: slackapi/slack-github-action@v1.24.0
         with:
-            status: ${{ job.status }}
-            notify_when: 'failure'
-            notification_title: "{workflow} is failing"
-            additional_fields: "Commit Author: ${{ steps.commit_info.outputs.commit_author }}"
+          status: ${{ job.status }}
+          notify_when: "failure"
+          notification_title: "{workflow} has failed"
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n\nPushed by: @${{ github.actor }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n\nPushed by: @${{ github.actor }}"
+                  }
+                }
+              ]
+            }
         env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
