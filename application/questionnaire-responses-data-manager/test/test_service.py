@@ -49,8 +49,8 @@ def build_mock_questionnaire_responses_item():
 def test_get_record_by_id():
     "Test get_record_by_id method"
     table = create_mock_dynamodb()
-    healthcare_service_record = build_mock_questionnaire_responses_item()
-    table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
+    questionnaire_response_record = build_mock_questionnaire_responses_item()
+    table.put_item(Item=questionnaire_response_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     assert response["Item"]["id"] == mock_id
     assert response["Item"]["active"] == mock_active
@@ -79,10 +79,10 @@ def test_add_record():
     response = table.get_item(Key={"id": mock_post_id})
     assert ("Item" in response) is False
     # build record to add
-    healthcare_service_record = build_mock_questionnaire_responses_item()
-    healthcare_service_record["active"] = mock_status_update
-    healthcare_service_record["id"] = mock_post_id
-    service.add_record(healthcare_service_record)
+    questionnaire_response_record = build_mock_questionnaire_responses_item()
+    questionnaire_response_record["active"] = mock_status_update
+    questionnaire_response_record["id"] = mock_post_id
+    service.add_record(questionnaire_response_record)
     response = table.get_item(Key={"id": mock_post_id})
     assert response["Item"]["id"] == mock_post_id
     assert response["Item"]["active"] == mock_status_update
@@ -93,16 +93,16 @@ def test_update_record():
     "Test update record method - eg used by PUT"
     table = create_mock_dynamodb()
     # Create and add a mock item to the table
-    healthcare_service_record = build_mock_questionnaire_responses_item()
-    table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
+    questionnaire_response_record = build_mock_questionnaire_responses_item()
+    table.put_item(Item=questionnaire_response_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     # check it has been saved correctly
     assert response["Item"]["id"] == mock_id
     assert response["Item"]["name"] == mock_name
     # update elements
-    healthcare_service_record["active"] = mock_status_update
-    healthcare_service_record["name"] = mock_updated_name
-    service.update_record(healthcare_service_record)
+    questionnaire_response_record["active"] = mock_status_update
+    questionnaire_response_record["name"] = mock_updated_name
+    service.update_record(questionnaire_response_record)
     # Verify that the item has been added successfully
     response = table.get_item(Key={"id": mock_id})
     assert response["Item"]["active"] == mock_status_update
@@ -113,8 +113,8 @@ def test_update_record():
 def test_delete_record_by_id():
     "Test delete_record method first adding and then checking it exists"
     table = create_mock_dynamodb()
-    healthcare_service_record = build_mock_questionnaire_responses_item()
-    table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
+    questionnaire_response_record = build_mock_questionnaire_responses_item()
+    table.put_item(Item=questionnaire_response_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
     assert response["Item"]["id"] == mock_id
     service.delete_record(mock_id)
