@@ -146,6 +146,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     if: always()
+    needs: [
+      build-and-deploy-application-code
+    ]
     steps:
       - name: Debug
         run: |
