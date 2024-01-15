@@ -43,7 +43,6 @@ jobs:
           echo "github.head_ref" ${{github.head_ref }}
           echo "username of user triggering the workflow: ${{ github.actor }}"
   derive-workspace:
-    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     uses: ./.github/workflows/derive-terraform-workspace-from-branch-name.yaml
     with:
       branch_name: ${{ inputs.branch_name }}
