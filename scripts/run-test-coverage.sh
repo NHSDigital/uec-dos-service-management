@@ -6,7 +6,7 @@ set -e
 #
 APPLICATION_DIR=application
 APPLICATION_UTIL_DIR=application-utils
-LOCATION_DATA_LOAD_DIR=scripts
+SCRIPT_LOAD_DIR=scripts
 
 
 # cleardown cache from previous run needs
@@ -62,17 +62,18 @@ for path in "$APPLICATION_UTIL_DIR"/*/ ; do
         done
 done
 
-# test locations data load
-for path in "$LOCATION_DATA_LOAD_DIR"/*/ ; do
+# find each directory under scripts
+# if test code exists copy it from sub-dir in prep for running it
+for path in "$SCRIPT_LOAD_DIR"/*/ ; do
     dirs=$(echo "$path" | tr "\/" '\n')
     for dir in $dirs
         do
-            if ! [ "$dir" == $LOCATION_DATA_LOAD_DIR ] ; then
-                if [ -d $LOCATION_DATA_LOAD_DIR/"$dir/test" ]; then
+            if ! [ "$dir" == $SCRIPT_LOAD_DIR ] ; then
+                if [ -d $SCRIPT_LOAD_DIR/"$dir/test" ]; then
                     echo "Preparing tests for $dir"
                     echo "Running tests for $dir"
-                    pip install -r $LOCATION_DATA_LOAD_DIR/"$dir"/test/requirements.txt
-                    coverage run -a --source=$LOCATION_DATA_LOAD_DIR/"$dir" -m pytest $LOCATION_DATA_LOAD_DIR/"$dir"
+                    pip install -r $SCRIPT_LOAD_DIR/"$dir"/test/requirements.txt
+                    coverage run -a --source=$SCRIPT_LOAD_DIR/"$dir" -m pytest $SCRIPT_LOAD_DIR/"$dir"
                 else
                     echo "No tests written for $dir"
                 fi
@@ -97,4 +98,3 @@ for path in "$APPLICATION_DIR"/*/ ; do
             fi
         done
 done
-
