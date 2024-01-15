@@ -4,7 +4,7 @@ Feature: organisation_affiliations
   I want to perform a CRUD action on the organisation_affiliations resource
 
 @tag4
-  Scenario: Basic get request for locations
+  Scenario: Basic get request for organisation_affiliations
     Given I setup the data by inserting from file organisation_affiliations_body into the dynamoDB table organisation_affiliations
     When I request data for id=3188721443926156 from organisation_affiliations
     Then I receive a status code 200 in response
