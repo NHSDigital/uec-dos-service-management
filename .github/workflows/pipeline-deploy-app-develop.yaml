@@ -145,10 +145,6 @@ jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     environment: dev
-    needs:
-      [
-        unit-tests,
-      ]
     steps:
       - name: Debug
         run: |
@@ -159,7 +155,8 @@ jobs:
           echo "GitHub Actor: ${{ github.actor }}"
           echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
       - name: Send custom JSON data to Slack workflow
-        if: ${{ always() && contains(needs.*.result, 'failure') }}
+        if: failure()
+        # if: ${{ always() && contains(needs.*.result, 'failure') }}
         #if: always()
         #if: ${{ failure() }}
         #if: ${{ github.event_name == 'push' && failure() }}
