@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import requests
-import json
+#import json
 import pandas as pd
 import boto3
 import uuid
@@ -78,7 +78,7 @@ def process_organizations(organizations):
                     .get("extension")[1]
                     .get("valueString")
                 )
-            except uprn.DoesNotExist:
+            except TypeError:
                 uprn = "NA"
 
             capitalized_address = [
@@ -129,7 +129,7 @@ def data_exists(table, identifier_value):
     return bool(items)
 
 
-def update_records():
+def update_records(dynamodb=None):
     dynamodb = boto3.resource("dynamodb")
     org_table = dynamodb.Table("organisations")
     locations_table = dynamodb.Table("locations")
@@ -218,10 +218,10 @@ def get_ssm(id, secret):
 dynamodb_table_name = "locations"
 
 
-def write_to_json(output_file_path, processed_data):
-    with open(output_file_path, "a") as output_file:
-        json.dump(processed_data, output_file, indent=2)
-        output_file.write("\n")
+# def write_to_json(output_file_path, processed_data):
+#     with open(output_file_path, "a") as output_file:
+#         json.dump(processed_data, output_file, indent=2)
+#         output_file.write("\n")
 
 
 # # Iterate over Excel values and make API requests

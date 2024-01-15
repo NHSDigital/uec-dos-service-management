@@ -1,11 +1,48 @@
 import locations_lambda
 from locations_lambda import read_ods_api
+from locations_lambda import update_records
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
 import boto3
 import json
 from moto import mock_ssm
+
+
+class TestUpdateRecords(unittest.TestCase):
+    @patch("locations_lambda.boto3.resource")
+    def test_update_records(self, mock_dynamodb_resource):
+        # Mock DynamoDB resource and tables
+        mock_dynamodb = mock_dynamodb_resource.return_value
+        mock_org_table = Mock()
+        mock_locations_table = Mock()
+        mock_dynamodb.Table.side_effect = (
+            lambda table_name: mock_org_table
+            if table_name == "organisations"
+            else mock_locations_table
+        )
+
+        # Mock DynamoDB scan responses
+        mock_org_response = {
+            "Items": [{"id": "org_id_1", "identifier": {"value": "123"}}]
+        }
+        mock_locations_response = {
+            "Items": [
+                {"id": "loc_id_1", "managingOrganization": "", "lookup_field": "123"}
+            ]
+        }
+        mock_org_table.scan.return_value = mock_org_response
+        mock_locations_table.scan.return_value = mock_locations_response
+
+        # Call the function
+        update_records(dynamodb=mock_dynamodb)
+
+        # Assert that update_item was called with the correct arguments
+        mock_locations_table.update_item.assert_called_once_with(
+            Key={"id": "loc_id_1"},
+            UpdateExpression="SET managingOrganization = :val",
+            ExpressionAttributeValues={":val": "org_id_1"},
+        )
 
 
 class TestReadODSAPI(unittest.TestCase):
@@ -65,16 +102,17 @@ class TestReadODSAPI(unittest.TestCase):
 
 
 def read_json():
-    json_file_dir = "./scripts/locations_data_load/test/events/response.json"
+    json_file_dir = "./events/response.json"
     read = open(json_file_dir)
     data = json.load(read)
     return data
 
 
 def test_process_organizations():
-    data = read_json()
+    data = read_json().get("entry", [])
     processed_data = locations_lambda.process_organizations(data)
     assert processed_data != ""
+    return processed_data
 
 
 @mock_ssm
@@ -133,7 +171,7 @@ def test_capitalize_address_item():
 
 
 def test_read_excel_values():
-    file_path = "./scripts/locations_data_load/test/events/dummy_ods_codes.xlsx"
+    file_path = "./events/dummy_ods_codes.xlsx"
     read_excel_response = [
         {
             "primary-organization": "FR999",
