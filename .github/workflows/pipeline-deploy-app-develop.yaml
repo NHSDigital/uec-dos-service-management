@@ -169,9 +169,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\n
-              https://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }}\n
-              Pushed by: @${{ github.actor }}",
+              "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }} \nPushed by: @${{ github.actor }}",
               "blocks": [
                 {
                   "type": "section",
