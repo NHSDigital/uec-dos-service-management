@@ -147,12 +147,6 @@ jobs:
     environment: dev
     needs:
       [
-        deploy-application-infrastructure,
-        build-and-deploy-application-code,
-        deploy-support-tools-infrastructure,
-        deploy-vpc-vpn-infrastructure,
-        unit-tests,
-        check-python-flake-rules,
         validate-terraform,
       ]
     steps:
