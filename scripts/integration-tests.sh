@@ -36,5 +36,6 @@ behave --tags=pipeline_tests -D workspace=$TERRAFORM_WORKSPACE_NAME --format=all
 echo "next generating report"
 allure generate --single-file -c -o  allure-reports;
 
+cd allure-reports
 echo "where are we"
 dir
