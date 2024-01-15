@@ -1,0 +1,97 @@
+name: Run integration tests
+
+on:
+  workflow_call:
+    inputs:
+      github_environment:
+        description: "Defines the Github environment in which to pull environment variables from"
+        required: true
+        type: string
+      deployment_workspace:
+        description: 'Name of the terraform workspace to spin up the service infrastructure'
+        required: false
+        default: 'not-set'
+        type: string
+      git_reference:
+        description: 'Name of the git reference that has triggered the action'
+        required: true
+        type: string
+jobs:
+  echo-workflow-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo workflow inputs
+        run: |
+          echo "github environment: ${{ inputs.github_environment }}"
+          echo "deployment workspace: ${{ inputs.deployment_workspace }}"
+          echo "git_reference: ${{ inputs.git_reference }}"
+  integration-tests:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          role-session-name: github-pipeline-session
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Install Allure command-line tool
+        continue-on-error: true
+        run: |
+          sudo apt-get install default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0-1_all.deb
+          sudo dpkg -i allure-2.25.0-1_all.deb
+          export PATH="$PATH:$(pwd)/allure-2.25.0-1/bin"
+          allure --version
+
+      - name: Run integration test script
+        run: |
+          export BUILD_DATETIME="${{ inputs.build_datetime }}"
+          export BUILD_TIMESTAMP="${{ inputs.build_timestamp }}"
+          export BUILD_EPOCH="${{ inputs.build_epoch }}"
+          export DEPLOYMENT_WORKSPACE=${{ inputs.deployment_workspace }}
+          echo "Integration tests invoked"
+          /bin/bash ./scripts/integration-tests.sh
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-reports/index.html
+          retention-days: 5
+
+
+
+
+      # - name: Load test report history
+      #   uses: actions/checkout@v3
+      #   if: always()
+      #   continue-on-error: true
+      #   with:
+      #     ref: ${{ inputs.deployment_workspace }}
+      #     path: ./tests/integration/reports
+
+      # - name: Build test report
+      #   uses: simple-elf/allure-report-action@v1.7
+      #   if: always()
+      #   with:
+      #     gh_pages: ./tests/integration/reports
+      #     allure_history: ./tests/integration/reports
+      #     allure_results: ./tests/integration/reports
+
+      # - name: Publish test report
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   if: always()
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_branch: ${{ inputs.git_reference }}"
+      #     publish_dir: ./tests/integration/reports
