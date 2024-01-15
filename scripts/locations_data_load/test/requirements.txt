@@ -6,4 +6,3 @@ moto[all]==4.2.0
 coverage==7.3.1
 pandas==2.1.4
 openpyxl==3.1.2
-django==5.0.1
