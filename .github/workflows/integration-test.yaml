@@ -47,9 +47,9 @@ jobs:
       - name: Install Allure command-line tool
         continue-on-error: true
         run: |
-          sudo apt install allure
-          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.zip
-          unzip allure-2.25.0.zip
+          sudo apt-get install default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0-1_all.deb
+          sudo dpkg -i allure-2.25.0-1_all.deb
           export PATH="$PATH:$(pwd)/allure-2.25.0/bin"
           allure --version
 
