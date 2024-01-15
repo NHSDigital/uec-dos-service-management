@@ -62,12 +62,21 @@ jobs:
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
 
-      - name: Archive test results
-        uses: actions/upload-artifact@v3
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        id: artifact-upload-step
         with:
           name: allure-report
           path: tests/integration/allure-reports/index.html
           retention-days: 5
+
+      - name: Output report url
+        run:  echo 'Report url is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
+
+      - name: Output artifact ID
+        run:  echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+
+
 
 
 
