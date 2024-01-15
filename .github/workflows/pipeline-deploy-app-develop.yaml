@@ -147,7 +147,7 @@ jobs:
     environment: dev
     needs:
       [
-        validate-terraform,
+        unit-tests,
       ]
     steps:
       - name: Debug

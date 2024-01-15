@@ -114,6 +114,5 @@ jobs:
           export ACCOUNT_TYPE=${{ vars.ACCOUNT_TYPE }}
           export DEPLOYMENT_WORKSPACE=default
           /bin/bash ./scripts/action-infra-stack.sh
-          - name: Report Status
 
 
