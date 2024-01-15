@@ -48,7 +48,7 @@ jobs:
         continue-on-error: true
         run: |
           sudo apt install allure
-          wget https://github.com/allure-framework/allure2/releases/tag/2.25.0/allure-2.25.0.zip
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.zip
           unzip allure-2.25.0.zip
           export PATH="$PATH:$(pwd)/allure-2.25.0/bin"
           allure --version

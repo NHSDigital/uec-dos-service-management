@@ -27,7 +27,7 @@ fi
 echo "Installing requirements"
 pip install -r $APPLICATION_TEST_DIR/requirements.txt
 
-# TERRAFORM_WORKSPACE_NAME='dr-5751'
+# TERRAFORM_WORKSPACE_NAME='dr-575'
 
 echo "Running integration tests"
 cd $APPLICATION_TEST_DIR
