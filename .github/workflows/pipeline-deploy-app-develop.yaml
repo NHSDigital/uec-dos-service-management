@@ -156,9 +156,9 @@ jobs:
           echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
       - name: Send custom JSON data to Slack workflow
         #if: always()
-        #if: ${{ failure() }}
+        if: ${{ failure() }}
         #if: ${{ github.event_name == 'push' && failure() }}
-        if: ${{ github.event_name == 'workflow_call' && failure() }}
+        #if: ${{ github.event_name == 'workflow_call' && failure() }}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           #status: ${{ job.status }}
