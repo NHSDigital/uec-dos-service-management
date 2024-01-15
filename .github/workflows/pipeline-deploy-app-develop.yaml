@@ -163,12 +163,15 @@ jobs:
       - name: Echo result of pipeline
         run: |
           echo conc ${{ env.WORKFLOW_CONCLUSION }}
+          echo run id ${{ github.run_id }}
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n\nPushed by: @${{ github.actor }}",
+              "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\n
+              https://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }}\n
+              Pushed by: @${{ github.actor }}",
               "blocks": [
                 {
                   "type": "section",
