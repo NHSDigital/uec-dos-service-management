@@ -31,7 +31,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2.2.0
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+          #role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
           role-session-name: github-pipeline-session
           aws-region: ${{ vars.AWS_REGION }}
 
@@ -120,12 +120,13 @@ jobs:
     environment: dev
     steps:
       - name: Send custom JSON data to Slack workflow
-        if: always()
+        #if: always()
+        if: ${{ failure() }}
         uses: slackapi/slack-github-action@v1.24.0
         with:
-          status: ${{ job.status }}
-          notify_when: "failure"
-          notification_title: "{workflow} has failed"
+          #status: ${{ job.status }}
+          #notify_when: "failure"
+          #notification_title: "{workflow} has failed"
           # For posting a rich message using Block Kit
           payload: |
             {
