@@ -145,6 +145,7 @@ jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     environment: dev
+    if: always()
     steps:
       - name: Debug
         run: |
@@ -154,16 +155,21 @@ jobs:
           echo "Workflow Status: ${{ github.event.workflow_run.conclusion }}"
           echo "GitHub Actor: ${{ github.actor }}"
           echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-      - name: Send custom JSON data to Slack workflow
-        if: failure()
+      - uses: technote-space/workflow-conclusion-action@v3
+
+      - name: Temp
+        # if: failure()
         # if: ${{ always() && contains(needs.*.result, 'failure') }}
-        #if: always()
+
         #if: ${{ failure() }}
         #if: ${{ github.event_name == 'push' && failure() }}
         #if: ${{ github.event_name == 'workflow_call' && failure() }}
+        run: |
+          echo conc ${{ env.WORKFLOW_CONCLUSION }}
+      - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
         with:
-          #status: ${{ job.status }}
+          # status: ${{ job.status }}
           #notify_when: "failure"
           #notification_title: "{workflow} has failed"
           # For posting a rich message using Block Kit
