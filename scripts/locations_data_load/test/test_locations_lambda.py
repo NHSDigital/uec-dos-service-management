@@ -102,7 +102,7 @@ class TestReadODSAPI(unittest.TestCase):
 
 
 def read_json():
-    json_file_dir = "./events/response.json"
+    json_file_dir = ".scripts/locations_data_load/test/events/response.json"
     read = open(json_file_dir)
     data = json.load(read)
     return data
@@ -171,7 +171,7 @@ def test_capitalize_address_item():
 
 
 def test_read_excel_values():
-    file_path = "./events/dummy_ods_codes.xlsx"
+    file_path = ".scripts/locations_data_load/test/events/dummy_ods_codes.xlsx"
     read_excel_response = [
         {
             "primary-organization": "FR999",
