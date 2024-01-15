@@ -14,41 +14,28 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 @app.post("/questionnaires")
 def create_questionnaires():
     post_data: dict = app.current_event.json_body
-
-    data = {
-        "id": post_data["id"],
-        "HospitalName": post_data["HospitalName"],
-        "HospitalLocation": post_data["HospitalLocation"],
-    }
-
-    print(data)
-    service.add_record(data)
-
-    return {"statusCode": 200, "body": "Item Added Successfully"}
+    response = service.add_record(post_data)
+    return response
 
 
 # Get using query string approach
 @app.get("/questionnaires")
 def get_questionnaires():
-    hs_id = app.current_event.get_query_string_value(name="id", default_value="")
-    print("Get hs_id record..." + hs_id)
-    response = service.get_record_by_id(hs_id)
-    return {"statusCode": 200, "body": response}
+    q_id = app.current_event.get_query_string_value(name="id", default_value="")
+    response = service.get_record_by_id(q_id)
+    return response
 
 
 @app.put("/questionnaires")
 def update_questionnaires():
     put_data: dict = app.current_event.json_body
-    service.update_record(
-        put_data["id"], put_data["HospitalName"], put_data["HospitalLocation"]
-    )
-    return {"statusCode": 200, "body": "Item Updated Successfully"}
+    response = service.update_record(put_data)
+    return response
 
 
 @app.delete("/questionnaires")
 def delete_questionnaires():
     delete_data: dict = app.current_event.json_body
-    print("Delete questionnaires record...")
     q_id = delete_data["id"]
-    service.delete_record(q_id)
-    return {"statusCode": 200, "body": "Item Deleted Successfully"}
+    response = service.delete_record(q_id)
+    return response
