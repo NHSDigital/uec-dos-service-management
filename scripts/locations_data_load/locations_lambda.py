@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import requests
-#import json
+
 import pandas as pd
 import boto3
 import uuid
@@ -219,6 +219,7 @@ dynamodb_table_name = "locations"
 
 
 # def write_to_json(output_file_path, processed_data):
+#     import json
 #     with open(output_file_path, "a") as output_file:
 #         json.dump(processed_data, output_file, indent=2)
 #         output_file.write("\n")
