@@ -46,22 +46,19 @@ class TestUpdateRecords(unittest.TestCase):
 
 
 class TestReadODSAPI(unittest.TestCase):
-    @patch("locations_lambda.get_api_token")
     @patch("locations_lambda.requests.get")
-    def test_read_ods_api_success(self, mock_requests_get, mock_get_api_token):
+    def test_read_ods_api_success(self, mock_requests_get):
         params = {"param1": "value1", "param2": "value2"}
         # Mocking get_api_token to return a dummy token
-        mock_get_api_token.return_value = "dummy_token"
+        headers = {"Authorization": "Bearer dummy_token"}
         # Mocking requests.get to return a successful response
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": "dummy_data"}
         mock_requests_get.return_value = mock_response
         # Call the function with dummy parameters
-        result = read_ods_api("dummy_api_endpoint", headers=None, params=params)
+        result = read_ods_api("dummy_api_endpoint", headers, params)
 
-        # Assert that get_api_token was called once
-        mock_get_api_token.assert_called_once()
         # Assert that requests.get was called with the expected arguments
         mock_requests_get.assert_called_once_with(
             "dummy_api_endpoint",
@@ -71,12 +68,10 @@ class TestReadODSAPI(unittest.TestCase):
         # Assert that the result is as expected
         self.assertEqual(result, {"data": "dummy_data"})
 
-    @patch("locations_lambda.get_api_token")
     @patch("locations_lambda.requests.get")
-    def test_read_ods_api_failure(self, mock_requests_get, mock_get_api_token):
+    def test_read_ods_api_failure(self, mock_requests_get):
         params = {"param1": "value1", "param2": "value2"}
-        # Mocking get_api_token to return a dummy token
-        mock_get_api_token.return_value = "dummy_token"
+        headers = {"Authorization": "Bearer dummy_token"}
 
         # Mocking requests.get to return a failed response
         mock_response = MagicMock()
@@ -85,10 +80,7 @@ class TestReadODSAPI(unittest.TestCase):
         mock_requests_get.return_value = mock_response
 
         # Call the function with dummy parameters
-        result = read_ods_api("dummy_api_endpoint", headers=None, params=params)
-
-        # Assert that get_api_token was called once
-        mock_get_api_token.assert_called_once()
+        result = read_ods_api("dummy_api_endpoint", headers, params)
 
         # Assert that requests.get was called with the expected arguments
         mock_requests_get.assert_called_once_with(

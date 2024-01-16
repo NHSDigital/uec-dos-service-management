@@ -16,9 +16,45 @@ def lambda_handler(event, context):
     fetch_Y_organizations()
 
 
-def read_ods_api(api_endpoint, headers, params):
+# Get parameters from store
+def get_ssm(id, secret):
+    ssm = boto3.client("ssm")
+    client_id = ssm.get_parameter(Name=id)["Parameter"]["Value"]
+    client_secret = ssm.get_parameter(Name=secret, WithDecryption=True)["Parameter"][
+        "Value"
+    ]
+    return client_id, client_secret
+
+
+def get_api_token():
+    ssm_param_id = "/data/api/lambda/client_id"
+    ssm_param_sec = "/data/api/lambda/client_secret"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "Keep-alive",
+    }
+
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": get_ssm(ssm_param_id, ssm_param_sec)[0],
+        "client_secret": get_ssm(ssm_param_id, ssm_param_sec)[1],
+    }
+
+    response = requests.post(url=token_api_endpoint, headers=headers, data=data)
+    token = response.json().get("access_token")
+
+    return token
+
+
+def get_headers():
     token = get_api_token()
     headers = {"Authorization": "Bearer " + token}
+    return headers
+
+
+def read_ods_api(api_endpoint, headers, params):
     try:
         response = requests.get(api_endpoint, headers=headers, params=params)
 
@@ -184,38 +220,6 @@ def read_excel_values(odscode_file_path):
 token_api_endpoint = "https://beta.ods.dc4h.link//authorisation/auth/realms/terminology/protocol/openid-connect/token"
 
 
-def get_api_token():
-    ssm_param_id = "/data/api/lambda/client_id"
-    ssm_param_sec = "/data/api/lambda/client_secret"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "Keep-alive",
-    }
-
-    data = {
-        "grant_type": "client_credentials",
-        "client_id": get_ssm(ssm_param_id, ssm_param_sec)[0],
-        "client_secret": get_ssm(ssm_param_id, ssm_param_sec)[1],
-    }
-
-    response = requests.post(url=token_api_endpoint, headers=headers, data=data)
-    token = response.json().get("access_token")
-
-    return token
-
-
-# Get parameters from store
-def get_ssm(id, secret):
-    ssm = boto3.client("ssm")
-    client_id = ssm.get_parameter(Name=id)["Parameter"]["Value"]
-    client_secret = ssm.get_parameter(Name=secret, WithDecryption=True)["Parameter"][
-        "Value"
-    ]
-    return client_id, client_secret
-
-
 # DynamoDB table name
 dynamodb_table_name = "locations"
 
@@ -232,9 +236,10 @@ def fetch_organizations():
     api_endpoint = "https://beta.ods.dc4h.link/fhir/OrganizationAffiliation?active=true"
     failed_to_fetch = "Failed to fetch data from the ODS API."
     odscode_params = read_excel_values(odscode_file_path)
+    headers = get_headers()
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
-        response_data = read_ods_api(api_endpoint, headers=None, params=odscode_param)
+        response_data = read_ods_api(api_endpoint, headers, params=odscode_param)
 
         # Process and load data to json file
         if response_data:
@@ -259,7 +264,8 @@ def fetch_Y_organizations():
     api_endpoint_Y = "https://beta.ods.dc4h.link/fhir/Organization?active=true"
     failed_to_fetch = "Failed to fetch data from the ODS API."
     params_Y = {"type": "RO209"}
-    Y_response_data = read_ods_api(api_endpoint_Y, headers=None, params=params_Y)
+    headers = get_headers()
+    Y_response_data = read_ods_api(api_endpoint_Y, headers, params=params_Y)
 
     # Process and load data to json file
     if Y_response_data:
