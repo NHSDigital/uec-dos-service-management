@@ -1,4 +1,4 @@
-@questionnaires
+@questionnaires @pipeline_tests
 Feature: questionnaires
   As a user,
   I want to perform a CRUD action on the questionnaires resource
