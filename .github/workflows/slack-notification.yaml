@@ -1,5 +1,6 @@
 name: slack-notification
-on: workflow_run:
+on:
+  workflow_run:
       workflows: ["build-and-deploy-application-code"]
       types:
         - completed
@@ -22,6 +23,9 @@ jobs:
           echo "Workflow Status: ${{ github.event.workflow_run.conclusion }}"
           echo "GitHub Actor: ${{ github.actor }}"
           echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          echo "Workflow Run ID: ${{ github.event.workflow_run.id }}"
+          echo "Workflow Name: ${{ github.event.workflow_run.name }}"
+
       - uses: technote-space/workflow-conclusion-action@v3
       - name: Echo result of pipeline
         run: |
