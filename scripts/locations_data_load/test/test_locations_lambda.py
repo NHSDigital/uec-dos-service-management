@@ -35,7 +35,7 @@ class TestUpdateRecords(unittest.TestCase):
         mock_locations_table.scan.return_value = mock_locations_response
 
         # Call the function
-        update_records(mock_dynamodb)
+        update_records()
 
         # Assert that update_item was called with the correct arguments
         mock_locations_table.update_item.assert_called_once_with(
@@ -104,7 +104,6 @@ def test_process_organizations():
     data = read_json().get("entry", [])
     processed_data = locations_lambda.process_organizations(data)
     assert processed_data != ""
-    return processed_data
 
 
 @mock_ssm
