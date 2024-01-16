@@ -165,9 +165,6 @@ def data_exists(table, identifier_value):
     return bool(items)
 
 
-
-
-
 def update_records():
     dynamodb = boto3.resource("dynamodb")
     org_table = dynamodb.Table("organisations")
