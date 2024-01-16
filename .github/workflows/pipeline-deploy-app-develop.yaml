@@ -145,7 +145,8 @@ jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     environment: dev
-    if: always()
+    # if: always()
+    if: failure()
     needs: [
       build-and-deploy-application-code
     ]
@@ -166,7 +167,6 @@ jobs:
           echo run id ${{ github.run_id }}
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
-        if: failure()
         with:
           payload: |
             {
