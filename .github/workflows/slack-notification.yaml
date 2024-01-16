@@ -1,5 +1,8 @@
 name: slack-notification
-on: workflow_call:
+on: workflow_run:
+      workflows: ["build-and-deploy-application-code"]
+      types:
+        - completed
 
 jobs:
   slack-notification:
