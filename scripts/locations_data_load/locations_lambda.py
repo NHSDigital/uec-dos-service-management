@@ -120,7 +120,7 @@ def write_to_dynamodb(table_name, processed_data):
             table.put_item(Item=item)
 
     # Call the function to update records in DynamoDB based on lookup_field
-    update_records()
+    update_records(dynamodb)
 
 
 def data_exists(table, identifier_value):
@@ -129,8 +129,10 @@ def data_exists(table, identifier_value):
     return bool(items)
 
 
+dynamodb = boto3.resource("dynamodb")
+
+
 def update_records(dynamodb):
-    dynamodb = boto3.resource("dynamodb")
     org_table = dynamodb.Table("organisations")
     locations_table = dynamodb.Table("locations")
     org_response = org_table.scan()
