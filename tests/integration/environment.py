@@ -7,7 +7,7 @@ def before_scenario(context, scenario):
     userdata = context.config.userdata
     context.apigateway = userdata.get("apigateway")
     if userdata.get("workspace") != "default":
-        context.workspace = "-"+userdata.get("workspace")
+        context.workspace = "-" + userdata.get("workspace")
     else:
         context.workspace = ""
     get_url(context)
