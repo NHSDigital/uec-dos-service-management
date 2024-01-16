@@ -5,8 +5,8 @@ locals {
 
 data "archive_file" "locations_lambda_deployment_file" {
   type        = "zip"
-  source_dir  = "${local.source_dir}"
-  excludes    = setsubtract(fileset("${local.source_dir}/","*"), ["ODS_Codes.xlsx", "locations_lambda.py"])
+  source_dir  = local.source_dir
+  excludes    = setsubtract(fileset("${local.source_dir}/", "*"), ["ODS_Codes.xlsx", "locations_lambda.py"])
   output_path = "${local.source_dir}/locations_lambda.zip"
 }
 
