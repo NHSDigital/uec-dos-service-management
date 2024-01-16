@@ -1,9 +1,8 @@
 name: slack-notification
 on: workflow_call:
-      workflows: ["build-and-deploy-application-code"]
 
 jobs:
-  slack-notifications:
+  slack-notification:
     runs-on: ubuntu-latest
     environment: dev
     if: always()
