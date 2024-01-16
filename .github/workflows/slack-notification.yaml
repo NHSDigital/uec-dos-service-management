@@ -10,9 +10,9 @@ jobs:
     environment: dev
     if: always()
     # if: failure()
-    needs: [
-      build-and-deploy-application-code
-    ]
+    #needs: [
+    #  build-and-deploy-application-code
+    #]
     steps:
       - name: Debug
         run: |
