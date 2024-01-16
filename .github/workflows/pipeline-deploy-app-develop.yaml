@@ -160,7 +160,6 @@ jobs:
           echo "GitHub Actor: ${{ github.actor }}"
           echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
       - uses: technote-space/workflow-conclusion-action@v3
-
       - name: Echo result of pipeline
         run: |
           echo conc ${{ env.WORKFLOW_CONCLUSION }}
