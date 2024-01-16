@@ -166,12 +166,12 @@ jobs:
           echo conc ${{ env.WORKFLOW_CONCLUSION }}
           echo run id ${{ github.run_id }}
       - name: Echo result of pipeline
-        if: ${{ env.WORKFLOW_CONCLUSION }} == 'failure'
+        if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
         run: |
           echo run id ${{ github.run_id }}
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
-        if: ${{ env.WORKFLOW_CONCLUSION }} == 'failure'
+        if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
         with:
           payload: |
             {
