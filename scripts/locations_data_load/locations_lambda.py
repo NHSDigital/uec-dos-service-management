@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     fetch_Y_organizations()
 
 
-def read_ods_api(api_endpoint, headers=None, params=None):
+def read_ods_api(api_endpoint, headers, params):
     token = get_api_token()
     headers = {"Authorization": "Bearer " + token}
     try:
@@ -129,7 +129,7 @@ def data_exists(table, identifier_value):
     return bool(items)
 
 
-def update_records(dynamodb=None):
+def update_records(dynamodb):
     dynamodb = boto3.resource("dynamodb")
     org_table = dynamodb.Table("organisations")
     locations_table = dynamodb.Table("locations")

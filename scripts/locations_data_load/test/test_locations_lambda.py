@@ -35,7 +35,7 @@ class TestUpdateRecords(unittest.TestCase):
         mock_locations_table.scan.return_value = mock_locations_response
 
         # Call the function
-        update_records(dynamodb=mock_dynamodb)
+        update_records(mock_dynamodb)
 
         # Assert that update_item was called with the correct arguments
         mock_locations_table.update_item.assert_called_once_with(
@@ -58,7 +58,7 @@ class TestReadODSAPI(unittest.TestCase):
         mock_response.json.return_value = {"data": "dummy_data"}
         mock_requests_get.return_value = mock_response
         # Call the function with dummy parameters
-        result = read_ods_api("dummy_api_endpoint", params=params)
+        result = read_ods_api("dummy_api_endpoint", headers=None, params=params)
 
         # Assert that get_api_token was called once
         mock_get_api_token.assert_called_once()
@@ -85,7 +85,7 @@ class TestReadODSAPI(unittest.TestCase):
         mock_requests_get.return_value = mock_response
 
         # Call the function with dummy parameters
-        result = read_ods_api("dummy_api_endpoint", params=params)
+        result = read_ods_api("dummy_api_endpoint", headers=None, params=params)
 
         # Assert that get_api_token was called once
         mock_get_api_token.assert_called_once()
