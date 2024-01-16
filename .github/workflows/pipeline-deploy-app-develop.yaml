@@ -145,8 +145,8 @@ jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     environment: dev
-    # if: always()
-    if: failure()
+    if: always()
+    # if: failure()
     needs: [
       build-and-deploy-application-code
     ]
@@ -164,6 +164,10 @@ jobs:
       - name: Echo result of pipeline
         run: |
           echo conc ${{ env.WORKFLOW_CONCLUSION }}
+          echo run id ${{ github.run_id }}
+      - name: Echo result of pipeline
+        run: |
+          if: ${{ env.WORKFLOW_CONCLUSION }} == 'failure'
           echo run id ${{ github.run_id }}
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
