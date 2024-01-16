@@ -1,8 +1,13 @@
+locals {
+  source_dir = "../../../scripts/locations_data_load"
+}
+
+
 data "archive_file" "locations_lambda_deployment_file" {
   type        = "zip"
-  source_dir  = "../../../scripts/locations_data_load"
-  excludes    = ["../../../scripts/locations_data_load/locations_lambda.zip"]
-  output_path = "../../../scripts/locations_data_load/locations_lambda.zip"
+  source_dir  = "${local.source_dir}"
+  excludes    = setsubtract(fileset("${local.source_dir}/","*"), ["ODS_Codes.xlsx", "locations_lambda.py"])
+  output_path = "${local.source_dir}/locations_lambda.zip"
 }
 
 module "locations-lambda" {

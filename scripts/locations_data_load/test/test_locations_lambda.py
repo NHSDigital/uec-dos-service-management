@@ -183,10 +183,3 @@ def test_read_excel_values():
     ]
     response = locations_lambda.read_excel_values(file_path)
     assert response == read_excel_response
-
-
-# locations_lambda.data_exists
-# locations_lambda.update_records
-# locations_lambda.write_to_json
-# locations_lambda.process_organizations
-# locations_lambda.read_excel_values
