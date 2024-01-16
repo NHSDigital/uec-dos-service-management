@@ -166,6 +166,7 @@ jobs:
           echo run id ${{ github.run_id }}
       - name: Send custom JSON data to Slack workflow
         uses: slackapi/slack-github-action@v1.24.0
+        if: failure()
         with:
           payload: |
             {
@@ -183,7 +184,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-        if: ${{ env.WORKFLOW_CONCLUSION }} == 'failure'
+
 
 
 
