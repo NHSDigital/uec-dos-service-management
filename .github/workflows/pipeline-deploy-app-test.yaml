@@ -143,3 +143,9 @@ jobs:
           export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
+  slack-notifications:
+    needs: [
+      deploy-application-infrastructure
+    ]
+    uses: ./.github/workflows/slack-notifications.yaml
+    secrets: inherit # pass slack webhookurl!
