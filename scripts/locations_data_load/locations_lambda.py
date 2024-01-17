@@ -70,17 +70,6 @@ def read_ods_api(api_endpoint, headers, params):
         return None
 
 
-def generate_random_id():
-    # Generate a random 16-digit ID
-    return str(uuid.uuid4().int)[0:16]
-
-
-# function to get the current date and time in UK format
-def get_formatted_datetime():
-    current_datetime = datetime.datetime.now()
-    return current_datetime.strftime("%d-%m-%Y %H:%M:%S")
-
-
 def capitalize_line(line):
     return line.title()
 
@@ -103,7 +92,9 @@ def capitalize_address_item(address_item):
 
 def process_organizations(organizations):
     processed_data = []
-
+    random_id = str(uuid.uuid4().int)[0:16]
+    current_datetime = datetime.datetime.now()
+    now_time = current_datetime.strftime("%d-%m-%Y %H:%M:%S")
     for resvars in organizations:
         org = resvars.get("resource")
         if org.get("resourceType") == "Organization":
@@ -124,15 +115,15 @@ def process_organizations(organizations):
             ]
 
             processed_attributes = {
-                "id": generate_random_id(),
+                "id": random_id,
                 "lookup_field": org.get("id"),
                 "active": "true",
                 "name": org.get("name").title(),
                 "Address": capitalized_address,
-                "createdDateTime": get_formatted_datetime(),
+                "createdDateTime": now_time,
                 "createdBy": "Admin",
                 "modifiedBy": "Admin",
-                "modifiedDateTime": get_formatted_datetime(),
+                "modifiedDateTime": now_time,
                 "UPRN": uprn,
                 "position": {"longitude": "", "latitude": ""},
                 "managingOrganization": "",

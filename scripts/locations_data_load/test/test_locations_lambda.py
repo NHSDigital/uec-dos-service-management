@@ -305,15 +305,6 @@ def test_process_organizations():
     assert processed_data != ""
 
 
-def test_generate_random_id():
-    response = locations_lambda.generate_random_id()
-    assert len(response) == 16
-
-
-def test_get_formatted_datetime():
-    assert locations_lambda.get_formatted_datetime() != ""
-
-
 address_item = {
     "line": ["CERTAIN", "PHARMACY", "ADDRESS"],
     "city": "CITY",
