@@ -2,12 +2,29 @@ import locations_lambda
 from locations_lambda import read_ods_api, update_records
 from locations_lambda import write_to_dynamodb, data_exists
 from locations_lambda import get_headers, get_api_token
-from locations_lambda import get_ssm
+from locations_lambda import get_ssm, lambda_handler
 from locations_lambda import fetch_organizations, fetch_y_organizations
 
 import unittest
 from unittest.mock import patch, MagicMock, Mock
 import json
+
+
+class TestLambdaHandler(unittest.TestCase):
+
+    @patch("locations_lambda.fetch_organizations")
+    @patch("locations_lambda.fetch_y_organizations")
+    def test_lambda_handler(self, mock_fetch_y_organizations, mock_fetch_organizations):
+        # Set up mock event and context
+        event = {"some_key": "some_value"}
+        context = MagicMock()
+
+        # Execute the lambda_handler function
+        lambda_handler(event, context)
+
+        # Assertions
+        mock_fetch_organizations.assert_called_once()
+        mock_fetch_y_organizations.assert_called_once()
 
 
 class TestUpdateRecords(unittest.TestCase):
