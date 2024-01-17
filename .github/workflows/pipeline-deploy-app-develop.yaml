@@ -142,6 +142,10 @@ jobs:
           /bin/bash ./scripts/app-build-deploy.sh
   slack-notifications:
     uses: ./.github/workflows/slack-notifications.yaml
+    needs: [
+      build-and-deploy-application-code
+    ]
+
 
 
 
