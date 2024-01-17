@@ -145,6 +145,7 @@ jobs:
       build-and-deploy-application-code
     ]
     uses: ./.github/workflows/slack-notifications.yaml
+    secrets: inherit # pass slack webhookurl!
 
 
 
