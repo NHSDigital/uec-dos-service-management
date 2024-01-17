@@ -11,7 +11,6 @@ import json
 
 
 class TestLambdaHandler(unittest.TestCase):
-
     @patch("locations_lambda.fetch_organizations")
     @patch("locations_lambda.fetch_y_organizations")
     def test_lambda_handler(self, mock_fetch_y_organizations, mock_fetch_organizations):
