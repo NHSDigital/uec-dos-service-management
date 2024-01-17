@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     print("Fetching organizations data.")
     fetch_organizations()
     print("Fetching Y organizations data.")
-    fetch_Y_organizations()
+    fetch_y_organizations()
 
 
 # Get parameters from store
@@ -161,7 +161,7 @@ def write_to_dynamodb(table_name, processed_data):
 
 def data_exists(table, identifier_value):
     response = table.scan(FilterExpression=Attr("lookup_field").eq(identifier_value))
-    items = response.get("Items")
+    items = response.get("Items")[0]
     return bool(items)
 
 
@@ -258,16 +258,16 @@ def fetch_organizations():
 
 
 # fetch Y code organizations
-def fetch_Y_organizations():
-    api_endpoint_Y = "https://beta.ods.dc4h.link/fhir/Organization?active=true"
+def fetch_y_organizations():
+    api_endpoint_y = "https://beta.ods.dc4h.link/fhir/Organization?active=true"
     failed_to_fetch = "Failed to fetch data from the ODS API."
-    params_Y = {"type": "RO209"}
+    params_y = {"type": "RO209"}
     headers = get_headers()
-    Y_response_data = read_ods_api(api_endpoint_Y, headers, params=params_Y)
+    y_response_data = read_ods_api(api_endpoint_y, headers, params=params_y)
 
     # Process and load data to json file
-    if Y_response_data:
-        organizations = Y_response_data.get("entry", [])
+    if y_response_data:
+        organizations = y_response_data.get("entry", [])
         processed_data = process_organizations(organizations)
         write_to_dynamodb(dynamodb_table_name, processed_data)
         # output_file_path = "./location.json"
@@ -276,7 +276,7 @@ def fetch_Y_organizations():
     else:
         print(failed_to_fetch)
 
-    if Y_response_data:
+    if y_response_data:
         print("Y Data fetched successfully.")
 
     else:

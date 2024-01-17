@@ -1,12 +1,13 @@
 import locations_lambda
-from locations_lambda import read_ods_api
-from locations_lambda import update_records
+from locations_lambda import read_ods_api, update_records
+from locations_lambda import write_to_dynamodb, data_exists
+from locations_lambda import get_headers, get_api_token
+from locations_lambda import get_ssm
+from locations_lambda import fetch_organizations, fetch_y_organizations
 
 import unittest
 from unittest.mock import patch, MagicMock, Mock
-import boto3
 import json
-from moto import mock_ssm
 
 
 class TestUpdateRecords(unittest.TestCase):
@@ -93,6 +94,188 @@ class TestReadODSAPI(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class TestWriteToDynamoDB(unittest.TestCase):
+    @patch("locations_lambda.boto3.resource")
+    def test_write_to_dynamodb(self, mock_boto3_resource):
+        # Mock DynamoDB resource
+        mock_table = MagicMock()
+        mock_boto3_resource.return_value.Table.return_value = mock_table
+
+        # Mock data for testing
+        processed_data = [
+            {"lookup_field": "value1", "other_field": "data1"},
+            {"lookup_field": "value2", "other_field": "data2"},
+        ]
+
+        # Mock data_exists function
+        with patch(
+            "locations_lambda.data_exists", return_value=False
+        ) as mock_data_exists:
+            # Mock update_records function
+            with patch("locations_lambda.update_records") as mock_update_records:
+                # Call the function to test
+                write_to_dynamodb("test_table", processed_data)
+
+                # Assert that data_exists was called for each item in processed_data
+                mock_data_exists.assert_any_call(mock_table, "value1")
+                mock_data_exists.assert_any_call(mock_table, "value2")
+
+                # Assert that put_item was called for each item where data doesn't exist
+                mock_table.put_item.assert_called_with(Item=processed_data[1])
+                mock_update_records.assert_called_once()
+
+    @patch("locations_lambda.boto3.resource")
+    def test_data_exists(self, mock_boto3_resource):
+        # Mock DynamoDB resource
+        mock_table = MagicMock()
+        mock_table1 = MagicMock()
+        mock_boto3_resource.return_value.Table.return_value = mock_table
+        mock_boto3_resource.return_value.Table.return_value = mock_table1
+        # Mock scan response for existing data
+        mock_table.scan.return_value = {
+            "Items": [{"lookup_field": "value1", "other_field": "data1"}]
+        }
+        mock_table1.scan.return_value = {"Items": [{}]}
+        # value=str(mock_table.scan.return_value.get("Items")["lookup_field"])
+        # Test with existing data
+        result = data_exists(mock_table, "value1")
+        # Test with existing data
+        result = data_exists(mock_table, "value1")
+        self.assertTrue(result)
+
+        # Test with non-existing data
+        result1 = data_exists(mock_table1, "something")
+        self.assertFalse(result1)
+
+
+class TestSsmGetTokenGetHeaders(unittest.TestCase):
+    @patch("locations_lambda.boto3.client")
+    def test_get_ssm(self, mock_boto3_client):
+        # Set up mock SSM client
+        ssm_mock = MagicMock()
+        ssm_mock.get_parameter.side_effect = [
+            {"Parameter": {"Value": "mock_client_id"}},
+            {"Parameter": {"Value": "mock_client_secret"}},
+        ]
+        mock_boto3_client.return_value = ssm_mock
+
+        # Execute the function
+        client_id, client_secret = get_ssm("mock_id", "mock_secret")
+
+        # Assertions
+        self.assertEqual(client_id, "mock_client_id")
+        self.assertEqual(client_secret, "mock_client_secret")
+
+    @patch("locations_lambda.requests.post")
+    @patch(
+        "locations_lambda.get_ssm",
+        return_value=("mock_client_id", "mock_client_secret"),
+    )
+    def test_get_api_token(self, mock_get_ssm, mock_requests_post):
+        # Set up mock response
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"access_token": "mock_access_token"}
+        mock_requests_post.return_value = mock_response
+
+        # Execute the function
+        token = get_api_token()
+
+        # Assertions
+        self.assertEqual(token, "mock_access_token")
+
+    @patch("locations_lambda.get_api_token", return_value="mock_access_token")
+    def test_get_headers(self, mock_get_api_token):
+        # Execute the function
+        headers = get_headers()
+
+        # Assertions
+        expected_headers = {"Authorization": "Bearer mock_access_token"}
+        self.assertEqual(headers, expected_headers)
+        # Ensure get_api_token is called
+        mock_get_api_token.assert_called_once()
+
+
+class TestFetchOrganizations(unittest.TestCase):
+    @patch("locations_lambda.read_excel_values")
+    @patch("locations_lambda.get_headers")
+    @patch("locations_lambda.read_ods_api")
+    @patch("locations_lambda.process_organizations")
+    @patch("locations_lambda.write_to_dynamodb")
+    def test_fetch_organizations(
+        self,
+        mock_write_to_dynamodb,
+        mock_process_organizations,
+        mock_read_ods_api,
+        mock_get_headers,
+        mock_read_excel_values,
+    ):
+        # Set up mock data and responses
+        odscode_params = [{"param1": "value1"}, {"param2": "value2"}]
+        headers = {"Authorization": "Bearer mock_access_token"}
+        response_data = {"entry": [{"org1": "data1"}, {"org2": "data2"}]}
+        table_name = locations_lambda.dynamodb_table_name
+
+        # Set up mock functions and their responses
+        mock_read_excel_values.return_value = odscode_params
+        mock_get_headers.return_value = headers
+        mock_read_ods_api.return_value = response_data
+        mock_process_organizations.return_value = processed_data = [
+            {"processed_org1": "data1"},
+            {"processed_org2": "data2"},
+        ]
+
+        # Execute the function
+        fetch_organizations()
+
+        # Assertions
+        mock_read_excel_values.assert_called_once_with("./ODS_Codes.xlsx")
+        mock_get_headers.assert_called_once()
+        mock_read_ods_api.assert_called_with(
+            "https://beta.ods.dc4h.link/fhir/OrganizationAffiliation?active=true",
+            headers,
+            params=odscode_params[1],
+        )
+        mock_process_organizations.assert_called_with(response_data["entry"])
+        mock_write_to_dynamodb.assert_called_with(table_name, processed_data)
+
+    @patch("locations_lambda.get_headers")
+    @patch("locations_lambda.read_ods_api")
+    @patch("locations_lambda.process_organizations")
+    @patch("locations_lambda.write_to_dynamodb")
+    def test_fetch_y_organizations(
+        self,
+        mock_write_to_dynamodb,
+        mock_process_organizations,
+        mock_read_ods_api,
+        mock_get_headers,
+    ):
+        # Set up mock data and responses
+        headers = {"Authorization": "Bearer mock_access_token"}
+        y_response_data = {"entry": [{"org_y1": "data1"}, {"org_y2": "data2"}]}
+        table_name = locations_lambda.dynamodb_table_name
+
+        # Set up mock functions and their responses
+        mock_get_headers.return_value = headers
+        mock_read_ods_api.return_value = y_response_data
+        mock_process_organizations.return_value = processed_data_y = [
+            {"processed_org_y1": "data1"},
+            {"processed_org_y2": "data2"},
+        ]
+
+        # Execute the function
+        fetch_y_organizations()
+
+        # Assertions
+        mock_get_headers.assert_called_once()
+        mock_read_ods_api.assert_called_with(
+            "https://beta.ods.dc4h.link/fhir/Organization?active=true",
+            headers,
+            params={"type": "RO209"},
+        )
+        mock_process_organizations.assert_called_with(y_response_data["entry"])
+        mock_write_to_dynamodb.assert_called_with(table_name, processed_data_y)
+
+
 def read_json():
     json_file_dir = "./scripts/locations_data_load/test/events/response.json"
     read = open(json_file_dir)
@@ -104,27 +287,6 @@ def test_process_organizations():
     data = read_json().get("entry", [])
     processed_data = locations_lambda.process_organizations(data)
     assert processed_data != ""
-
-
-@mock_ssm
-def test_get_ssm():
-    parameter_names = ["/foo/id", "/foo/sec"]
-    ssm = boto3.client("ssm")
-    ssm.put_parameter(
-        Name=parameter_names[0],
-        Description="test ID",
-        Value="id value",
-        Type="String",
-    )
-    ssm.put_parameter(
-        Name=parameter_names[1],
-        Description="test sec",
-        Value="sec value",
-        Type="SecureString",
-    )
-    response = locations_lambda.get_ssm(parameter_names[0], parameter_names[1])
-    assert response[0] == "id value"
-    assert response[1] == "sec value"
 
 
 def test_generate_random_id():
