@@ -52,7 +52,6 @@ jobs:
   unit-tests:
     needs:
       [
-        get-metadata-fail-test,
         scan-secrets,
         check-file-format,
         check-markdown-format,
