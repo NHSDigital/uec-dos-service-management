@@ -141,10 +141,11 @@ jobs:
           export SERVICE_NAME=${{ matrix.service-name }}
           /bin/bash ./scripts/app-build-deploy.sh
   slack-notifications:
-    uses: ./.github/workflows/slack-notifications.yaml
     needs: [
       build-and-deploy-application-code
     ]
+    uses: ./.github/workflows/slack-notifications.yaml
+
 
 
 
