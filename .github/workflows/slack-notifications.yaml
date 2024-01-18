@@ -2,11 +2,16 @@ name: Slack Notification
 
 on:
   workflow_call:
+    inputs:
+        env:
+          description: "Pass environment for slack notification channel "
+          required: true
+          type: string
 
 jobs:
   slack-notifications:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{inputs.env}}
     if: always()
     steps:
     - name: Debug

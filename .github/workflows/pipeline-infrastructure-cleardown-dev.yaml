@@ -18,6 +18,20 @@ jobs:
     steps:
       - name: Summary
         run: |
+<<<<<<< HEAD:.github/workflows/pipeline-infrastructure-cleardown-dev.yaml
           echo "${{ github.actor }} deleted a task branch..."
           echo "triggering cleardown of infra in dev account relating to ${{ github.ref_type }}: ${{ github.event_ref }}"
+=======
+          echo "Ref for a branch deletion: ${{ github.event.ref }}"
+          echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
+  slack-notifications:
+    needs: [
+      destroy
+    ]
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: dev
+    secrets: inherit # pass slack webhookurl
+
+>>>>>>> 209a1ec (DR-396 Slack notify break unit test):.github/workflows/pipeline-infrastructure-cleardown.yaml
 
