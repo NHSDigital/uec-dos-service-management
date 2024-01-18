@@ -70,8 +70,3 @@ jobs:
           path: tests/integration/allure-reports/index.html
           retention-days: 10
 
-      - name: Output report url
-        run:  echo 'Report url is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
-
-      - name: Output artifact ID
-        run:  echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
