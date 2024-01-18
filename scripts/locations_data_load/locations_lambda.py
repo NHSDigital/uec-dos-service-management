@@ -9,6 +9,18 @@ import datetime
 from boto3.dynamodb.conditions import Attr
 
 
+# SSM Parameter names
+ssm_base_api_url = "/data/api/lambda/ods/domain"
+ssm_param_id = "/data/api/lambda/client_id"
+ssm_param_sec = "/data/api/lambda/client_secret"
+
+# ODS code file
+odscode_file_path = "./ODS_Codes.xlsx"
+
+# DynamoDB table name
+dynamodb_table_name = "locations"
+
+
 def lambda_handler(event, context):
     print("Fetching organizations data.")
     fetch_organizations()
@@ -17,18 +29,17 @@ def lambda_handler(event, context):
 
 
 # Get parameters from store
-def get_ssm(id, secret):
+def get_ssm(name):
     ssm = boto3.client("ssm")
-    client_id = ssm.get_parameter(Name=id)["Parameter"]["Value"]
-    client_secret = ssm.get_parameter(Name=secret, WithDecryption=True)["Parameter"][
-        "Value"
-    ]
-    return client_id, client_secret
+    response = ssm.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
+    return response
 
 
 def get_api_token():
-    ssm_param_id = "/data/api/lambda/client_id"
-    ssm_param_sec = "/data/api/lambda/client_secret"
+    token_api_endpoint = get_ssm(ssm_base_api_url)
+    token_api_endpoint += (
+        "//authorisation/auth/realms/terminology/protocol/openid-connect/token"
+    )
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "*/*",
@@ -38,8 +49,8 @@ def get_api_token():
 
     data = {
         "grant_type": "client_credentials",
-        "client_id": get_ssm(ssm_param_id, ssm_param_sec)[0],
-        "client_secret": get_ssm(ssm_param_id, ssm_param_sec)[1],
+        "client_id": get_ssm(ssm_param_id),
+        "client_secret": get_ssm(ssm_param_sec),
     }
 
     response = requests.post(url=token_api_endpoint, headers=headers, data=data)
@@ -105,7 +116,7 @@ def process_organizations(organizations):
                     .get("extension")[1]
                     .get("valueString")
                 )
-            except TypeError:
+            except Exception:
                 uprn = "NA"
 
             capitalized_address = [
@@ -142,7 +153,7 @@ def write_to_dynamodb(table_name, processed_data):
         identifier_value = item.get("lookup_field", {})
 
         # Check if the identifier already exists in DynamoDB
-        if not data_exists(table, identifier_value):
+        if data_exists(table, identifier_value) is False:
             # If the data doesn't exist, insert it into DynamoDB
             table.put_item(Item=item)
 
@@ -152,8 +163,10 @@ def write_to_dynamodb(table_name, processed_data):
 
 def data_exists(table, identifier_value):
     response = table.scan(FilterExpression=Attr("lookup_field").eq(identifier_value))
-    items = response.get("Items")[0]
-    return bool(items)
+    if response.get("Items") == []:
+        return False
+    else:
+        return True
 
 
 def update_records():
@@ -184,12 +197,9 @@ def update_records():
                         )
 
 
-odscode_file_path = "./ODS_Codes.xlsx"
-
-
-def read_excel_values(odscode_file_path):
+def read_excel_values(file_path):
     # Read values from the Excel file
-    excel_data = pd.read_excel(odscode_file_path)
+    excel_data = pd.read_excel(file_path)
     param1_values = excel_data["ODS_Codes"].tolist()
 
     # # Hardcoded values for param2
@@ -206,13 +216,6 @@ def read_excel_values(odscode_file_path):
     return params
 
 
-token_api_endpoint = "https://beta.ods.dc4h.link//authorisation/auth/realms/terminology/protocol/openid-connect/token"
-
-
-# DynamoDB table name
-dynamodb_table_name = "locations"
-
-
 # def write_to_json(output_file_path, processed_data):
 #     import json
 #     with open(output_file_path, "a") as output_file:
@@ -222,10 +225,11 @@ dynamodb_table_name = "locations"
 
 # # Iterate over Excel values and make API requests
 def fetch_organizations():
-    api_endpoint = "https://beta.ods.dc4h.link/fhir/OrganizationAffiliation?active=true"
+    api_endpoint = get_ssm(ssm_base_api_url)
+    api_endpoint += "/fhir/OrganizationAffiliation?active=true"
     failed_to_fetch = "Failed to fetch data from the ODS API."
-    odscode_params = read_excel_values(odscode_file_path)
     headers = get_headers()
+    odscode_params = read_excel_values(odscode_file_path)
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
         response_data = read_ods_api(api_endpoint, headers, params=odscode_param)
@@ -250,7 +254,8 @@ def fetch_organizations():
 
 # fetch Y code organizations
 def fetch_y_organizations():
-    api_endpoint_y = "https://beta.ods.dc4h.link/fhir/Organization?active=true"
+    api_endpoint_y = get_ssm(ssm_base_api_url)
+    api_endpoint_y += "/fhir/Organization?active=true"
     failed_to_fetch = "Failed to fetch data from the ODS API."
     params_y = {"type": "RO209"}
     headers = get_headers()
