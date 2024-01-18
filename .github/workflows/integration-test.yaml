@@ -68,7 +68,7 @@ jobs:
         with:
           name: allure-report
           path: tests/integration/allure-reports/index.html
-          retention-days: 5
+          retention-days: 10
 
       - name: Output report url
         run:  echo 'Report url is ${{ steps.artifact-upload-step.outputs.artifact-url }}'
