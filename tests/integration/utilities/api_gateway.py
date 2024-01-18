@@ -39,7 +39,6 @@ class ApiGatewayToService:
                 if rest_api is not None:
                     break
             self.api_id = rest_api["id"]
-            logger.info("Found ID for API %s.", api_name)
         except ClientError:
             logger.exception("Couldn't find ID for API %s.", api_name)
             raise
