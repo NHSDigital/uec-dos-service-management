@@ -113,7 +113,6 @@ jobs:
   integration-test:
       needs:
         [
-          get-metadata,
           deploy-application-infrastructure,
           build-and-deploy-application-code,
           derive-deployment-workspace,
