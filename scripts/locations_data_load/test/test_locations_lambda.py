@@ -201,10 +201,9 @@ class TestSsmGetTokenGetHeaders(unittest.TestCase):
         result = get_api_token()
 
         # Assert that the mocked values were used and the function behaves as expected
-        # mock_get_ssm.assert_called_with(locations_lambda.ssm_base_api_url)
         mock_post.assert_called_once_with(
-            url="mocked_ssm_value/data/api/lambda/ods/domain"\
-                "//authorisation/auth/realms/terminology/protocol/openid-connect/token",
+            url="mocked_ssm_value/data/api/lambda/ods/domain"
+            "//authorisation/auth/realms/terminology/protocol/openid-connect/token",
             headers={
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Accept": "*/*",
@@ -380,7 +379,7 @@ class TestFetchOrganizations(unittest.TestCase):
     @patch("locations_lambda.read_ods_api")
     @patch("locations_lambda.process_organizations")
     @patch("locations_lambda.write_to_dynamodb")
-    def test_fetch_organizations_success(
+    def test_fetch_organizations(
         self,
         mock_write_to_dynamodb,
         mock_process_organizations,
@@ -420,7 +419,7 @@ class TestFetchOrganizations(unittest.TestCase):
     @patch("locations_lambda.read_ods_api")
     @patch("locations_lambda.process_organizations")
     @patch("locations_lambda.write_to_dynamodb")
-    def test_fetch_y_organizations_success(
+    def test_fetch_y_organizations(
         self,
         mock_write_to_dynamodb,
         mock_process_organizations,
