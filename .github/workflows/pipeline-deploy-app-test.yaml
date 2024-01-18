@@ -145,7 +145,11 @@ jobs:
           /bin/bash ./scripts/integration-tests.sh
   slack-notifications:
     needs: [
-      deploy-application-infrastructure
+      build-and-deploy-application-code
     ]
     uses: ./.github/workflows/slack-notifications.yaml
-    secrets: inherit # pass slack webhookurl!
+    with:
+      env: test
+    secrets: inherit # pass slack webhookurl
+
+

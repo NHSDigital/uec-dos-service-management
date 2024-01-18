@@ -18,3 +18,13 @@ jobs:
         run: |
           echo "Ref for a branch deletion: ${{ github.event.ref }}"
           echo "Ref type for a branch deletion: ${{ github.event.ref_type }}"
+  slack-notifications:
+    needs: [
+      destroy
+    ]
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: dev
+    secrets: inherit # pass slack webhookurl
+
+
