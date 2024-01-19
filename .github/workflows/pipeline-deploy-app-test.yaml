@@ -57,7 +57,7 @@ jobs:
       action: apply
       tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       git_ref: ${{ inputs.git_tag }}
-    #secrets: inherit
+    secrets: inherit
 
   deploy-support-tools-infrastructure:
     needs:
