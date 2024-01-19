@@ -12,10 +12,6 @@ on:
         required: false
         default: 'not-set'
         type: string
-      git_reference:
-        description: 'Name of the git reference that has triggered the action'
-        required: true
-        type: string
 jobs:
   echo-workflow-inputs:
     runs-on: ubuntu-latest
@@ -24,10 +20,9 @@ jobs:
         run: |
           echo "github environment: ${{ inputs.github_environment }}"
           echo "deployment workspace: ${{ inputs.deployment_workspace }}"
-          echo "git_reference: ${{ inputs.git_reference }}"
   integration-tests:
     runs-on: ubuntu-latest
-    environment: test
+    environment: ${{ inputs.github_environment }}
     permissions:
       id-token: write
       contents: read
