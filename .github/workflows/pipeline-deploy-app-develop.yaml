@@ -59,6 +59,7 @@ jobs:
         check-python-black-format,
         check-python-flake-rules,
         cloc-repository,
+        validate-terraform,
       ]
     name: Run unit test
     uses: ./.github/workflows/unit-test.yaml
@@ -142,8 +143,12 @@ jobs:
           /bin/bash ./scripts/app-build-deploy.sh
   slack-notifications:
     needs: [
-      build-and-deploy-application-code
+      build-and-deploy-application-code,
+      unit-tests,
+      deploy-support-tools-infrastructure,
+      deploy-vpc-vpn-infrastructure,
     ]
+    if: always(s)
     uses: ./.github/workflows/slack-notifications.yaml
     with:
       env: dev

@@ -12,7 +12,6 @@ jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     environment: ${{inputs.env}}
-    if: always()
     steps:
     - name: Debug
       run: |
