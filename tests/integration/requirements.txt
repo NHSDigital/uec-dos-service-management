@@ -8,3 +8,5 @@ pytest
 botocore
 boto3-helpers
 pprintpp
+requests
+behave
