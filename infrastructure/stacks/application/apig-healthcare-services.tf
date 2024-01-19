@@ -116,6 +116,10 @@ module "healthcare_services_aws_lambda_permission" {
   account_id           = local.account_id
   lambda_function_name = var.healthcare_services_function_name
   rest_api_id          = module.sm_rest_api.rest_api_id
+
+  depends_on = [
+    module.healthcare-services-data-manager-lambda
+  ]
 }
 
 #####
