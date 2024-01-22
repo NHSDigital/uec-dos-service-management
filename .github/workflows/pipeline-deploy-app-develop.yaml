@@ -152,7 +152,7 @@ jobs:
     uses: ./.github/workflows/slack-notifications.yaml
     with:
       env: dev
-    secrets: inherit # pass slack webhookurl
+    secrets: inherit # pass slack webhookurl #
 
 
 
