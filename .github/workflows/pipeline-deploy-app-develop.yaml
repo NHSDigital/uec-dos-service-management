@@ -52,7 +52,6 @@ jobs:
   unit-tests:
     needs:
       [
-        get-metadata,
         scan-secrets,
         check-file-format,
         check-markdown-format,
@@ -60,6 +59,7 @@ jobs:
         check-python-black-format,
         check-python-flake-rules,
         cloc-repository,
+        validate-terraform,
       ]
     name: Run unit test
     uses: ./.github/workflows/unit-test.yaml
@@ -141,3 +141,20 @@ jobs:
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
           /bin/bash ./scripts/app-build-deploy.sh
+  slack-notifications:
+    needs: [
+      build-and-deploy-application-code,
+      unit-tests,
+      deploy-support-tools-infrastructure,
+      deploy-vpc-vpn-infrastructure,
+    ]
+    if: always()
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: dev
+    secrets: inherit # pass slack webhookurl
+
+
+
+
+
