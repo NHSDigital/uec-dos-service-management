@@ -150,6 +150,7 @@ jobs:
           build-and-deploy-application-code,
           derive-deployment-workspace,
         ]
+      if: always()
       uses: ./.github/workflows/slack-notifications.yaml
       with:
         env: test
