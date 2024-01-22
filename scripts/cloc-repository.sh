@@ -41,5 +41,5 @@ is-arg-true "$VERBOSE" && set -x
 
 main $*
 
-#exit 0
-exit 1
+exit 0
+
