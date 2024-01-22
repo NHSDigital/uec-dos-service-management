@@ -142,3 +142,16 @@ jobs:
         run: |
           export SERVICE_NAME=${{ matrix.service-name }}
           /bin/bash ./scripts/app-build-deploy.sh
+  slack-notifications:
+    needs: [
+      build-and-deploy-application-code,
+      unit-tests,
+      deploy-support-tools-infrastructure,
+      deploy-vpc-vpn-infrastructure,
+    ]
+    if: always()
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: dev
+    secrets: inherit
+
