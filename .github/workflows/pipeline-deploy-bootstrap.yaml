@@ -18,3 +18,12 @@ jobs:
       with:
         ENV: test
       secrets: inherit
+    slack-notifications:
+      needs: [
+        deploy-bootstrap-dos-dev
+      ]
+      uses: ./.github/workflows/slack-notifications.yaml
+      with:
+        env: dev, test
+      secrets: inherit # pass slack webhookurl
+
