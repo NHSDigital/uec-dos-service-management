@@ -60,6 +60,7 @@ jobs:
         check-python-black-format,
         check-python-flake-rules,
         cloc-repository,
+        validate-terraform,
       ]
     name: Run unit test
     uses: ./.github/workflows/unit-test.yaml
