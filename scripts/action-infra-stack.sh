@@ -22,6 +22,7 @@ export_terraform_workspace_name
 
 # check exports have been done
 #EXPORTS_SET=0
+#invoke break terraform validate/apply for testing
 EXPORTS_SET=1
 # Check key variables have been exported - see above
 if [ -z "$ACTION" ] ; then
