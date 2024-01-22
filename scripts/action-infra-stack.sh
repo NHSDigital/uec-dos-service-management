@@ -21,8 +21,7 @@ export USE_REMOTE_STATE_STORE="${USE_REMOTE_STATE_STORE:-true}"
 export_terraform_workspace_name
 
 # check exports have been done
-#EXPORTS_SET=0
-EXPORTS_SET=1
+EXPORTS_SET=0
 # Check key variables have been exported - see above
 if [ -z "$ACTION" ] ; then
   echo Set ACTION to terraform action one of plan apply or destroy
