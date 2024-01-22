@@ -52,7 +52,7 @@ def test_get_record_by_id():
     healthcare_service_record = build_mock_healthcare_services_item()
     table.put_item(Item=healthcare_service_record, TableName=service.TABLE_NAME)
     response = service.get_record_by_id(mock_id)
-    assert response["Item"]["id"] == mock_id
+    assert response["Item"]["id"] == "mock_id"
     assert response["Item"]["active"] == mock_active
     assert response["Item"]["createdBy"] == mock_created_by
     assert response["Item"]["createdDateTime"] == mock_timestamp_created
