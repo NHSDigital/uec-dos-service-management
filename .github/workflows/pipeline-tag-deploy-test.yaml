@@ -48,3 +48,13 @@ jobs:
     with:
       git_tag: ${{needs.generate-test-ready-tag.outputs.test_tag}}
     secrets: inherit
+  slack-notifications:
+    needs: [
+      deploy-to-test,
+    ]
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: test
+    secrets: inherit
+
+

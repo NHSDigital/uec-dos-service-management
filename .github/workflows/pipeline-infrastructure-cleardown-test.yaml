@@ -21,3 +21,12 @@ jobs:
         run: |
           echo "${{ github.actor }} closed/merged PR"
           echo "Triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.head_ref }}"
+  slack-notifications:
+    needs: [
+      destroy
+    ]
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: test
+    secrets: inherit
+
