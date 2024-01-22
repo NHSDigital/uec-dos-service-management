@@ -144,12 +144,13 @@ jobs:
           echo "Integration tests invoked"
           /bin/bash ./scripts/integration-tests.sh
   slack-notifications:
-    needs: [
-      build-and-deploy-application-code
-    ]
-    uses: ./.github/workflows/slack-notifications.yaml
-    with:
-      env: test
-    secrets: inherit # pass slack webhookurl
-
-
+      needs:
+        [
+          deploy-application-infrastructure,
+          build-and-deploy-application-code,
+          derive-deployment-workspace,
+        ]
+      uses: ./.github/workflows/slack-notifications.yaml
+      with:
+       env: test
+      secrets: inherit # pass slack webhookurl

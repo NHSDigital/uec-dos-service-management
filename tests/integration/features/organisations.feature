@@ -10,7 +10,7 @@ Feature: organisation
     Then I receive a status code 200 in response
     And I receive data for id 3188721443926156 in the response
 
-@test
+
   Scenario: Basic post request for organisations
     Given I reset the data by deleting id 3188721443926156 in the dynamoDB table organisations
     When I post the json organisation_body to the resource organisations
