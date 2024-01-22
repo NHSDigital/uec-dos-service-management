@@ -123,3 +123,17 @@ jobs:
         github_environment: test
         DEPLOYMENT_WORKSPACE: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
       secrets: inherit
+  slack-notifications:
+    needs:
+      [
+        deploy-application-infrastructure,
+        build-and-deploy-application-code,
+        derive-deployment-workspace,
+      ]
+    if: always()
+    uses: ./.github/workflows/slack-notifications.yaml
+    with:
+      env: test
+    secrets: inherit
+
+

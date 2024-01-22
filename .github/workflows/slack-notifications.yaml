@@ -1,0 +1,53 @@
+name: Slack Notification
+
+on:
+  workflow_call:
+    inputs:
+        env:
+          description: "Pass environment for slack notification channel "
+          required: true
+          type: string
+
+jobs:
+  slack-notifications:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.env}}
+    steps:
+    - name: Debug
+      run: |
+        echo "Job Status: ${{ job.status }}"
+        echo "GitHub Event: ${{ github.event_name }}"
+        echo "Workflow Run: ${{ toJson(github.event.workflow_run) }}"
+        echo "Workflow Status: ${{ github.event.workflow_run.conclusion }}"
+        echo "GitHub Actor: ${{ github.actor }}"
+        echo "Pull Request URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+    - uses: technote-space/workflow-conclusion-action@v3
+    - name: Echo result of pipeline if success
+      run: |
+        echo conc ${{ env.WORKFLOW_CONCLUSION }}
+        echo run id ${{ github.run_id }}
+    - name: Echo result of pipeline if failure
+      if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
+      run: |
+        echo run id ${{ github.run_id }}
+    - name: Send custom JSON data to Slack workflow on failure
+      uses: slackapi/slack-github-action@v1.24.0
+      if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
+      with:
+        payload: |
+            {
+            "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }} \nPushed by: @${{ github.actor }}",
+            "blocks": [
+                {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }}\nPushed by: @${{ github.actor }}"
+                }
+                }
+            ]
+            }
+    env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
