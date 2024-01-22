@@ -148,7 +148,7 @@ jobs:
       deploy-support-tools-infrastructure,
       deploy-vpc-vpn-infrastructure,
     ]
-    if: always(s)
+    if: always()
     uses: ./.github/workflows/slack-notifications.yaml
     with:
       env: dev
