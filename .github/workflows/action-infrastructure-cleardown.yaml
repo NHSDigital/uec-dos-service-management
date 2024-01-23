@@ -4,7 +4,7 @@ on:
     inputs:
       github_environment:
         description: "Defines the Github environment in which to pull environment variables from"
-        required: true
+        required: false
         type: string
       branch_name:
         description: "Name of the branch used to derive tf version and workspace"
