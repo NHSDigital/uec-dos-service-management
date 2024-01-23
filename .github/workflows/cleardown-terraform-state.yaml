@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       deployment_workspace:
-        description: 'Name of the terraform workspace to tear down the service infrastructure'
+        description: 'The Name of the terraform workspace to tear down the service infrastructure'
         required: false
         default: 'not-set'
         type: string
