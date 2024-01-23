@@ -21,6 +21,7 @@ jobs:
     slack-notifications:
       needs: [
         deploy-bootstrap-dos-dev,
+        deploy-bootstrap-dos-test,
       ]
       uses: ./.github/workflows/slack-notifications.yaml
       with:
