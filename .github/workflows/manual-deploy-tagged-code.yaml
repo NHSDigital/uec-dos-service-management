@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       git_tag:
-        description: "Specify the git commit tag to be used for deployment"
+        description: "Please Specify the git commit tag to be used for deployment"
         required: true
         type: string
 
