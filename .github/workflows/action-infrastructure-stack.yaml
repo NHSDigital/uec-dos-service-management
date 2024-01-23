@@ -5,7 +5,7 @@ on:
     inputs:
       github_environment:
         description: "Defines the Github environment in which to pull environment variables from"
-        required: true
+        required: false
         type: string
       deployment_workspace:
         description: 'Name of the terraform workspace to spin up the service infrastructure'
