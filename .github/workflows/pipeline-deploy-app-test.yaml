@@ -110,7 +110,7 @@ jobs:
           export SERVICE_NAME=${{ matrix.service-name }}
           export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
           /bin/bash ./scripts/app-build-deploy.sh
-  integration-test:
+  integration-test-22:
       needs:
         [
           deploy-application-infrastructure,
