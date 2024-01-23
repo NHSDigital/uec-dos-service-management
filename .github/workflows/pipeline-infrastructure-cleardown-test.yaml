@@ -25,6 +25,7 @@ jobs:
     needs: [
       destroy
     ]
+    if: always()
     uses: ./.github/workflows/slack-notifications.yaml
     with:
       env: test

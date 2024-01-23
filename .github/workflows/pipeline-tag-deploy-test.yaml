@@ -52,6 +52,7 @@ jobs:
     needs: [
       deploy-to-test,
     ]
+    if: always()
     uses: ./.github/workflows/slack-notifications.yaml
     with:
       env: test
