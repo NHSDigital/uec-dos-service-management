@@ -23,6 +23,7 @@ jobs:
         deploy-bootstrap-dos-dev,
         deploy-bootstrap-dos-test,
       ]
+      if: always()
       uses: ./.github/workflows/slack-notifications.yaml
       with:
         env: dev, test
