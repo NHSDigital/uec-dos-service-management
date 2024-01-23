@@ -24,7 +24,7 @@ jobs:
           echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
           echo "triggering action: ${{ github.event_name }}"
           echo "github event ref: ${{ github.event.ref }}"
-          echo "username of user triggering the workflow: ${{ github.actor }}"
+          echo "name of user triggering the workflow: ${{ github.actor }}"
   scan-secrets:
     uses: ./.github/workflows/scan-secrets.yaml
   check-file-format:
