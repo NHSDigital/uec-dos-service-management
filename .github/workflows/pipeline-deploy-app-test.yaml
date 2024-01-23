@@ -110,12 +110,13 @@ jobs:
           export SERVICE_NAME=${{ matrix.service-name }}
           export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
           /bin/bash ./scripts/app-build-deploy.sh
-  integration-test:
+  integration-test-2:
       needs:
         [
           deploy-application-infrastructure,
           build-and-deploy-application-code,
           derive-deployment-workspace,
+          get-metadata,
         ]
       name: Run integration tests
       uses: ./.github/workflows/integration-test.yaml
