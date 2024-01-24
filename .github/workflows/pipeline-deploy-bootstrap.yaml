@@ -18,3 +18,15 @@ jobs:
       with:
         ENV: test
       secrets: inherit
+    slack-notifications:
+      needs: [
+        deploy-bootstrap-dos-dev,
+        deploy-bootstrap-dos-test,
+      ]
+      if: always()
+      uses: ./.github/workflows/slack-notifications.yaml
+      with:
+        env: dev, test
+      secrets: inherit
+
+
