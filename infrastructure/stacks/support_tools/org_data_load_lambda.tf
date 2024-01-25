@@ -9,6 +9,7 @@ data "archive_file" "org_data_lambda_deployment_file" {
   output_path = "${local.org_data_load_dir}/org_data_load_lambda.zip"
 }
 
+
 module "org-data-lambda" {
   source = "../../modules/lambda"
 
