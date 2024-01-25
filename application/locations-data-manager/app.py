@@ -29,7 +29,7 @@ def get_locations():
 @app.put("/locations")
 def update_locations():
     put_data: dict = app.current_event.json_body
-    response = service.update_record(put_data, "test", "test2")
+    response = service.update_record(put_data)
     return response
 
 
