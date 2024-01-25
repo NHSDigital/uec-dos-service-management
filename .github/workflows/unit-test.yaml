@@ -39,6 +39,7 @@ jobs:
       #     ./scripts/run-test-coverage.sh
       - name: Run static analysis
         run: |
+          export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}
           export SONAR_ORGANISATION_KEY=${{ vars.SONAR_ORGANISATION_KEY }}
           export SONAR_PROJECT_KEY=${{ vars.SONAR_PROJECT_KEY }}
           export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
