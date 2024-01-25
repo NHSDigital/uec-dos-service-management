@@ -1,4 +1,4 @@
-import service
+from . import service
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
