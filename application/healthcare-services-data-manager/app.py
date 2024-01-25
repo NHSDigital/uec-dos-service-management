@@ -1,4 +1,4 @@
-from . import service
+import service
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
@@ -31,7 +31,7 @@ def get_healthcareservices():
 @app.put("/healthcare_services")
 def update_healthcareservices():
     put_data: dict = app.current_event.json_body
-    response = service.update_record(put_data, "hey", "hey2")
+    response = service.update_record(put_data, "hey", "hey")
     return response
 
 
