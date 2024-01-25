@@ -14,5 +14,5 @@ data "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
 }
 
 data "aws_security_group" "vpn_secgroup" {
-    name = var.vpn_security_group_name
+  name = var.vpn_security_group_name
 }
