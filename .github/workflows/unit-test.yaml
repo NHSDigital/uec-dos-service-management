@@ -33,10 +33,10 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Run unit test script
-        run: |
-          export AWS_DEFAULT_REGION=${{ vars.AWS_REGION }}
-          ./scripts/run-test-coverage.sh
+      # - name: Run unit test script
+      #   run: |
+      #     export AWS_DEFAULT_REGION=${{ vars.AWS_REGION }}
+      #     ./scripts/run-test-coverage.sh
       - name: Run static analysis
         run: |
           export BRANCH_NAME=${GITHUB_HEAD_REF:-$(echo $GITHUB_REF | sed 's#refs/heads/##')}

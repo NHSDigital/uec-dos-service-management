@@ -67,91 +67,91 @@ jobs:
     with:
       github_environment: dev
     secrets: inherit
-  deploy-vpc-vpn-infrastructure:
-    needs:
-      [
-        validate-terraform,
-        derive-tf-versions,
-      ]
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
-    with:
-      github_environment: dev
-      stack: network
-      action: plan
-      deployment_workspace: default
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-    secrets: inherit
-  deploy-application-infrastructure:
-      needs:
-        [
-          validate-terraform,
-          derive-tf-versions,
-        ]
-      uses: ./.github/workflows/action-infrastructure-stack.yaml
-      with:
-        github_environment: dev
-        stack: application
-        action: apply
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-      secrets: inherit
-  deploy-support-tools-infrastructure:
-      needs:
-        [
-          validate-terraform,
-          derive-tf-versions,
-        ]
-      uses: ./.github/workflows/action-infrastructure-stack.yaml
-      with:
-        github_environment: dev
-        stack: support_tools
-        action: apply
-        deployment_workspace: default
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-      secrets: inherit
-  build-and-deploy-application-code:
-    runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      id-token: write
-      contents: read
-    needs:
-      [
-        deploy-application-infrastructure,
-      ]
-    strategy:
-      matrix:
-        service-name:
-          - healthcare-services-data-manager
-          - locations-data-manager
-          - organisation-affiliations-data-manager
-          - organisations-data-manager
-          - questionnaire-responses-data-manager
-          - questionnaires-data-manager
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+  # deploy-vpc-vpn-infrastructure:
+  #   needs:
+  #     [
+  #       validate-terraform,
+  #       derive-tf-versions,
+  #     ]
+  #   uses: ./.github/workflows/action-infrastructure-stack.yaml
+  #   with:
+  #     github_environment: dev
+  #     stack: network
+  #     action: plan
+  #     deployment_workspace: default
+  #     tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+  #   secrets: inherit
+  # deploy-application-infrastructure:
+  #     needs:
+  #       [
+  #         validate-terraform,
+  #         derive-tf-versions,
+  #       ]
+  #     uses: ./.github/workflows/action-infrastructure-stack.yaml
+  #     with:
+  #       github_environment: dev
+  #       stack: application
+  #       action: apply
+  #       tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+  #     secrets: inherit
+  # deploy-support-tools-infrastructure:
+  #     needs:
+  #       [
+  #         validate-terraform,
+  #         derive-tf-versions,
+  #       ]
+  #     uses: ./.github/workflows/action-infrastructure-stack.yaml
+  #     with:
+  #       github_environment: dev
+  #       stack: support_tools
+  #       action: apply
+  #       deployment_workspace: default
+  #       tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+  #     secrets: inherit
+  # build-and-deploy-application-code:
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   needs:
+  #     [
+  #       deploy-application-infrastructure,
+  #     ]
+  #   strategy:
+  #     matrix:
+  #       service-name:
+  #         - healthcare-services-data-manager
+  #         - locations-data-manager
+  #         - organisation-affiliations-data-manager
+  #         - organisations-data-manager
+  #         - questionnaire-responses-data-manager
+  #         - questionnaires-data-manager
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
-          role-session-name: github-pipeline-session
-          aws-region: ${{ vars.AWS_REGION }}
+  #     - name: Configure AWS Credentials
+  #       uses: aws-actions/configure-aws-credentials@v2.2.0
+  #       with:
+  #         role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
+  #         role-session-name: github-pipeline-session
+  #         aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Build and deploy application code
-        run: |
-          export SERVICE_NAME=${{ matrix.service-name }}
-          /bin/bash ./scripts/app-build-deploy.sh
-  slack-notifications:
-    needs: [
-      build-and-deploy-application-code,
-      unit-tests,
-      deploy-support-tools-infrastructure,
-      deploy-vpc-vpn-infrastructure,
-    ]
-    if: always()
-    uses: ./.github/workflows/slack-notifications.yaml
-    with:
-      env: dev
-    secrets: inherit
+  #     - name: Build and deploy application code
+  #       run: |
+  #         export SERVICE_NAME=${{ matrix.service-name }}
+  #         /bin/bash ./scripts/app-build-deploy.sh
+  # slack-notifications:
+  #   needs: [
+  #     build-and-deploy-application-code,
+  #     unit-tests,
+  #     deploy-support-tools-infrastructure,
+  #     deploy-vpc-vpn-infrastructure,
+  #   ]
+  #   if: always()
+  #   uses: ./.github/workflows/slack-notifications.yaml
+  #   with:
+  #     env: dev
+  #   secrets: inherit
 
