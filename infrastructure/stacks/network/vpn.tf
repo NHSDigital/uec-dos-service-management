@@ -16,7 +16,7 @@ resource "aws_ec2_client_vpn_authorization_rule" "auth_rule_service_management_v
 
 # one security group
 resource "aws_security_group" "vpn_secgroup" {
-  name        = "vpn-sg"
+  name        = var.vpn_security_group_name
   description = "Allow inbound traffic from port 443, to the VPN"
   vpc_id      = resource.aws_vpc.main.id
 

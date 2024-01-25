@@ -16,3 +16,13 @@ variable "vpc_cidr_block_marker" {
   description = "CIDR block range marker to use with VPC"
 }
 
+variable "vpc_name" {
+  description = "Name of vpc"
+  type        = string
+}
+
+variable "vpn_security_group_name" {
+  description = "value"
+
+}
+
