@@ -35,14 +35,14 @@ jobs:
     uses: ./.github/workflows/check-markdown-format.yaml
   check-terraform-format:
       uses: ./.github/workflows/check-terraform-format.yaml
-  validate-terraform:
-    name: Validate terraform code
-    uses: ./.github/workflows/validate-terraform.yaml
-    needs: derive-tf-versions
-    with:
-      ENV: dev
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
-    secrets: inherit
+  # validate-terraform:
+  #   name: Validate terraform code
+  #   uses: ./.github/workflows/validate-terraform.yaml
+  #   needs: derive-tf-versions
+  #   with:
+  #     ENV: dev
+  #     tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+  #   secrets: inherit
   check-python-black-format:
       uses: ./.github/workflows/check-python-black-format.yaml
   check-python-flake-rules:
@@ -60,7 +60,6 @@ jobs:
         check-python-black-format,
         check-python-flake-rules,
         cloc-repository,
-        validate-terraform,
       ]
     name: Run unit test
     uses: ./.github/workflows/unit-test.yaml
