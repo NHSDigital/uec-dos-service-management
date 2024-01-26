@@ -6,7 +6,7 @@ app = APIGatewayRestResolver()
 
 
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
-# fields
+# fields test
 
 
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
