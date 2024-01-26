@@ -1,5 +1,5 @@
 resource "aws_route53_zone" "private" {
-  name = "uec-dos-mig-dev"
+  name = "${var.project}-mig-${var.environment}"
   vpc {
     vpc_id = aws_vpc.main.id
   }
