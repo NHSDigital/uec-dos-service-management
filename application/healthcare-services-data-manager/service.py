@@ -2,7 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 from common import utilities
 
-TABLE_NAME = "healthcare_services2"
+TABLE_NAME = "healthcare_services"
 
 
 def get_table_resource():
