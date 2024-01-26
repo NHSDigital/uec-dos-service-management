@@ -10,5 +10,5 @@ resource "aws_route53_record" "dev" {
   name    = "mig-datastore"
   type    = "CNAME"
   ttl     = 300
-  records = ["aws_rds_cluster_instance"] #dummy endpoint until known
+  records = ["aws_rds_cluster_instance"] #dummy endpoint until known#
 }
