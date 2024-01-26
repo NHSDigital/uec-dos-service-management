@@ -26,9 +26,10 @@ def add_record(item):
     return response
 
 
-def update_record(item, temp, stemp):
+def update_record(item, temp, stemp, t2):
     print(temp)
     print(stemp)
+    print(t2)
     return add_record(item)
 
 
