@@ -6,7 +6,7 @@
 truncate pathwaysdos.savedsearches, pathwaysdos.usersavedsearches ;
 truncate pathwaysdos.serviceattributes cascade;
 
--- 1.1 Clear down accounts 
+-- 1.1 Clear down accounts
 delete from pathwaysdos.userpermissions up where up.userid not in (31);
 delete from pathwaysdos.userreferralroles ur where ur.userid not in (31);
 delete from pathwaysdos.userregions ur where ur.userid not in (31);
@@ -69,10 +69,10 @@ update pathwaysdos.servicephonenumbers set phonenumber = '888888 000000', phoned
 update pathwaysdos.servicephonenumbers set phonenumber = '00000 999999', phonedescription = concat('STUB Phonedescription Public 2  Text Field ' , id)   where ispublic=true AND (id % 2) = 1;
 
 
- -- 6.0 Stub out Sensitive Professionalreferralinfo in Services table to contain realistic characters and length
+-- 6.0 Stub out Sensitive Professionalreferralinfo in Services table to contain realistic characters and length
 update pathwaysdos.services  set professionalreferralinfo = '# **Service Information**
 
-The flu vaccine is a safe and effective vaccine. 
+The flu vaccine is a safe and effective vaccine.
 It''s offered every year on the NHS to help protect people at risk of getting seriously ill from flu.
 
 **Information Links:**
