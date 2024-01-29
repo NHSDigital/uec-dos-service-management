@@ -178,6 +178,7 @@ def process_organizations(organizations):
 
     for resvar in organizations:
         org = resvar.get("resource")
+        processed_attributes = None
 
         if (
             org.get("resourceType") == "Organization"
@@ -190,8 +191,8 @@ def process_organizations(organizations):
             and org["type"][0]["coding"][0]["display"] != "PHARMACY"
         ):
             processed_attributes = process_non_pharmacy(org)
-
-        processed_data.append(processed_attributes)
+        if processed_attributes is not None:
+            processed_data.append(processed_attributes)
 
     return processed_data
 
@@ -316,12 +317,6 @@ def fetch_organizations():
             organizations = response_data.get("entry", [])
             processed_data = process_organizations(organizations)
             write_to_dynamodb(dynamodb_table_name, processed_data)
-
+            print("Data fetched successfully for ODS code " + odscode_param)
         else:
-            print("Failed to fetch data from the ODS API.")
-
-    if response_data:
-        print("Data fetched successfully.")
-
-    else:
-        print("Failed to fetch data from the ODS API.")
+            print("Failed to fetch data from the ODS API for ODS code " + odscode_param)
