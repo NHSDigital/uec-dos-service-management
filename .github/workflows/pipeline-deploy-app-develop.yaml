@@ -29,6 +29,8 @@ jobs:
           echo "username of user triggering the workflow: ${{ github.actor }}"
   scan-secrets:
     uses: ./.github/workflows/scan-secrets.yaml
+  check-file-format:
+    uses: ./.github/workflows/check-file-format.yaml
   check-markdown-format:
     uses: ./.github/workflows/check-markdown-format.yaml
   check-terraform-format:
