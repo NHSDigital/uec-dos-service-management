@@ -36,7 +36,7 @@ jobs:
   check-terraform-format:
       uses: NHSDigital/uec-cm/.github/workflows/check-terraform-format.yaml@main
   # validate-terraform:
-  #   name: Validate terraform code
+  #   name: Validate terraform coe
   #   uses: ./.github/workflows/validate-terraform.yaml
   #   needs: derive-tf-versions
   #   with:
