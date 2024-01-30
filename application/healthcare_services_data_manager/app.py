@@ -5,7 +5,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 app = APIGatewayRestResolver()
 
 
-# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# Auto resolves the type of request dcomming through and sets APIGatewayRestResolver
 # fields test
 
 
