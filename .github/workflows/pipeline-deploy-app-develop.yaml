@@ -30,7 +30,7 @@ jobs:
   scan-secrets:
     uses: NHSDigital/uec-cm/.github/workflows/scan-secrets.yaml@main
   check-file-format:
-    uses: NHSDigital/uec-cm/.github/workflows/check-file-format.yaml@v2.1
+    uses: NHSDigital/uec-cm/.github/workflows/check-file-format.yaml@main
   check-markdown-format:
     uses: NHSDigital/uec-cm/.github/workflows/check-markdown-format.yaml@main
   check-terraform-format:
