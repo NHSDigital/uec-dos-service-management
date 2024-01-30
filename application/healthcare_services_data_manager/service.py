@@ -32,6 +32,8 @@ def add_record(item):
 def update_record(item, temp, stemp):
     print(temp)
     print(stemp)
+    MySillyNamedVar = "silly"
+    print(MySillyNamedVar)
     return add_record(item)
 
 
