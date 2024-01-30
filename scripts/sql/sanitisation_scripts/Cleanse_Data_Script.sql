@@ -3,8 +3,9 @@
 
 -- 1.0 Truncate User related Tables
 
-truncate pathwaysdos.savedsearches, pathwaysdos.usersavedsearches ;
+truncate pathwaysdos.savedsearches, pathwaysdos.usersavedsearches;
 truncate pathwaysdos.serviceattributes cascade;
+truncate pathwaysdos.servicenotes;
 
 -- 1.1 Clear down accounts
 delete from pathwaysdos.userpermissions up where up.userid not in (31);

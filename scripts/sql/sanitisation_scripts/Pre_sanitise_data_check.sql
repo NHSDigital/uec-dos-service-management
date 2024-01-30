@@ -4,6 +4,8 @@ count int, indicator varchar(50), stage  varchar(50)
 );
 
 insert into temp_script_counts
+select count(*) as count, 'servicenotes_truncated_table' as indicator, 'before' as stage from pathwaysdos.servicenotes;
+insert into temp_script_counts
 select count(*) as count, 'savedsearches_truncated_table' as indicator, 'before' as stage from pathwaysdos.savedsearches;
 insert into temp_script_counts
 select count(*) as count, 'usersavedsearches_truncated_table' , 'before' as stage from pathwaysdos.usersavedsearches ;
