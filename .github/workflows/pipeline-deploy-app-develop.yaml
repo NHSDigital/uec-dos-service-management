@@ -8,7 +8,7 @@ on:
 
 jobs:
   derive-tf-versions:
-    uses: ./.github/workflows/derive-tf-version.yaml
+    uses: NHSDigital/uec-cm/.github/workflows/derive-tf-version.yaml@main
   get-metadata:
     runs-on: ubuntu-latest
     outputs:
@@ -28,13 +28,13 @@ jobs:
           echo "github event ref: ${{ github.event.ref }}"
           echo "username of user triggering the workflow: ${{ github.actor }}"
   scan-secrets:
-    uses: ./.github/workflows/scan-secrets.yaml
+    uses: NHSDigital/uec-cm/.github/workflows/scan-secrets.yaml@main
   check-file-format:
-    uses: NHSDigital/uec-cm/.github/workflows/check-file-format.yaml@main
+    uses: NHSDigital/uec-cm/.github/workflows/check-file-format.yaml@v2.1
   check-markdown-format:
-    uses: ./.github/workflows/check-markdown-format.yaml
+    uses: NHSDigital/uec-cm/.github/workflows/check-markdown-format.yaml@main
   check-terraform-format:
-      uses: ./.github/workflows/check-terraform-format.yaml
+      uses: NHSDigital/uec-cm/.github/workflows/check-terraform-format.yaml@main
   # validate-terraform:
   #   name: Validate terraform code
   #   uses: ./.github/workflows/validate-terraform.yaml
@@ -44,11 +44,11 @@ jobs:
   #     tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
   #   secrets: inherit
   check-python-black-format:
-      uses: ./.github/workflows/check-python-black-format.yaml
+      uses: NHSDigital/uec-cm/.github/workflows/check-python-black-format.yaml@main
   check-python-flake-rules:
-      uses: ./.github/workflows/check-python-flake-rules.yaml
+      uses: NHSDigital/uec-cm/.github/workflows/check-python-flake-rules.yaml@main
   cloc-repository:
-    uses: ./.github/workflows/cloc-repository.yaml
+    uses: NHSDigital/uec-cm/.github/workflows/cloc-repository.yaml@main
   unit-tests:
     needs:
       [
