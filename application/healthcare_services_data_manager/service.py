@@ -25,7 +25,9 @@ def add_record(item):
     )
     return response
 
+
 # def write_to_json(output_file_path, processed_data):
+
 
 def update_record(item, temp, stemp):
     print(temp)

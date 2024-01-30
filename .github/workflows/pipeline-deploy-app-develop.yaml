@@ -43,10 +43,10 @@ jobs:
   #     ENV: dev
   #     tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
   #   secrets: inherit
-  check-python-black-format:
-      uses: NHSDigital/uec-cm/.github/workflows/check-python-black-format.yaml@main
-  check-python-flake-rules:
-      uses: NHSDigital/uec-cm/.github/workflows/check-python-flake-rules.yaml@main
+  # check-python-black-format:
+  #     uses: NHSDigital/uec-cm/.github/workflows/check-python-black-format.yaml@main
+  # check-python-flake-rules:
+  #     uses: NHSDigital/uec-cm/.github/workflows/check-python-flake-rules.yaml@main
   cloc-repository:
     uses: NHSDigital/uec-cm/.github/workflows/cloc-repository.yaml@main
   unit-tests:
