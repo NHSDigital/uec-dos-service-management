@@ -19,6 +19,12 @@ def create_healthcareservices():
     response = service.add_record(post_data)
     return response
 
+@app.post("/healthcare_services")
+def create_healthcareservices():
+    post_data: dict = app.current_event.json_body
+    response = service.add_record(post_data)
+    return response
+
 
 # Get using query string approach
 @app.get("/healthcare_services")
