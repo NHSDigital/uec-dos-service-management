@@ -29,7 +29,7 @@ def get_organisationaffiliations():
 @app.put("/organisation_affiliations")
 def update_organisationaffiliations():
     put_data: dict = app.current_event.json_body
-    response = service.update_record(put_data)
+    response = service.update_record(put_data, "temp", "temp")
     return response
 
 
