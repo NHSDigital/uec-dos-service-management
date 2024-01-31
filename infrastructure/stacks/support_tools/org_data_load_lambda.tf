@@ -39,7 +39,7 @@ module "org-data-lambda" {
                     "Sid": "UseParameters",
                     "Effect": "Allow",
                     "Action": [
-                        "ssm:GetParameters"
+                        "ssm:GetParameter*"
                     ],
                     "Resource": [
                         "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_id",
