@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import requests
 import pandas as pd
 import boto3
@@ -12,6 +12,9 @@ ssm_base_api_url = "/data/api/lambda/ods/domain"
 ssm_param_id = "/data/api/lambda/client_id"
 ssm_param_sec = "/data/api/lambda/client_secret"
 
+# DynamoDB table name
+dynamodb_table_name = "organisations"
+
 # ODS code excel file path
 odscode_file_path = "./ODS_Codes.xlsx"
 
@@ -19,6 +22,13 @@ odscode_file_path = "./ODS_Codes.xlsx"
 def lambda_handler(event, context):
     print("Fetching organizations data.")
     fetch_organizations()
+
+
+def get_table_name(table_name):
+    workspace_table_name = table_name
+    if os.getenv("WORKSPACE") is not None and os.getenv("WORKSPACE") != "":
+        workspace_table_name = table_name + "-" + os.getenv("WORKSPACE")
+    return workspace_table_name
 
 
 # Get parameters from store
@@ -304,8 +314,8 @@ def fetch_organizations():
     # Get headers
     headers = get_headers()
 
-    # DynamoDB table name
-    dynamodb_table_name = "organisations"
+    # Get worskpace table name
+    workspace_table_name = get_table_name(dynamodb_table_name)
 
     # Iterate over Excel values and make API requests
     for odscode_param in odscode_params:
@@ -316,7 +326,7 @@ def fetch_organizations():
         if response_data:
             organizations = response_data.get("entry", [])
             processed_data = process_organizations(organizations)
-            write_to_dynamodb(dynamodb_table_name, processed_data)
+            write_to_dynamodb(workspace_table_name, processed_data)
             print("Data fetched successfully for ODS code " + odscode_param)
         else:
             print("Failed to fetch data from the ODS API for ODS code " + odscode_param)
