@@ -1,8 +1,14 @@
-from behave import then, when
+from behave import then, when, given
 import requests
 from assertpy import assert_that
 import json
 from utilities.config_reader import read_config
+import allure
+
+
+@given("workspace has been added to allure report")
+def add_workspace_to_allure(context):
+    allure.dynamic.description("Workspace: " + context.workspace)
 
 
 @when("I request data for {params} from {resource_name}")
