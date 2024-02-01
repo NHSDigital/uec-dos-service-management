@@ -10,7 +10,7 @@ from common_modules.common_functions import (
     get_formatted_datetime,
     get_headers,
     read_ods_api,
-    capitalize_address_item
+    capitalize_address_item,
 )
 
 # SSM parameter names
