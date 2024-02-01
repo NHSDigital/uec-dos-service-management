@@ -1,11 +1,11 @@
 #!/bin/bash
 
 GIT_BRANCH_PATTERN_PREFIX=task
-GIT_BRANCH_PATTERN_SUFFIX='[A-Z]{2,5}-[0-9]{1,5}_[A-Z][a-z]+_[A-Za-z0-9]+_[A-Za-z0-9_]'
+GIT_BRANCH_PATTERN_SUFFIX='[A-Z]{2,5}-[0-9]{1,5}_[A-Z][a-z0-9]+_[A-Za-z0-9]+_[A-Za-z0-9_]'
 GIT_BRANCH_PATTERN=$GIT_BRANCH_PATTERN_PREFIX/$GIT_BRANCH_PATTERN_SUFFIX
 GIT_BRANCH_MAX_LENGTH=60
 GIT_COMMIT_MESSAGE_MAX_LENGTH=100
-GIT_COMMIT_MESSAGE_PATTERN_MAIN='[A-Z]{2,5}-([0-9]{1,5})[[:space:]][A-Z][a-z]+[[:space:]][a-z]+[[:space:]][a-z]+'
+GIT_COMMIT_MESSAGE_PATTERN_MAIN='[A-Z]{2,5}-([0-9]{1,5})[[:space:]][A-Z][a-z0-9]+[[:space:]][a-z0-9]+[[:space:]][a-z0-9]+'
 
 function git-check-if-commit-changed-directory {
     PRECOMMIT=$1
