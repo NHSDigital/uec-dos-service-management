@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-import os
-import requests
 import pandas as pd
 import boto3
-import uuid
-import datetime
 from boto3.dynamodb.conditions import Attr
+
+from common_modules.common_functions import (
+    get_table_name,
+    get_ssm,
+    generate_random_id,
+    get_formatted_datetime,
+    get_headers,
+    read_ods_api,
+    capitalize_address_item
+)
 
 # SSM parameter names
 ssm_base_api_url = "/data/api/lambda/ods/domain"
@@ -24,98 +30,6 @@ def lambda_handler(event, context):
     fetch_organizations()
 
 
-def get_table_name(table_name):
-    workspace_table_name = table_name
-    if os.getenv("WORKSPACE") is not None and os.getenv("WORKSPACE") != "":
-        workspace_table_name = table_name + "-" + os.getenv("WORKSPACE")
-    return workspace_table_name
-
-
-# Get parameters from store
-def get_ssm(name):
-    ssm = boto3.client("ssm")
-    response = ssm.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
-    return response
-
-
-def get_api_token():
-    api_endpoint = get_ssm(ssm_base_api_url)
-    api_endpoint += (
-        "//authorisation/auth/realms/terminology/protocol/openid-connect/token"
-    )
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "Keep-alive",
-    }
-
-    data = {
-        "grant_type": "client_credentials",
-        "client_id": get_ssm(ssm_param_id),
-        "client_secret": get_ssm(ssm_param_sec),
-    }
-
-    response = requests.post(url=api_endpoint, headers=headers, data=data)
-    token = response.json().get("access_token")
-
-    return token
-
-
-def get_headers():
-    token = get_api_token()
-    headers = {"Authorization": "Bearer " + token}
-    return headers
-
-
-def read_ods_api(api_endpoint, headers, params):
-    try:
-        response = requests.get(api_endpoint, headers=headers, params=params)
-
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            response_data = response.json()
-
-            return response_data
-        else:
-            print(f"Error: {response.status_code} - {response.text}")
-            return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-
-
-def generate_random_id():
-    # Generate a random 16-digit ID
-    return str(uuid.uuid4().int)[0:16]
-
-
-# function to get the current date and time in UK format
-def get_formatted_datetime():
-    current_datetime = datetime.datetime.now()
-    return current_datetime.strftime("%d-%m-%Y %H:%M:%S")
-
-
-def capitalize_line(line):
-    return line.title()
-
-
-def capitalize_address_item(address_item):
-    capitalized_item = {}
-
-    for key, value in address_item.items():
-        if key == "line" and isinstance(value, list):
-            capitalized_item[key] = [capitalize_line(line) for line in value]
-        elif key in ["city", "district", "country"]:
-            capitalized_item[key] = value.title()
-        elif key == "postalCode":
-            capitalized_item[key] = value
-        elif key != "extension":
-            capitalized_item[key] = value
-
-    return capitalized_item
-
-
 def process_organization(organizations):
     ph_org = None
 
@@ -131,56 +45,73 @@ def process_organization(organizations):
     return ph_org
 
 
-def process_pharmacy(org, ph_org):
+def process_attributes(org, ph_org=None):
     capitalized_address = [
         capitalize_address_item(address_item)
         for address_item in org.get("address", [])
         if isinstance(address_item, dict)
     ]
 
-    processed_attributes = {
-        "resourceType": org.get("resourceType"),
-        "id": generate_random_id(),
-        "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
-        "active": "true",
-        "type": process_type(org.get("type", "")),
-        "name": org.get("name").title(),
-        "Address": capitalized_address,
-        "createdDateTime": get_formatted_datetime(),
-        "partOf": "",
-        "lookup_field": ph_org["id"] if ph_org else None,
-        "createdBy": "Admin",
-        "modifiedBy": "Admin",
-        "modifiedDateTime": get_formatted_datetime(),
-    }
+    if ph_org is not None:
+        processed_attributes = {
+            "resourceType": org.get("resourceType"),
+            "id": generate_random_id(),
+            "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
+            "active": "true",
+            "type": process_type(org.get("type", "")),
+            "name": org.get("name").title(),
+            "Address": capitalized_address,
+            "createdDateTime": get_formatted_datetime(),
+            "partOf": "",
+            "lookup_field": ph_org["id"] if ph_org else None,
+            "createdBy": "Admin",
+            "modifiedBy": "Admin",
+            "modifiedDateTime": get_formatted_datetime(),
+        }
+    else:
+        processed_attributes = {
+            "resourceType": org.get("resourceType"),
+            "id": generate_random_id(),
+            "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
+            "active": "true",
+            "type": process_type(org.get("type", "")),
+            "name": org.get("name").title(),
+            "Address": capitalized_address,
+            "createdDateTime": get_formatted_datetime(),
+            # "partOf": "",
+            # "lookup_field": None,
+            "createdBy": "Admin",
+            "modifiedBy": "Admin",
+            "modifiedDateTime": get_formatted_datetime(),
+        }
 
     return processed_attributes
 
 
-def process_non_pharmacy(org):
-    capitalized_address = [
-        capitalize_address_item(address_item)
-        for address_item in org.get("address", [])
-        if isinstance(address_item, dict)
-    ]
+# def process_non_pharmacy(org):
+#     capitalized_address = [
+#         capitalize_address_item(address_item)
+#         for address_item in org.get("address", [])
+#         if isinstance(address_item, dict)
+#     ]
 
-    processed_attributes = {
-        "resourceType": org.get("resourceType"),
-        "id": generate_random_id(),
-        "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
-        "active": "true",
-        "type": process_type(org.get("type", "")),
-        "name": org.get("name").title(),
-        "Address": capitalized_address,
-        "createdDateTime": get_formatted_datetime(),
-        # "partOf": "",
-        # "lookup_field": None,
-        "createdBy": "Admin",
-        "modifiedBy": "Admin",
-        "modifiedDateTime": get_formatted_datetime(),
-    }
+#     processed_attributes = {
+#         "resourceType": org.get("resourceType"),
+#         "id": generate_random_id(),
+#         "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
+#         "active": "true",
+#         "type": process_type(org.get("type", "")),
+#         "name": org.get("name").title(),
+#         "Address": capitalized_address,
+#         "createdDateTime": get_formatted_datetime(),
+#         # "partOf": "",
+#         # "lookup_field": None,
+#         "createdBy": "Admin",
+#         "modifiedBy": "Admin",
+#         "modifiedDateTime": get_formatted_datetime(),
+#     }
 
-    return processed_attributes
+#     return processed_attributes
 
 
 def process_organizations(organizations):
@@ -195,12 +126,12 @@ def process_organizations(organizations):
             and org["type"][0]["coding"][0]["display"] == "PHARMACY"
         ):
             ph_org = process_organization(organizations)
-            processed_attributes = process_pharmacy(org, ph_org)
+            processed_attributes = process_attributes(org, ph_org)
         elif (
             org.get("resourceType") == "Organization"
             and org["type"][0]["coding"][0]["display"] != "PHARMACY"
         ):
-            processed_attributes = process_non_pharmacy(org)
+            processed_attributes = process_attributes(org)
         if processed_attributes is not None:
             processed_data.append(processed_attributes)
 
@@ -274,7 +205,7 @@ def update_records(table):
                 )
 
                 # Print the update status
-                print("Record with id " + lookup_field_value + "updated.")
+                print("Record with id " + lookup_field_value + " updated.")
             else:
                 print(f"No match found for identifier value: {lookup_field_value}")
         else:
@@ -312,7 +243,7 @@ def fetch_organizations():
     odscode_params = read_excel_values(odscode_file_path)
 
     # Get headers
-    headers = get_headers()
+    headers = get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
 
     # Get worskpace table name
     workspace_table_name = get_table_name(dynamodb_table_name)
@@ -327,6 +258,8 @@ def fetch_organizations():
             organizations = response_data.get("entry", [])
             processed_data = process_organizations(organizations)
             write_to_dynamodb(workspace_table_name, processed_data)
-            print("Data fetched successfully for ODS code " + odscode_param)
+            print("Data fetched successfully for ODS code")
+            print(odscode_param)
         else:
-            print("Failed to fetch data from the ODS API for ODS code " + odscode_param)
+            print("Failed to fetch data from the ODS API for ODS code")
+            print(odscode_param)
