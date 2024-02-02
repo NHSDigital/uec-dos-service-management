@@ -135,7 +135,9 @@ def fetch_organizations():
     odscode_params = common_functions.read_excel_values()
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
-        response_data = common_functions.read_ods_api(api_endpoint, headers, odscode_param)
+        response_data = common_functions.read_ods_api(
+            api_endpoint, headers, odscode_param
+        )
 
         # Process and load data
         if response_data:
@@ -155,7 +157,9 @@ def fetch_y_organizations():
     api_endpoint_y += "/fhir/Organization?active=true"
     params_y = {"type": "RO209"}
     headers = common_functions.get_headers()
-    y_response_data = common_functions.read_ods_api(api_endpoint_y, headers, params=params_y)
+    y_response_data = common_functions.read_ods_api(
+        api_endpoint_y, headers, params=params_y
+    )
 
     # Process and load data
     if y_response_data:

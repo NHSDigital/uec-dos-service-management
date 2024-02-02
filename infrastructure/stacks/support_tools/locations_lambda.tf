@@ -10,8 +10,8 @@ module "locations_data_load" {
   ]
 
   environment_variables = {
-  "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
-  "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+    "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
+    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
   }
 
   policy_jsons = [

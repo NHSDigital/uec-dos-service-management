@@ -5,7 +5,7 @@ from application.locations_data_load.locations_lambda import (
     lambda_handler,
     fetch_organizations,
     fetch_y_organizations,
-    process_organizations
+    process_organizations,
 )
 
 import unittest
@@ -79,10 +79,13 @@ class TestWriteToDynamoDB(unittest.TestCase):
 
         # Mock data_exists function
         with patch(
-            "application.locations_data_load.locations_lambda.data_exists", return_value=False
+            "application.locations_data_load.locations_lambda.data_exists",
+            return_value=False,
         ) as mock_data_exists:
             # Mock update_records function
-            with patch("application.locations_data_load.locations_lambda.update_records") as mock_update_records:
+            with patch(
+                "application.locations_data_load.locations_lambda.update_records"
+            ) as mock_update_records:
                 # Call the function to test
                 write_to_dynamodb("test_table", processed_data)
 
@@ -156,7 +159,9 @@ class TestProcessOrganizations(unittest.TestCase):
                 },
             }
         ]
-        with patch("application.locations_data_load.locations_lambda.uuid") as mock_uuid, patch(
+        with patch(
+            "application.locations_data_load.locations_lambda.uuid"
+        ) as mock_uuid, patch(
             "application.locations_data_load.locations_lambda.datetime"
         ) as mock_datetime:
             mock_uuid.uuid4.return_value.int = 1234567890123456
@@ -196,9 +201,15 @@ class TestProcessOrganizations(unittest.TestCase):
 
 class TestFetchOrganizations(unittest.TestCase):
     @patch("application.locations_data_load.locations_lambda.common_functions.get_ssm")
-    @patch("application.locations_data_load.locations_lambda.common_functions.get_headers")
-    @patch("application.locations_data_load.locations_lambda.common_functions.read_excel_values")
-    @patch("application.locations_data_load.locations_lambda.common_functions.read_ods_api")
+    @patch(
+        "application.locations_data_load.locations_lambda.common_functions.get_headers"
+    )
+    @patch(
+        "application.locations_data_load.locations_lambda.common_functions.read_excel_values"
+    )
+    @patch(
+        "application.locations_data_load.locations_lambda.common_functions.read_ods_api"
+    )
     @patch("application.locations_data_load.locations_lambda.process_organizations")
     @patch("application.locations_data_load.locations_lambda.write_to_dynamodb")
     def test_fetch_organizations(
@@ -228,7 +239,8 @@ class TestFetchOrganizations(unittest.TestCase):
         mock_read_excel_values.assert_called_once()
         mock_read_ods_api.assert_called_with(
             "mocked_api_url/fhir/OrganizationAffiliation?active=true",
-            {"Authorization": "Bearer token"}, "456",
+            {"Authorization": "Bearer token"},
+            "456",
         )
         mock_process_organizations.assert_called_once_with(mock_response_data["entry"])
         mock_write_to_dynamodb.assert_called_once_with(
@@ -236,8 +248,12 @@ class TestFetchOrganizations(unittest.TestCase):
         )
 
     @patch("application.locations_data_load.locations_lambda.common_functions.get_ssm")
-    @patch("application.locations_data_load.locations_lambda.common_functions.get_headers")
-    @patch("application.locations_data_load.locations_lambda.common_functions.read_ods_api")
+    @patch(
+        "application.locations_data_load.locations_lambda.common_functions.get_headers"
+    )
+    @patch(
+        "application.locations_data_load.locations_lambda.common_functions.read_ods_api"
+    )
     @patch("application.locations_data_load.locations_lambda.process_organizations")
     @patch("application.locations_data_load.locations_lambda.write_to_dynamodb")
     def test_fetch_y_organizations(

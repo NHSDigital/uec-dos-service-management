@@ -103,12 +103,17 @@ def read_excel_values():
     bucket_name = os.getenv("S3_DATA_BUCKET")
     file_key = os.getenv("ODS_CODES_XLSX_FILE")
     # Read values from the Excel file
-    s3 = boto3.client('s3')
+    s3 = boto3.client("s3")
     excel_object = s3.get_object(Bucket=bucket_name, Key=file_key)
-    excel_data = pd.read_excel(BytesIO(excel_object['Body'].read()))
-    param1_values = excel_data['ODS_Codes'].tolist()
+    excel_data = pd.read_excel(BytesIO(excel_object["Body"].read()))
+    param1_values = excel_data["ODS_Codes"].tolist()
     # Hardcoded values for param2
-    param2_value = ["OrganizationAffiliation:primary-organization","OrganizationAffiliation:participating-organization"]
+    param2_value = [
+        "OrganizationAffiliation:primary-organization",
+        "OrganizationAffiliation:participating-organization",
+    ]
     # list of dictionaries with the desired format
-    params = [{'primary-organization': val, '_include': param2_value} for val in param1_values]
+    params = [
+        {"primary-organization": val, "_include": param2_value} for val in param1_values
+    ]
     return params

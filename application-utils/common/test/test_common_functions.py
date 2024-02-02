@@ -16,7 +16,7 @@ from common.common_functions import (
     read_ods_api,
     generate_random_id,
     get_formatted_datetime,
-    read_excel_values
+    read_excel_values,
 )
 
 
@@ -124,7 +124,9 @@ class TestSsmGetTokenGetHeaders(unittest.TestCase):
         mocked_ssm_param_sec = "password"
 
         # Call the function
-        result = get_headers(mocked_ssm_base_api_url, mocked_ssm_param_id, mocked_ssm_param_sec)
+        result = get_headers(
+            mocked_ssm_base_api_url, mocked_ssm_param_id, mocked_ssm_param_sec
+        )
 
         # Assert that the mocked values were used and the function behaves as expected
         mock_get_api_token.assert_called_once()
@@ -244,7 +246,7 @@ class TestReadExcelValues(unittest.TestCase):
         # Mocking environment variables
         mock_getenv.side_effect = lambda x: {
             "S3_DATA_BUCKET": "mocked_bucket",
-            "ODS_CODES_XLSX_FILE": "mocked_file.xlsx"
+            "ODS_CODES_XLSX_FILE": "mocked_file.xlsx",
         }.get(x)
 
         # Mocking boto3.client('s3') and s3.get_object
@@ -254,24 +256,37 @@ class TestReadExcelValues(unittest.TestCase):
         mock_body = BytesIO()
         mock_excel_data.to_excel(mock_body, index=False)
         mock_body.seek(0)
-        mock_s3_client.get_object.return_value = {'Body': mock_body}
+        mock_s3_client.get_object.return_value = {"Body": mock_body}
 
         # Call the function to test
         result = read_excel_values()
 
         # Assertions
         mock_getenv.assert_called_with("ODS_CODES_XLSX_FILE")
-        mock_boto_client.assert_called_once_with('s3')
-        mock_s3_client.get_object.assert_called_once_with(Bucket='mocked_bucket', Key='mocked_file.xlsx')
+        mock_boto_client.assert_called_once_with("s3")
+        mock_s3_client.get_object.assert_called_once_with(
+            Bucket="mocked_bucket", Key="mocked_file.xlsx"
+        )
 
         # Convert result to DataFrame for comparison
         expected_params = [
-            {"primary-organization": "F123", "_include": ["OrganizationAffiliation:primary-organization", "OrganizationAffiliation:participating-organization"]},
-            {"primary-organization": "P456", "_include": ["OrganizationAffiliation:primary-organization", "OrganizationAffiliation:participating-organization"]},
+            {
+                "primary-organization": "F123",
+                "_include": [
+                    "OrganizationAffiliation:primary-organization",
+                    "OrganizationAffiliation:participating-organization",
+                ],
+            },
+            {
+                "primary-organization": "P456",
+                "_include": [
+                    "OrganizationAffiliation:primary-organization",
+                    "OrganizationAffiliation:participating-organization",
+                ],
+            },
         ]
         expected_params_df = pd.DataFrame(expected_params)
 
-        self.assertEqual(type(result[0]['primary-organization']), str)
+        self.assertEqual(type(result[0]["primary-organization"]), str)
 
         pd.testing.assert_frame_equal(pd.DataFrame(result), expected_params_df)
-

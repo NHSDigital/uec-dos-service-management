@@ -152,10 +152,16 @@ class TestProcessOrganization(unittest.TestCase):
 
 
 class TestProcessPharmacy(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
-    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+    )
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+    )
     @patch("application.org_data_load.org_data_load.process_type")
-    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+    )
     def test_process_pharmacy_with_ph_org(
         self,
         mock_get_formatted_datetime,
@@ -209,10 +215,16 @@ class TestProcessPharmacy(unittest.TestCase):
             },
         )
 
-    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
-    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+    )
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+    )
     @patch("application.org_data_load.org_data_load.process_type")
-    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+    )
     def test_process_pharmacy_without_ph_org(
         self,
         mock_get_formatted_datetime,
@@ -267,10 +279,16 @@ class TestProcessPharmacy(unittest.TestCase):
 
 
 class TestProcessNonPharmacy(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
-    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+    )
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+    )
     @patch("application.org_data_load.org_data_load.process_type")
-    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    @patch(
+        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+    )
     def test_process_non_pharmacy(
         self,
         mock_get_formatted_datetime,

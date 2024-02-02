@@ -55,7 +55,7 @@ def process_pharmacy(org, ph_org):
         "createdBy": "Admin",
         "modifiedBy": "Admin",
         "modifiedDateTime": common_functions.get_formatted_datetime(),
-        }
+    }
 
     return processed_attributes
 
@@ -195,7 +195,9 @@ def fetch_organizations():
     odscode_params = common_functions.read_excel_values()
 
     # Get headers
-    headers = common_functions.get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
+    headers = common_functions.get_headers(
+        ssm_base_api_url, ssm_param_id, ssm_param_sec
+    )
 
     # Get worskpace table name
     workspace_table_name = common_functions.get_table_name(dynamodb_table_name)
@@ -203,7 +205,9 @@ def fetch_organizations():
     # Iterate over Excel values and make API requests
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
-        response_data = common_functions.read_ods_api(api_endpoint, headers, odscode_param)
+        response_data = common_functions.read_ods_api(
+            api_endpoint, headers, odscode_param
+        )
 
         # Process and load data to json file
         if response_data:
