@@ -66,8 +66,8 @@ module "locations_data_load-lambda" {
                         "dynamodb:Query",
                         "dynamodb:UpdateItem"
                     ],
-                    "Resource": [
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
+                    "Resource":[
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations${local.workspace_suffix}",
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
                     ]
                 },

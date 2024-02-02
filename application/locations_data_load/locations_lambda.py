@@ -127,6 +127,9 @@ def update_records():
 #         output_file.write("\n")
 
 
+# Get worskpace table name
+workspace_table_name = common_functions.get_table_name(dynamodb_table_name)
+
 # # Iterate over Excel values and make API requests
 def fetch_organizations():
     api_endpoint = common_functions.get_ssm(ssm_base_api_url)
@@ -145,7 +148,7 @@ def fetch_organizations():
         if response_data:
             organizations = response_data.get("entry", [])
             processed_data = process_organizations(organizations)
-            write_to_dynamodb(dynamodb_table_name, processed_data)
+            write_to_dynamodb(workspace_table_name, processed_data)
             # output_file_path = "./location.json"
             # write_to_json(output_file_path, processed_data)
             print("Data fetched successfully.")
@@ -169,7 +172,7 @@ def fetch_y_organizations():
     if y_response_data:
         organizations = y_response_data.get("entry", [])
         processed_data = process_organizations(organizations)
-        write_to_dynamodb(dynamodb_table_name, processed_data)
+        write_to_dynamodb(workspace_table_name, processed_data)
         # output_file_path = "./location.json"
         # write_to_json(output_file_path, processed_data)
         print("Y Data fetched successfully.")
