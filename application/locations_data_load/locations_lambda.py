@@ -131,7 +131,7 @@ def update_records():
 def fetch_organizations():
     api_endpoint = common_functions.get_ssm(ssm_base_api_url)
     api_endpoint += "/fhir/OrganizationAffiliation?active=true"
-    headers = common_functions.get_headers()
+    headers = common_functions.get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
     odscode_params = common_functions.read_excel_values()
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
@@ -156,7 +156,7 @@ def fetch_y_organizations():
     api_endpoint_y = common_functions.get_ssm(ssm_base_api_url)
     api_endpoint_y += "/fhir/Organization?active=true"
     params_y = {"type": "RO209"}
-    headers = common_functions.get_headers()
+    headers = common_functions.get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
     y_response_data = common_functions.read_ods_api(
         api_endpoint_y, headers, params=params_y
     )
