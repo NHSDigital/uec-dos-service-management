@@ -78,7 +78,7 @@ module "org-data-load" {
                         "s3:*Object",
                     ],
                     "Resource": [
-                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket"
+                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket",
                         "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket/ODS_Codes.xlsx"
                     ]
                 }
