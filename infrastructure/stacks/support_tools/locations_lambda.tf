@@ -76,6 +76,7 @@ module "locations_data_load-lambda" {
                     "Action": [
                       "s3:ListBucket",
                       "s3:GetObject"
+                    ],
                     "Resource": ["*"]
                 }
             ]
