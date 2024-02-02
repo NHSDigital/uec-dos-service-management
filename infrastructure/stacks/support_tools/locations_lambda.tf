@@ -1,4 +1,4 @@
-module "locations_data_load" {
+module "locations_data_load-lambda" {
   source = "../../modules/lambda"
 
   function_name = "locations_data_load"
@@ -71,16 +71,12 @@ module "locations_data_load" {
                     ]
                 },
                 {
-                    "Sid": "S3",
+                    "Sid": "ListObjectsInBucket",
                     "Effect": "Allow",
                     "Action": [
-                        "s3:ListBucket",
-                        "s3:*Object"
-                    ],
-                    "Resource": [
-                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket",
-                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket/ODS_Codes.xlsx"
-                    ]
+                      "s3:ListBucket",
+                      "s3:GetObject"
+                    "Resource": ["*"]
                 }
             ]
         }

@@ -1,4 +1,4 @@
-module "org-data-load" {
+module "org-data-load-lambda" {
   source = "../../modules/lambda"
 
   function_name = "org_data_load"
@@ -71,16 +71,12 @@ module "org-data-load" {
                     ]
                 },
                 {
-                    "Sid": "S3",
+                    "Sid": "ListObjectsInBucket",
                     "Effect": "Allow",
                     "Action": [
-                        "s3:ListBucket",
-                        "s3:*Object"
-                    ],
-                    "Resource": [
-                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket",
-                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket/ODS_Codes.xlsx"
-                    ]
+                      "s3:ListBucket",
+                      "s3:GetObject"
+                    "Resource": ["*"]
                 }
             ]
         }
