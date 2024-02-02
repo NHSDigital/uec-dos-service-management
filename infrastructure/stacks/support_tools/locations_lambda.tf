@@ -65,7 +65,7 @@ module "locations_data_load" {
                         "dynamodb:Query",
                         "dynamodb:UpdateItem"
                     ],
-                    "Resource":[
+                    "Resource": [
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
                     ]
@@ -75,7 +75,7 @@ module "locations_data_load" {
                     "Effect": "Allow",
                     "Action": [
                         "s3:ListBucket",
-                        "s3:*Object",
+                        "s3:*Object"
                     ],
                     "Resource": [
                         "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket",

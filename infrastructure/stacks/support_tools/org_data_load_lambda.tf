@@ -75,7 +75,7 @@ module "org-data-load" {
                     "Effect": "Allow",
                     "Action": [
                         "s3:ListBucket",
-                        "s3:*Object",
+                        "s3:*Object"
                     ],
                     "Resource": [
                         "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket",
