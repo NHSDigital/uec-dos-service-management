@@ -19,8 +19,9 @@ organisations_table_name = "organisations"
 
 # Get worskpace table name
 workspace_locations_table_name = common_functions.get_table_name(locations_table_name)
-workspace_organisations_table_name = common_functions.get_table_name(organisations_table_name)
-
+workspace_organisations_table_name = common_functions.get_table_name(
+    organisations_table_name
+)
 
 
 def lambda_handler(event, context):
