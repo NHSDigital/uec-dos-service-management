@@ -14,7 +14,13 @@ ssm_param_sec = "/data/api/lambda/client_secret"
 
 
 # DynamoDB table name
-dynamodb_table_name = "locations"
+locations_table_name = "locations"
+organisations_table_name = "organisations"
+
+# Get worskpace table name
+workspace_locations_table_name = common_functions.get_table_name(locations_table_name)
+workspace_organisations_table_name = common_functions.get_table_name(organisations_table_name)
+
 
 
 def lambda_handler(event, context):
@@ -94,8 +100,8 @@ def data_exists(table, identifier_value):
 
 def update_records():
     dynamodb = boto3.resource("dynamodb")
-    org_table = dynamodb.Table("organisations")
-    locations_table = dynamodb.Table("locations")
+    org_table = dynamodb.Table(workspace_locations_table_name)
+    locations_table = dynamodb.Table(workspace_organisations_table_name)
     org_response = org_table.scan()
     locations_response = locations_table.scan()
     org_items = org_response.get("Items")
@@ -127,10 +133,6 @@ def update_records():
 #         output_file.write("\n")
 
 
-# Get worskpace table name
-workspace_table_name = common_functions.get_table_name(dynamodb_table_name)
-
-
 # # Iterate over Excel values and make API requests
 def fetch_organizations():
     api_endpoint = common_functions.get_ssm(ssm_base_api_url)
@@ -149,7 +151,7 @@ def fetch_organizations():
         if response_data:
             organizations = response_data.get("entry", [])
             processed_data = process_organizations(organizations)
-            write_to_dynamodb(workspace_table_name, processed_data)
+            write_to_dynamodb(workspace_locations_table_name, processed_data)
             # output_file_path = "./location.json"
             # write_to_json(output_file_path, processed_data)
             print("Data fetched successfully.")
@@ -173,7 +175,7 @@ def fetch_y_organizations():
     if y_response_data:
         organizations = y_response_data.get("entry", [])
         processed_data = process_organizations(organizations)
-        write_to_dynamodb(workspace_table_name, processed_data)
+        write_to_dynamodb(workspace_locations_table_name, processed_data)
         # output_file_path = "./location.json"
         # write_to_json(output_file_path, processed_data)
         print("Y Data fetched successfully.")
