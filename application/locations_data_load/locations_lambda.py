@@ -130,6 +130,7 @@ def update_records():
 # Get worskpace table name
 workspace_table_name = common_functions.get_table_name(dynamodb_table_name)
 
+
 # # Iterate over Excel values and make API requests
 def fetch_organizations():
     api_endpoint = common_functions.get_ssm(ssm_base_api_url)
