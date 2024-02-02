@@ -8,6 +8,7 @@ module "org-data-load-lambda" {
     "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
   ]
+  timeout = "900"
 
   environment_variables = {
     "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",

@@ -13,6 +13,7 @@ module "lambda" {
   number_of_policy_jsons  = var.number_of_policy_jsons
   description             = var.description
   policy_jsons            = var.policy_jsons
+  timeout                 = var.timeout
 
   environment_variables = merge(var.environment_variables, { WORKSPACE = "${local.environment_workspace}" })
   layers                = concat(local.common_layers, var.layers)

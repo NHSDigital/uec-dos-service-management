@@ -42,3 +42,7 @@ variable "environment_variables" {
 variable "layers" {
   default = []
 }
+
+variable "timeout" {
+  default = "3"
+}
