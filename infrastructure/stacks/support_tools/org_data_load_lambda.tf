@@ -1,26 +1,18 @@
-locals {
-  org_data_load_dir = "../../../scripts/org_data_load"
-}
-
-
-data "archive_file" "org_data_lambda_deployment_file" {
-  type        = "zip"
-  source_dir  = "${local.org_data_load_dir}/deploy"
-  output_path = "${local.org_data_load_dir}/org_data_load_lambda.zip"
-}
-
-
-module "org-data-lambda" {
+module "org-data-load" {
   source = "../../modules/lambda"
 
-  function_name = "org_data_load_lambda"
+  function_name = "org_data_load"
   description   = "To pull ODS organizations data and write to DynamoDB table"
   handler       = "org_data_load.lambda_handler"
   layers = [
     "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
   ]
-  local_existing_package = data.archive_file.org_data_lambda_deployment_file.output_path
+
+  environment_variables = {
+  "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
+  "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+  }
 
   policy_jsons = [
     <<-EOT
@@ -76,6 +68,18 @@ module "org-data-lambda" {
                     "Resource":[
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
+                    ]
+                },
+                {
+                    "Sid": "S3",
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:ListBucket",
+                        "s3:*Object",
+                    ],
+                    "Resource": [
+                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket"
+                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket/ODS_Codes.xlsx"
                     ]
                 }
             ]

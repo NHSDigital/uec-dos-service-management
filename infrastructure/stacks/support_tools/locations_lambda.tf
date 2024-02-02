@@ -1,23 +1,18 @@
-locals {
-  source_dir = "../../../scripts/locations_data_load"
-}
-
-
-data "archive_file" "locations_lambda_deployment_file" {
-  type        = "zip"
-  source_dir  = local.source_dir
-  excludes    = setsubtract(fileset("${local.source_dir}/", "*"), ["ODS_Codes.xlsx", "locations_lambda.py"])
-  output_path = "${local.source_dir}/locations_lambda.zip"
-}
-
-module "locations-lambda" {
+module "locations_data_load" {
   source = "../../modules/lambda"
 
-  function_name = "locations_lambda"
+  function_name = "locations_data_load"
   description   = "To pull ODS locations data nad write to DynamoDB Locations table"
   handler       = "locations_lambda.lambda_handler"
+  layers = [
+    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
+    "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
+  ]
 
-  local_existing_package = data.archive_file.locations_lambda_deployment_file.output_path
+  environment_variables = {
+  "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
+  "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+  }
 
   policy_jsons = [
     <<-EOT
@@ -36,11 +31,12 @@ module "locations-lambda" {
                     "Sid": "UseParameters",
                     "Effect": "Allow",
                     "Action": [
-                        "ssm:GetParameters"
+                        "ssm:GetParameter*"
                     ],
                     "Resource": [
                         "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_id",
-                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_secret"
+                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_secret",
+                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/ods/domain"
                     ]
                 },
                 {
@@ -64,13 +60,27 @@ module "locations-lambda" {
                     "Effect": "Allow",
                     "Action": [
                         "dynamodb:PutItem",
-                        "dynamodb:DeleteItem",
                         "dynamodb:GetItem",
                         "dynamodb:Scan",
                         "dynamodb:Query",
                         "dynamodb:UpdateItem"
                     ],
-                    "Resource": "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations"
+                    "Resource":[
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
+                    ]
+                },
+                {
+                    "Sid": "S3",
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:ListBucket",
+                        "s3:*Object",
+                    ],
+                    "Resource": [
+                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket"
+                        "arn:aws:s3:${var.aws_region}:${local.account_id}:nhse-uec-sm-dev-databucket/ODS_Codes.xlsx"
+                    ]
                 }
             ]
         }

@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
-import pandas as pd
 import boto3
 from boto3.dynamodb.conditions import Attr
 
-from common_modules.common_functions import (
-    get_table_name,
-    get_ssm,
-    generate_random_id,
-    get_formatted_datetime,
-    get_headers,
-    read_ods_api,
-    capitalize_address_item,
-)
+from common import common_functions
+
 
 # SSM parameter names
 ssm_base_api_url = "/data/api/lambda/ods/domain"
@@ -20,9 +12,6 @@ ssm_param_sec = "/data/api/lambda/client_secret"
 
 # DynamoDB table name
 dynamodb_table_name = "organisations"
-
-# ODS code excel file path
-odscode_file_path = "./ODS_Codes.xlsx"
 
 
 def lambda_handler(event, context):
@@ -45,73 +34,56 @@ def process_organization(organizations):
     return ph_org
 
 
-def process_attributes(org, ph_org=None):
+def process_pharmacy(org, ph_org):
     capitalized_address = [
-        capitalize_address_item(address_item)
+        common_functions.capitalize_address_item(address_item)
         for address_item in org.get("address", [])
         if isinstance(address_item, dict)
     ]
 
-    if ph_org is not None:
-        processed_attributes = {
-            "resourceType": org.get("resourceType"),
-            "id": generate_random_id(),
-            "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
-            "active": "true",
-            "type": process_type(org.get("type", "")),
-            "name": org.get("name").title(),
-            "Address": capitalized_address,
-            "createdDateTime": get_formatted_datetime(),
-            "partOf": "",
-            "lookup_field": ph_org["id"] if ph_org else None,
-            "createdBy": "Admin",
-            "modifiedBy": "Admin",
-            "modifiedDateTime": get_formatted_datetime(),
-        }
-    else:
-        processed_attributes = {
-            "resourceType": org.get("resourceType"),
-            "id": generate_random_id(),
-            "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
-            "active": "true",
-            "type": process_type(org.get("type", "")),
-            "name": org.get("name").title(),
-            "Address": capitalized_address,
-            "createdDateTime": get_formatted_datetime(),
-            # "partOf": "",
-            # "lookup_field": None,
-            "createdBy": "Admin",
-            "modifiedBy": "Admin",
-            "modifiedDateTime": get_formatted_datetime(),
+    processed_attributes = {
+        "resourceType": org.get("resourceType"),
+        "id": common_functions.generate_random_id(),
+        "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
+        "active": "true",
+        "type": process_type(org.get("type", "")),
+        "name": org.get("name").title(),
+        "Address": capitalized_address,
+        "createdDateTime": common_functions.get_formatted_datetime(),
+        "partOf": "",
+        "lookup_field": ph_org["id"] if ph_org else None,
+        "createdBy": "Admin",
+        "modifiedBy": "Admin",
+        "modifiedDateTime": common_functions.get_formatted_datetime(),
         }
 
     return processed_attributes
 
 
-# def process_non_pharmacy(org):
-#     capitalized_address = [
-#         capitalize_address_item(address_item)
-#         for address_item in org.get("address", [])
-#         if isinstance(address_item, dict)
-#     ]
+def process_non_pharmacy(org):
+    capitalized_address = [
+        common_functions.capitalize_address_item(address_item)
+        for address_item in org.get("address", [])
+        if isinstance(address_item, dict)
+    ]
 
-#     processed_attributes = {
-#         "resourceType": org.get("resourceType"),
-#         "id": generate_random_id(),
-#         "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
-#         "active": "true",
-#         "type": process_type(org.get("type", "")),
-#         "name": org.get("name").title(),
-#         "Address": capitalized_address,
-#         "createdDateTime": get_formatted_datetime(),
-#         # "partOf": "",
-#         # "lookup_field": None,
-#         "createdBy": "Admin",
-#         "modifiedBy": "Admin",
-#         "modifiedDateTime": get_formatted_datetime(),
-#     }
+    processed_attributes = {
+        "resourceType": org.get("resourceType"),
+        "id": common_functions.generate_random_id(),
+        "identifier": {"use": "secondary", "type": "ODS", "value": org.get("id")},
+        "active": "true",
+        "type": process_type(org.get("type", "")),
+        "name": org.get("name").title(),
+        "Address": capitalized_address,
+        "createdDateTime": common_functions.get_formatted_datetime(),
+        # "partOf": "",
+        # "lookup_field": None,
+        "createdBy": "Admin",
+        "modifiedBy": "Admin",
+        "modifiedDateTime": common_functions.get_formatted_datetime(),
+    }
 
-#     return processed_attributes
+    return processed_attributes
 
 
 def process_organizations(organizations):
@@ -126,12 +98,12 @@ def process_organizations(organizations):
             and org["type"][0]["coding"][0]["display"] == "PHARMACY"
         ):
             ph_org = process_organization(organizations)
-            processed_attributes = process_attributes(org, ph_org)
+            processed_attributes = process_pharmacy(org, ph_org)
         elif (
             org.get("resourceType") == "Organization"
             and org["type"][0]["coding"][0]["display"] != "PHARMACY"
         ):
-            processed_attributes = process_attributes(org)
+            processed_attributes = process_non_pharmacy(org)
         if processed_attributes is not None:
             processed_data.append(processed_attributes)
 
@@ -216,42 +188,22 @@ def update_records(table):
         print("Lookup field value is blank. Skipping update.")
 
 
-def read_excel_values(file_path):
-    # Read values from the Excel file
-    excel_data = pd.read_excel(file_path)
-
-    param1_values = excel_data["ODS_Codes"].tolist()
-
-    # Hardcoded values for param2
-    param2_value = [
-        "OrganizationAffiliation:primary-organization",
-        "OrganizationAffiliation:participating-organization",
-    ]
-
-    # list of dictionaries with the desired format
-    params = [
-        {"primary-organization": val, "_include": param2_value} for val in param1_values
-    ]
-
-    return params
-
-
 def fetch_organizations():
-    api_endpoint = get_ssm(ssm_base_api_url)
+    api_endpoint = common_functions.get_ssm(ssm_base_api_url)
     api_endpoint += "/fhir/OrganizationAffiliation?active=true"
     # Read values from Excel
-    odscode_params = read_excel_values(odscode_file_path)
+    odscode_params = common_functions.read_excel_values()
 
     # Get headers
-    headers = get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
+    headers = common_functions.get_headers(ssm_base_api_url, ssm_param_id, ssm_param_sec)
 
     # Get worskpace table name
-    workspace_table_name = get_table_name(dynamodb_table_name)
+    workspace_table_name = common_functions.get_table_name(dynamodb_table_name)
 
     # Iterate over Excel values and make API requests
     for odscode_param in odscode_params:
         # Call the function to read from the ODS API and write to the output file
-        response_data = read_ods_api(api_endpoint, headers, odscode_param)
+        response_data = common_functions.read_ods_api(api_endpoint, headers, odscode_param)
 
         # Process and load data to json file
         if response_data:

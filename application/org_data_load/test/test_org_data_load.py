@@ -1,9 +1,9 @@
-from scripts.org_data_load.deploy.org_data_load import (
+from application.org_data_load.org_data_load import (
     lambda_handler,
-    read_excel_values,
     write_to_dynamodb,
     process_organization,
-    process_attributes,
+    process_pharmacy,
+    process_non_pharmacy,
     process_organizations,
     process_type,
     data_exists,
@@ -13,11 +13,10 @@ from scripts.org_data_load.deploy.org_data_load import (
 
 import unittest
 from unittest.mock import patch, MagicMock, Mock
-import pandas as pd
 
 
 class TestLambdaHandler(unittest.TestCase):
-    @patch("scripts.org_data_load.deploy.org_data_load.fetch_organizations")
+    @patch("application.org_data_load.org_data_load.fetch_organizations")
     def test_lambda_handler(self, mock_fetch_organizations):
         # Set up mock event and context
         event = {"some_key": "some_value"}
@@ -30,42 +29,10 @@ class TestLambdaHandler(unittest.TestCase):
         mock_fetch_organizations.assert_called_once()
 
 
-class TestReadExcelValues(unittest.TestCase):
-    @patch("pandas.read_excel")
-    def test_read_excel_values(self, mock_read_excel):
-        # Mocking pandas.read_excel
-        mock_excel_data = pd.DataFrame({"ODS_Codes": ["123", "456"]})
-        mock_read_excel.return_value = mock_excel_data
-
-        # Call the function to test
-        result = read_excel_values("fake_file_path.xlsx")
-
-        # Assertions
-        mock_read_excel.assert_called_once_with("fake_file_path.xlsx")
-
-        expected_params = [
-            {
-                "primary-organization": "123",
-                "_include": [
-                    "OrganizationAffiliation:primary-organization",
-                    "OrganizationAffiliation:participating-organization",
-                ],
-            },
-            {
-                "primary-organization": "456",
-                "_include": [
-                    "OrganizationAffiliation:primary-organization",
-                    "OrganizationAffiliation:participating-organization",
-                ],
-            },
-        ]
-        self.assertEqual(result, expected_params)
-
-
 class TestWriteToDynamoDB(unittest.TestCase):
-    @patch("scripts.org_data_load.deploy.org_data_load.boto3.resource")
-    @patch("scripts.org_data_load.deploy.org_data_load.update_records")
-    @patch("scripts.org_data_load.deploy.org_data_load.data_exists")
+    @patch("application.org_data_load.org_data_load.boto3.resource")
+    @patch("application.org_data_load.org_data_load.update_records")
+    @patch("application.org_data_load.org_data_load.data_exists")
     def test_write_to_dynamodb_with_new_data(
         self, mock_data_exists, mock_update_records, mock_dynamodb_resource
     ):
@@ -85,9 +52,9 @@ class TestWriteToDynamoDB(unittest.TestCase):
         # Assert that update_records was called
         mock_update_records.assert_called_once_with(mock_table)
 
-    @patch("scripts.org_data_load.deploy.org_data_load.boto3.resource")
-    @patch("scripts.org_data_load.deploy.org_data_load.update_records")
-    @patch("scripts.org_data_load.deploy.org_data_load.data_exists")
+    @patch("application.org_data_load.org_data_load.boto3.resource")
+    @patch("application.org_data_load.org_data_load.update_records")
+    @patch("application.org_data_load.org_data_load.data_exists")
     def test_write_to_dynamodb_with_existing_data(
         self, mock_data_exists, mock_update_records, mock_dynamodb_resource
     ):
@@ -107,7 +74,7 @@ class TestWriteToDynamoDB(unittest.TestCase):
         # Assert that update_records was called
         mock_update_records.assert_called_once_with(mock_table)
 
-    @patch("scripts.org_data_load.deploy.org_data_load.boto3.resource")
+    @patch("application.org_data_load.org_data_load.boto3.resource")
     def test_data_exists(self, mock_boto3_resource):
         # Mock DynamoDB resource
         mock_table_true = MagicMock()
@@ -127,8 +94,8 @@ class TestWriteToDynamoDB(unittest.TestCase):
         result = data_exists(mock_table_false, "something")
         self.assertFalse(result)
 
-    @patch("scripts.org_data_load.deploy.org_data_load.print")
-    @patch("scripts.org_data_load.deploy.org_data_load.boto3.resource")
+    @patch("application.org_data_load.org_data_load.print")
+    @patch("application.org_data_load.org_data_load.boto3.resource")
     def test_update_records_with_existing_data(self, mock_print, mock_table):
         # Mock data with existing data in the DynamoDB table
         mock_table.scan.return_value = {
@@ -172,7 +139,7 @@ class TestProcessOrganization(unittest.TestCase):
             {
                 "resource": {
                     "resourceType": "Organization",
-                    "type": [{"coding": [{"display": "SOME OTHER TYPE"}]}],
+                    "type": [{"coding": [{"display": "Some Type"}]}],
                 }
             }
         ]
@@ -185,11 +152,11 @@ class TestProcessOrganization(unittest.TestCase):
 
 
 class TestProcessPharmacy(unittest.TestCase):
-    @patch("scripts.org_data_load.deploy.org_data_load.capitalize_address_item")
-    @patch("scripts.org_data_load.deploy.org_data_load.generate_random_id")
-    @patch("scripts.org_data_load.deploy.org_data_load.process_type")
-    @patch("scripts.org_data_load.deploy.org_data_load.get_formatted_datetime")
-    def test_process_attributes_with_ph_org(
+    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
+    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    def test_process_pharmacy_with_ph_org(
         self,
         mock_get_formatted_datetime,
         mock_process_type,
@@ -217,7 +184,7 @@ class TestProcessPharmacy(unittest.TestCase):
         mock_get_formatted_datetime.return_value = "formatted_datetime"
 
         # Call the function to process pharmacy
-        result = process_attributes(org, ph_org)
+        result = process_pharmacy(org, ph_org)
 
         # Assert that the result has the expected attributes based on the mock data
         self.maxDiff = None
@@ -242,11 +209,11 @@ class TestProcessPharmacy(unittest.TestCase):
             },
         )
 
-    @patch("scripts.org_data_load.deploy.org_data_load.capitalize_address_item")
-    @patch("scripts.org_data_load.deploy.org_data_load.generate_random_id")
-    @patch("scripts.org_data_load.deploy.org_data_load.process_type")
-    @patch("scripts.org_data_load.deploy.org_data_load.get_formatted_datetime")
-    def test_process_attributes_without_ph_org(
+    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
+    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    def test_process_pharmacy_without_ph_org(
         self,
         mock_get_formatted_datetime,
         mock_process_type,
@@ -274,7 +241,7 @@ class TestProcessPharmacy(unittest.TestCase):
         mock_get_formatted_datetime.return_value = "formatted_datetime"
 
         # Call the function to process pharmacy
-        result = process_attributes(org, ph_org)
+        result = process_pharmacy(org, ph_org)
 
         # Assert that the result has the expected attributes based on the mock data
         self.assertEqual(
@@ -286,12 +253,67 @@ class TestProcessPharmacy(unittest.TestCase):
                 "active": "true",
                 "type": "Processed Type",
                 "name": "Pharmacy Name",
+                "partOf": "",
                 "Address": [
                     {"street": "123 Main St", "city": "City", "state": "State"}
                 ],
                 "createdDateTime": "formatted_datetime",
-                "partOf": "",
+                "createdBy": "Admin",
                 "lookup_field": None,
+                "modifiedBy": "Admin",
+                "modifiedDateTime": "formatted_datetime",
+            },
+        )
+
+
+class TestProcessNonPharmacy(unittest.TestCase):
+    @patch("application.org_data_load.org_data_load.common_functions.capitalize_address_item")
+    @patch("application.org_data_load.org_data_load.common_functions.generate_random_id")
+    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("application.org_data_load.org_data_load.common_functions.get_formatted_datetime")
+    def test_process_non_pharmacy(
+        self,
+        mock_get_formatted_datetime,
+        mock_process_type,
+        mock_generate_random_id,
+        mock_capitalize_address_item,
+    ):
+        # Mock data for a non-pharmacy organization
+        org = {
+            "resourceType": "Organization",
+            "id": "org_id",
+            "name": "Non-Pharmacy Name",
+            "type": "Some Type",
+            "address": [{"street": "456 Second St", "city": "City", "state": "State"}],
+        }
+
+        # Mock the functions and methods used within process_non_pharmacy
+        mock_capitalize_address_item.return_value = {
+            "street": "456 Second St",
+            "city": "City",
+            "state": "State",
+        }
+        mock_generate_random_id.return_value = "generated_id"
+        mock_process_type.return_value = "Processed Type"
+        mock_get_formatted_datetime.return_value = "formatted_datetime"
+
+        # Call the function to process non-pharmacy organization
+        result = process_non_pharmacy(org)
+
+        # Assert that the result has the expected attributes based on the mock data
+        self.assertEqual(
+            result,
+            {
+                "resourceType": "Organization",
+                "id": "generated_id",
+                "identifier": {"use": "secondary", "type": "ODS", "value": "org_id"},
+                "active": "true",
+                "type": "Processed Type",
+                "name": "Non-Pharmacy Name",
+                "Address": [
+                    {"street": "456 Second St", "city": "City", "state": "State"}
+                ],
+                "createdDateTime": "formatted_datetime",
                 "createdBy": "Admin",
                 "modifiedBy": "Admin",
                 "modifiedDateTime": "formatted_datetime",
@@ -299,65 +321,10 @@ class TestProcessPharmacy(unittest.TestCase):
         )
 
 
-# class TestProcessNonPharmacy(unittest.TestCase):
-#     @patch("scripts.org_data_load.deploy.org_data_load.capitalize_address_item")
-#     @patch("scripts.org_data_load.deploy.org_data_load.generate_random_id")
-#     @patch("scripts.org_data_load.deploy.org_data_load.process_type")
-#     @patch("scripts.org_data_load.deploy.org_data_load.get_formatted_datetime")
-#     def test_process_non_pharmacy(
-#         self,
-#         mock_get_formatted_datetime,
-#         mock_process_type,
-#         mock_generate_random_id,
-#         mock_capitalize_address_item,
-#     ):
-#         # Mock data for a non-pharmacy organization
-#         org = {
-#             "resourceType": "Organization",
-#             "id": "org_id",
-#             "name": "Non-Pharmacy Name",
-#             "type": "Some Type",
-#             "address": [{"street": "456 Second St", "city": "City", "state": "State"}],
-#         }
-
-#         # Mock the functions and methods used within process_non_pharmacy
-#         mock_capitalize_address_item.return_value = {
-#             "street": "456 Second St",
-#             "city": "City",
-#             "state": "State",
-#         }
-#         mock_generate_random_id.return_value = "generated_id"
-#         mock_process_type.return_value = "Processed Type"
-#         mock_get_formatted_datetime.return_value = "formatted_datetime"
-
-#         # Call the function to process non-pharmacy organization
-#         result = process_non_pharmacy(org)
-
-#         # Assert that the result has the expected attributes based on the mock data
-#         self.assertEqual(
-#             result,
-#             {
-#                 "resourceType": "Organization",
-#                 "id": "generated_id",
-#                 "identifier": {"use": "secondary", "type": "ODS", "value": "org_id"},
-#                 "active": "true",
-#                 "type": "Processed Type",
-#                 "name": "Non-Pharmacy Name",
-#                 "Address": [
-#                     {"street": "456 Second St", "city": "City", "state": "State"}
-#                 ],
-#                 "createdDateTime": "formatted_datetime",
-#                 "createdBy": "Admin",
-#                 "modifiedBy": "Admin",
-#                 "modifiedDateTime": "formatted_datetime",
-#             },
-#         )
-
-
 class TestProcessOrganizations(unittest.TestCase):
-    @patch("scripts.org_data_load.deploy.org_data_load.process_organization")
-    @patch("scripts.org_data_load.deploy.org_data_load.process_pharmacy")
-    @patch("scripts.org_data_load.deploy.org_data_load.process_non_pharmacy")
+    @patch("application.org_data_load.org_data_load.process_organization")
+    @patch("application.org_data_load.org_data_load.process_pharmacy")
+    @patch("application.org_data_load.org_data_load.process_non_pharmacy")
     def test_process_organizations(
         self,
         mock_process_non_pharmacy,
@@ -450,12 +417,12 @@ class TestProcessType(unittest.TestCase):
 
 
 class TestFetchOrganizations(unittest.TestCase):
-    @patch("scripts.org_data_load.deploy.org_data_load.get_ssm")
-    @patch("scripts.org_data_load.deploy.org_data_load.get_headers")
-    @patch("scripts.org_data_load.deploy.org_data_load.read_excel_values")
-    @patch("scripts.org_data_load.deploy.org_data_load.read_ods_api")
-    @patch("scripts.org_data_load.deploy.org_data_load.process_organizations")
-    @patch("scripts.org_data_load.deploy.org_data_load.write_to_dynamodb")
+    @patch("application.org_data_load.org_data_load.common_functions.get_ssm")
+    @patch("application.org_data_load.org_data_load.common_functions.get_headers")
+    @patch("application.org_data_load.org_data_load.common_functions.read_excel_values")
+    @patch("application.org_data_load.org_data_load.common_functions.read_ods_api")
+    @patch("application.org_data_load.org_data_load.process_organizations")
+    @patch("application.org_data_load.org_data_load.write_to_dynamodb")
     def test_fetch_organizations(
         self,
         mock_write_to_dynamodb,
@@ -480,7 +447,7 @@ class TestFetchOrganizations(unittest.TestCase):
         # Assertions
         mock_get_ssm.assert_called_once_with("/data/api/lambda/ods/domain")
         mock_get_headers.assert_called_once()
-        mock_read_excel_values.assert_called_once_with("./ODS_Codes.xlsx")
+        mock_read_excel_values.assert_called_once()
         mock_read_ods_api.assert_called_with(
             "mocked_api_url/fhir/OrganizationAffiliation?active=true",
             {"Authorization": "Bearer token"},
