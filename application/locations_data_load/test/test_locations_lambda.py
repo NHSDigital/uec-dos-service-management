@@ -30,37 +30,27 @@ class TestLambdaHandler(unittest.TestCase):
 
 class TestUpdateRecords(unittest.TestCase):
     @patch("application.locations_data_load.locations_lambda.boto3.resource")
-    def test_update_records(self, mock_dynamodb_resource):
-        # Mock DynamoDB resource and tables
-        mock_dynamodb = mock_dynamodb_resource.return_value
+    @patch("application.locations_data_load.locations_lambda.workspace_locations_table_name", "your_workspace_locations_table_name")
+    @patch("application.locations_data_load.locations_lambda.organisations_table_name", "your_organisations_table_name")
+    def test_update_records_with_existing_data(self, mock_resource):
+        # Mock data with existing data in the DynamoDB tables
         mock_org_table = Mock()
         mock_locations_table = Mock()
-        mock_dynamodb.Table.side_effect = (
-            lambda table_name: mock_org_table
-            if table_name == "organisations"
-            else mock_locations_table
-        )
+        mock_resource.return_value.Table.side_effect = [mock_org_table, mock_locations_table]
 
-        # Mock DynamoDB scan responses
-        mock_org_response = {
-            "Items": [{"id": "org_id_1", "identifier": {"value": "123"}}]
-        }
-        mock_locations_response = {
-            "Items": [
-                {"id": "loc_id_1", "managingOrganization": "", "lookup_field": "123"}
-            ]
-        }
+        mock_org_response = {"Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
+        mock_locations_response = {"Items": [{"lookup_field": "123", "id": "locations_id", "managingOrganization": ""}]}
         mock_org_table.scan.return_value = mock_org_response
         mock_locations_table.scan.return_value = mock_locations_response
 
-        # Call the function
+        # Call the function to update records
         update_records()
 
-        # Assert that update_item was called with the correct arguments
+        # Assert that the update_item method was called with the correct parameters
         mock_locations_table.update_item.assert_called_once_with(
-            Key={"id": "loc_id_1"},
+            Key={"id": "locations_id"},
             UpdateExpression="SET managingOrganization = :val",
-            ExpressionAttributeValues={":val": "org_id_1"},
+            ExpressionAttributeValues={":val": "org_id"},
         )
 
 

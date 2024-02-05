@@ -19,9 +19,9 @@ organisations_table_name = "organisations"
 
 # Get worskpace table name
 workspace_locations_table_name = common_functions.get_table_name(locations_table_name)
-workspace_organisations_table_name = common_functions.get_table_name(
-    organisations_table_name
-)
+# workspace_organisations_table_name = common_functions.get_table_name(
+#     organisations_table_name
+# )
 
 
 def lambda_handler(event, context):
@@ -102,7 +102,7 @@ def data_exists(table, identifier_value):
 def update_records():
     dynamodb = boto3.resource("dynamodb")
     org_table = dynamodb.Table(workspace_locations_table_name)
-    locations_table = dynamodb.Table(workspace_organisations_table_name)
+    locations_table = dynamodb.Table(organisations_table_name)
     org_response = org_table.scan()
     locations_response = locations_table.scan()
     org_items = org_response.get("Items")
