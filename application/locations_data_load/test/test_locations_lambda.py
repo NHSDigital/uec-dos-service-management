@@ -32,11 +32,11 @@ class TestUpdateRecords(unittest.TestCase):
     @patch("application.locations_data_load.locations_lambda.boto3.resource")
     @patch(
         "application.locations_data_load.locations_lambda.workspace_locations_table_name",
-        "your_workspace_locations_table_name",
+        "locations_table_name",
     )
     @patch(
         "application.locations_data_load.locations_lambda.organisations_table_name",
-        "your_organisations_table_name",
+        "organisations_table_name",
     )
     def test_update_records_with_existing_data(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables
