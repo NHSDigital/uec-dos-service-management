@@ -30,16 +30,35 @@ class TestLambdaHandler(unittest.TestCase):
 
 class TestUpdateRecords(unittest.TestCase):
     @patch("application.locations_data_load.locations_lambda.boto3.resource")
-    @patch("application.locations_data_load.locations_lambda.workspace_locations_table_name", "your_workspace_locations_table_name")
-    @patch("application.locations_data_load.locations_lambda.organisations_table_name", "your_organisations_table_name")
+    @patch(
+        "application.locations_data_load.locations_lambda.workspace_locations_table_name",
+        "your_workspace_locations_table_name",
+    )
+    @patch(
+        "application.locations_data_load.locations_lambda.organisations_table_name",
+        "your_organisations_table_name",
+    )
     def test_update_records_with_existing_data(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables
         mock_org_table = Mock()
         mock_locations_table = Mock()
-        mock_resource.return_value.Table.side_effect = [mock_org_table, mock_locations_table]
+        mock_resource.return_value.Table.side_effect = [
+            mock_org_table,
+            mock_locations_table,
+        ]
 
-        mock_org_response = {"Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
-        mock_locations_response = {"Items": [{"lookup_field": "123", "id": "locations_id", "managingOrganization": ""}]}
+        mock_org_response = {
+            "Items": [{"identifier": {"value": "123"}, "id": "org_id"}]
+        }
+        mock_locations_response = {
+            "Items": [
+                {
+                    "lookup_field": "123",
+                    "id": "locations_id",
+                    "managingOrganization": "",
+                }
+            ]
+        }
         mock_org_table.scan.return_value = mock_org_response
         mock_locations_table.scan.return_value = mock_locations_response
 
