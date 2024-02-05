@@ -68,7 +68,7 @@ module "locations_data_load-lambda" {
                     ],
                     "Resource":[
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations${local.workspace_suffix}",
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations"
                     ]
                 },
                 {
