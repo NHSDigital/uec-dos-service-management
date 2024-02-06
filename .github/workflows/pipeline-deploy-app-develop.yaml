@@ -140,6 +140,8 @@ jobs:
           - organisations-data-manager
           - questionnaire-responses-data-manager
           - questionnaires-data-manager
+          - org_data_load
+          - locations_data_load
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

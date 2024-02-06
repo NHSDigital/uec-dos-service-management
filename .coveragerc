@@ -11,7 +11,6 @@ omit =
         **/*database_populator.py
         **/*ods_location_comparator.py
         **/*service_data_load.py
-        **/*org_data_load.py
 
 [report]
 omit =
@@ -23,4 +22,3 @@ omit =
         **/*database_populator.py
         **/*ods_location_comparator.py
         **/*service_data_load.py
-        **/*org_data_load.py

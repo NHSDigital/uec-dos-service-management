@@ -1,9 +1,9 @@
-module "locations_data_load-lambda" {
+module "org-data-load-lambda" {
   source = "../../modules/lambda"
 
-  function_name = "locations_data_load"
-  description   = "To pull ODS locations data nad write to DynamoDB Locations table"
-  handler       = "locations_lambda.lambda_handler"
+  function_name = "org_data_load"
+  description   = "To pull ODS organizations data and write to DynamoDB table"
+  handler       = "org_data_load.lambda_handler"
   layers = [
     "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
@@ -67,8 +67,7 @@ module "locations_data_load-lambda" {
                         "dynamodb:UpdateItem"
                     ],
                     "Resource":[
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations${local.workspace_suffix}",
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations"
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
                     ]
                 },
                 {
