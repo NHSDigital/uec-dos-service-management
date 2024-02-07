@@ -51,11 +51,6 @@ variable "data_type" {
   type        = string
 }
 
-variable "environment" {
-  description = "identifying the purpose of the resources, dev, testing, preproduction, production"
-  type        = string
-}
-
 variable "project_type" {
   description = "identifying the purpose of the resources, PoC, Pilot, Production"
   type        = string
