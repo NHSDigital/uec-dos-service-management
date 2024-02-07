@@ -26,3 +26,52 @@ variable "vpn_security_group_name" {
 
 }
 
+variable "tag_version" {
+  description = "Identifies the version of tagging policy in use and supports changing it over time and any automation around the version."
+  type        = string
+}
+
+variable "service" {
+  description = "Identifies the service or programme."
+  type        = string
+}
+
+variable "cost_centre" {
+  description = "Supports Consolidated Billing and attribution of cost to Programmes."
+  type        = string
+}
+
+variable "data_classification" {
+  description = "See Cloud Risk Model, to enable quick searching of data classifications"
+  type        = string
+}
+
+variable "data_type" {
+  description = "identify the data type, None / PCD / PII / Anonymised / UserAccount / Audit"
+  type        = string
+}
+
+variable "environment" {
+  description = "identifying the purpose of the resources, dev, testing, preproduction, production"
+  type        = string
+}
+
+variable "project_type" {
+  description = "identifying the purpose of the resources, PoC, Pilot, Production"
+  type        = string
+}
+
+variable "public_facing" {
+  description = "Whether this is public facing via the internet"
+  type        = string
+}
+
+variable "service_category" {
+  description = "Used to identify response priorities"
+  type        = string
+}
+
+variable "on_off_pattern" {
+  description = "Used to automatically turn on and off machines that are not in a production environment."
+  type        = string
+}
