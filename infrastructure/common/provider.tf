@@ -26,7 +26,6 @@ provider "aws" {
       tag_version         = var.tag_version
       data_classification = var.data_classification
       DataType            = var.data_type
-      Environment         = var.environment
       ProjectType         = var.project_type
       PublicFacing        = var.public_facing
       ServiceCategory     = var.service_category
