@@ -56,7 +56,7 @@ class TestUpdateRecords(unittest.TestCase):
         mock_orgaffiliation_table.scan.return_value = mock_orgaffiliation_response
 
         # Call the function to update records
-        update_orgaffiliation_org()
+        update_orgaffiliation_org(mock_orgaffiliation_table,mock_orgaffiliation_response)
 
         # Assert that the update_item method was called with the correct parameters
         mock_orgaffiliation_table.update_item.assert_called_once_with(
