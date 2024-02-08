@@ -176,9 +176,9 @@ class TestProcessorgaffiliation(unittest.TestCase):
             }
         ]
         with patch(
-            "application.organisation_affiliations_data_load.orgaffiliation_lambda.uuid"
+            "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.uuid"
         ) as mock_uuid, patch(
-            "application.organisation_affiliations_data_load.orgaffiliation_lambda.datetime"
+            "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.datetime"
         ) as mock_datetime:
             mock_uuid.uuid4.return_value.int = 1234567890123456
             mock_datetime.datetime.now.return_value.strftime.return_value = (
@@ -237,15 +237,15 @@ class TestFetchOrgaffiliation(unittest.TestCase):
         "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.read_ods_api"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.process_organizations"
+        "application.organisation_affiliations_data_load.orgaffiliation_lambda.process_orgaffiliation"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.write_to_dynamodb"
+        "application.organisation_affiliations_data_load.orgaffiliation_lambda.write_to_dynamodborgaffili"
     )
     def test_fetch_orgaffiliation(
         self,
-        mock_write_to_dynamodb,
-        mock_process_organizations,
+        mock_write_to_dynamodborgaffili,
+        mock_process_orgaffiliation,
         mock_read_ods_api,
         mock_read_excel_values,
         mock_get_headers,
@@ -272,7 +272,7 @@ class TestFetchOrgaffiliation(unittest.TestCase):
             {"Authorization": "Bearer token"},
             "456",
         )
-        mock_process_organizations.assert_called_once_with(mock_response_data["entry"])
-        mock_write_to_dynamodb.assert_called_once_with(
-            "orgaffiliation", mock_process_organizations.return_value
+        process_orgaffiliation.assert_called_once_with(mock_response_data["entry"])
+        mock_write_to_dynamodborgaffili.assert_called_once_with(
+            "orgaffiliation", mock_process_orgaffiliation.return_value
         )
