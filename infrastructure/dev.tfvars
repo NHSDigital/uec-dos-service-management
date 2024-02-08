@@ -1,6 +1,3 @@
 environment           = "dev"
 vpc_cidr_block_marker = "150"
-project_type          = "development"
-public_facing         = "n"
-service_category      = "Silver"
-on_off_pattern        = "OfficeHours"
+

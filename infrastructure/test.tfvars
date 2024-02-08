@@ -1,6 +1,2 @@
 environment           = "test"
 vpc_cidr_block_marker = "151"
-project_type          = "testing"
-public_facing         = "n"
-service_category      = "Silver"
-on_off_pattern        = "OfficeHours"
