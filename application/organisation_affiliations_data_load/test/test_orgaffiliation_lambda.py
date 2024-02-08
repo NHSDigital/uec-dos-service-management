@@ -152,7 +152,7 @@ class TestProcessorgaffiliation(unittest.TestCase):
                     "resourceType": "OrganizationAffiliation",
                     "id": "FC999",
                     "active": "true",
-                    "periodStart": {"start": "2000-01-01"},
+                    "period": {"start": "2000-01-01"},
                     "organization": {
                         "reference": "Organization/FF999",
                         "identifier": {"system": "dummy_url", "value": "FF999"},
