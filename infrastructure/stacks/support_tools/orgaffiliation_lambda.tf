@@ -1,4 +1,4 @@
-module "orgaffiliation-lambda" {
+module "orgaffiliation-lambdaa" {
   source = "../../modules/lambda"
 
   function_name = "orgaffiliation_data_load"
@@ -12,7 +12,7 @@ module "orgaffiliation-lambda" {
 
   environment_variables = {
     "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name,
+    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
   }
 
   policy_jsons = [
@@ -32,11 +32,11 @@ module "orgaffiliation-lambda" {
                     "Sid": "UseParameters",
                     "Effect": "Allow",
                     "Action": [
-                        "ssm:GetParameters"
+                        "ssm:GetParameter*"
                     ],
                     "Resource": [
                         "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_id",
-                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_secret"
+                        "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/client_secret",
                         "arn:aws:ssm:${var.aws_region}:${local.account_id}:parameter/data/api/lambda/ods/domain"
                     ]
                 },
@@ -66,9 +66,9 @@ module "orgaffiliation-lambda" {
                         "dynamodb:Query",
                         "dynamodb:UpdateItem"
                     ],
-                    "Resource": [
-                        "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
-                        "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations"
+                    "Resource":[
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations"
                     ]
                 },
                 {
