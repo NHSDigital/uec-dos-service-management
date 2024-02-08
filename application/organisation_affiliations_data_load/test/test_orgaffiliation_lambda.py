@@ -274,5 +274,5 @@ class TestFetchOrgaffiliation(unittest.TestCase):
         )
         mock_process_orgaffiliation.assert_called_once_with(mock_response_data["entry"])
         mock_write_to_dynamodborgaffili.assert_called_once_with(
-            "orgaffiliation", mock_process_orgaffiliation.return_value
+            "organisation_affiliations", mock_process_orgaffiliation.return_value
         )
