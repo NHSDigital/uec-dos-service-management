@@ -31,10 +31,6 @@ class TestUpdateRecords(unittest.TestCase):
     @patch(
         "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
-    @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.workspace_orgaffiliation_table_name",
-        "orgaffiliation_table_name",
-    )
     def test_update_orgaffiliation_org(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables
         mock_org_table = Mock()
