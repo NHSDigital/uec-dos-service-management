@@ -36,8 +36,8 @@ class TestUpdateRecords(unittest.TestCase):
         "orgaffiliation_table_name",
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.organisations_table_name",
-        "organisations_table_name",
+        "application.organisation_affiliations_data_load.orgaffiliation_lambda.organization_table",
+        "organization_table",
     )
     def test_update_orgaffiliation_org(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables

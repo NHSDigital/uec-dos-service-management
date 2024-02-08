@@ -125,7 +125,7 @@ def fetch_orgaffiliation():
         print("Iterating individual ODS codes")
         # Call the function to read from the ODS API and write to the output file
         response_data = common_functions.read_ods_api(
-            api_endpoint, headers=headers, params=odscode_param
+            api_endpoint, headers, odscode_param
         )
 
         # Process and load data to json file
