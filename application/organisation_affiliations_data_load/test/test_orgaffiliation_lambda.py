@@ -47,7 +47,10 @@ class TestUpdateRecords(unittest.TestCase):
             }
         ]
 
-        mock_scan_result = {"Count": 1, "Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
+        mock_scan_result = {
+            "Count": 1,
+            "Items": [{"identifier": {"value": "123"}, "id": "org_id"}],
+        }
         mock_org_table.scan.return_value = mock_scan_result
 
         expected_update = {
