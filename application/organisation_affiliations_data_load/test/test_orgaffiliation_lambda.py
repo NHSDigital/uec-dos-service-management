@@ -9,6 +9,7 @@ from application.organisation_affiliations_data_load.orgaffiliation_lambda impor
 
 import unittest
 from unittest.mock import patch, MagicMock, Mock
+from boto3.dynamodb.conditions import Attr
 
 
 class TestLambdaHandler(unittest.TestCase):
@@ -31,19 +32,14 @@ class TestUpdateRecords(unittest.TestCase):
     @patch(
         "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
-    def test_update_orgaffiliation_org(self, mock_resource):
+    def test_update_orgaffiliation_org(mock_boto3):
         # Mock data with existing data in the DynamoDB tables
-        mock_org_table = Mock()
-        mock_orgaffiliation_table = Mock()
-        mock_resource.return_value.Table.side_effect = [
-            mock_org_table,
-            mock_orgaffiliation_table,
-        ]
+        mock_dynamodb = mock_boto3.return_value
+        mock_orgaffiliation_table = mock_dynamodb.Table.return_value
+        mock_org_table = mock_dynamodb.Table.return_value
 
-        mock_org_response = {
-            "Items": [{"identifier": {"value": "123"}, "id": "org_id"}]
-        }
-        mock_orgaffiliation_response = {
+        table_name = "my_table"
+        data = {
             "Items": [
                 {
                     "lookup_field_Org": "123",
@@ -52,20 +48,23 @@ class TestUpdateRecords(unittest.TestCase):
                 }
             ]
         }
-        mock_org_table.scan.return_value = mock_org_response
-        mock_orgaffiliation_table.scan.return_value = mock_orgaffiliation_response
+
+        mock_scan_result = {"Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
+        mock_org_table.scan.return_value = mock_scan_result
+
+        expected_update = {
+            "Key": {"id": "organisations_id"},
+            "UpdateExpression": "SET organization = :val",
+            "ExpressionAttributeValues": {":val": "org_id"},
+        }
 
         # Call the function to update records
-        update_orgaffiliation_org(
-            mock_orgaffiliation_table, mock_orgaffiliation_response
-        )
+        update_orgaffiliation_org(table_name, data)
 
-        # Assert that the update_item method was called with the correct parameters
-        mock_orgaffiliation_table.update_item.assert_called_once_with(
-            Key={"id": "organisations_id"},
-            UpdateExpression="SET organization = :val",
-            ExpressionAttributeValues={":val": "org_id"},
+        mock_org_table.scan.assert_called_once_with(
+            FilterExpression=Attr("identifier.value").eq("123")
         )
+        mock_orgaffiliation_table.update_item.assert_called_once_with(expected_update)
 
 
 class TestUpdateRecordsParti(unittest.TestCase):
