@@ -39,11 +39,7 @@ class TestUpdateRecords(unittest.TestCase):
         mock_org_table = mock_dynamodb.Table.return_value
 
         table_name = "my_table"
-        data = {
-            "lookup_field_Org": "123",
-            "id": "organisations_id",
-            "organization": "",
-        }
+        data = [{"lookup_field_Org": "123", "id": "organisations_id", "organization": "",}]
 
         mock_scan_result = {"Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
         mock_org_table.scan.return_value = mock_scan_result
