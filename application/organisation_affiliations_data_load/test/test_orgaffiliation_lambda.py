@@ -40,12 +40,10 @@ class TestUpdateRecords(unittest.TestCase):
 
         table_name = "my_table"
         data = {
-            "Items": {
                 "lookup_field_Org": "123",
                 "id": "organisations_id",
                 "organization": "",
             }
-        }
 
         mock_scan_result = {"Items": [{"identifier": {"value": "123"}, "id": "org_id"}]}
         mock_org_table.scan.return_value = mock_scan_result
