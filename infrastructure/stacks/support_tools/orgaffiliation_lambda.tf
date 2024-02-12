@@ -1,7 +1,7 @@
-module "orgaffiliation-lambdaa" {
+module "orgaffiliation-lambda" {
   source = "../../modules/lambda"
 
-  function_name = "orgaffiliation_data_load"
+  function_name = "organisation_affiliations_data_load"
   description   = "To pull orgaffiliation data from ODS and write to DynamoDB Org. Affiliation table"
   handler       = "orgaffiliation_lambda.lambda_handler"
   layers = [
