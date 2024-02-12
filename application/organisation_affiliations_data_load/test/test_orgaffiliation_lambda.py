@@ -32,10 +32,13 @@ class TestUpdateRecords(unittest.TestCase):
         "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
     def test_update_orgaffiliation_org(self, mock_resource):
-
         mock_orgaffiliation_table = MagicMock()
         mock_org_table = MagicMock()
-        mock_resource.return_value.Table.side_effect = lambda table_name: mock_orgaffiliation_table if table_name == 'my_table' else mock_org_table
+        mock_resource.return_value.Table.side_effect = (
+            lambda table_name: mock_orgaffiliation_table
+            if table_name == "my_table"
+            else mock_org_table
+        )
 
         data = [
             {
@@ -52,7 +55,7 @@ class TestUpdateRecords(unittest.TestCase):
         mock_org_table.scan.return_value = mock_scan_response
 
         # Call the function to update records
-        update_orgaffiliation_org('my_table', data)
+        update_orgaffiliation_org("my_table", data)
 
         mock_orgaffiliation_table.update_item.assert_called_once_with(
             Key={"id": "organisations_id"},
