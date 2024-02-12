@@ -8,7 +8,7 @@ from application.organisation_affiliations_data_load.orgaffiliation_lambda impor
 )
 
 import unittest
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch, MagicMock
 
 
 class TestLambdaHandler(unittest.TestCase):
@@ -68,42 +68,33 @@ class TestUpdateRecordsParti(unittest.TestCase):
     @patch(
         "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
-    @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.workspace_orgaffiliation_table_name",
-        "orgaffiliation_table_name",
-    )
-    @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.organisations_table_name",
-        "organisations_table_name",
-    )
     def update_orgaffiliation_partiorg(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables
-        mock_org_table = Mock()
-        mock_orgaffiliation_table = Mock()
-        mock_resource.return_value.Table.side_effect = [
-            mock_org_table,
-            mock_orgaffiliation_table,
+        mock_orgaffiliation_table = MagicMock()
+        mock_org_table = MagicMock()
+        mock_resource.return_value.Table.side_effect = (
+            lambda table_name: mock_orgaffiliation_table
+            if table_name == "my_table"
+            else mock_org_table
+        )
+
+        data = [
+            {
+                "lookup_field_parti": "123",
+                "id": "organisations_id",
+                "participatingOrganization": "",
+            }
         ]
 
-        mock_org_response = {
-            "Items": [{"identifier": {"value": "123"}, "id": "org_id"}]
+        mock_scan_response = {
+            "Count": 1,
+            "Items": [{"identifier": {"value": "123"}, "id": "org_id"}],
         }
-        mock_orgaffiliation_response = {
-            "Items": [
-                {
-                    "lookup_field_parti": "123",
-                    "id": "organisations_id",
-                    "participatingOrganization": "",
-                }
-            ]
-        }
-        mock_org_table.scan.return_value = mock_org_response
-        mock_orgaffiliation_table.scan.return_value = mock_orgaffiliation_response
+        mock_org_table.scan.return_value = mock_scan_response
 
         # Call the function to update records
-        update_orgaffiliation_partiorg()
+        update_orgaffiliation_partiorg("my_table", data)
 
-        # Assert that the update_item method was called with the correct parameters
         mock_orgaffiliation_table.update_item.assert_called_once_with(
             Key={"id": "organisations_id"},
             UpdateExpression="SET participatingOrganization = :val",
