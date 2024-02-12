@@ -23,7 +23,6 @@ provider "aws" {
       TagVersion          = var.tag_version
       service             = var.service
       CostCentre          = var.cost_centre
-      tag_version         = var.tag_version
       data_classification = var.data_classification
       DataType            = var.data_type
       ProjectType         = var.project_type
