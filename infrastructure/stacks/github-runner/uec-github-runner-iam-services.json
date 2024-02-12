@@ -27,7 +27,7 @@
               "iam:DeleteRolePolicy",
               "iam:PutRolePolicy",
               "iam:UpdateOpenIDConnectProviderThumbprint",
-              "UntagPolicy"
+              "iam:UntagPolicy"
           ],
           "Resource": "*"
       }
