@@ -20,7 +20,16 @@ provider "aws" {
       project             = var.project
       environment         = var.environment
       terraform-base-path = replace(path.cwd, "/^.*?(${var.repo_name}\\/)/", "$1")
+      TagVersion          = var.tag_version
+      service             = var.service
+      CostCentre          = var.cost_centre
+      data_classification = var.data_classification
+      DataType            = var.data_type
+      ProjectType         = var.project_type
+      PublicFacing        = var.public_facing
+      ServiceCategory     = var.service_category
+      OnOffPattern        = var.on_off_pattern
+
     }
   }
 }
-
