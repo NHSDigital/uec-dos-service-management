@@ -1,8 +1,4 @@
 environment           = "dev"
 vpc_cidr_block_marker = "150"
 data_classification   = "3"
-data_type             = "PII"
-project_type          = "alpha"
-public_facing         = "n"
-service_category      = "gold"
-on_off_pattern        = "alwaysOn"
+
