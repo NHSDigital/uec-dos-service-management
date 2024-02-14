@@ -53,10 +53,10 @@ jobs:
   validate-terraform:
     name: Validate terraform code
     uses: ./.github/workflows/validate-terraform.yaml
-    needs: derive-tf-versions
+    needs: metadata
     with:
       ENV: dev
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   check-python-black-format:
       uses: ./.github/workflows/check-python-black-format.yaml
@@ -67,7 +67,7 @@ jobs:
   unit-tests:
     needs:
       [
-        get-metadata,
+        metadata,
         scan-secrets,
         check-file-format,
         check-markdown-format,
@@ -86,7 +86,7 @@ jobs:
     needs:
       [
         validate-terraform,
-        derive-tf-versions,
+        metadata,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
     with:
@@ -94,26 +94,26 @@ jobs:
       stack: network
       action: plan
       deployment_workspace: default
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   deploy-application-infrastructure:
       needs:
         [
           validate-terraform,
-          derive-tf-versions,
+          metadata,
         ]
       uses: ./.github/workflows/action-infrastructure-stack.yaml
       with:
         github_environment: dev
         stack: application
         action: apply
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+        tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
       secrets: inherit
   deploy-aurora-related-infrastructure:
     needs:
       [
         validate-terraform,
-        derive-tf-versions,
+        metadata,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
     with:
@@ -121,20 +121,20 @@ jobs:
       stack: aurora
       action: apply
       deployment_workspace: default
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   deploy-support-tools-infrastructure:
       needs:
         [
           validate-terraform,
-          derive-tf-versions,
+          metadata,
         ]
       uses: ./.github/workflows/action-infrastructure-stack.yaml
       with:
         github_environment: dev
         stack: support_tools
         action: apply
-        tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
+        tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
       secrets: inherit
   build-and-deploy-application-code:
     runs-on: ubuntu-latest
