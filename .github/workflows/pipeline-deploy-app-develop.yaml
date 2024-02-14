@@ -7,6 +7,13 @@ on:
       - 'task/*'
 
 jobs:
+  code-line-count:
+    name: "Code Line Count"
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: "Code line count"
+        uses: NHSDigital/uec-dos-management/.github/actions/code-line-count@main
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
