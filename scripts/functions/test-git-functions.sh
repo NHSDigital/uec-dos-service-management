@@ -177,11 +177,11 @@ fi
 #  -- other tests
 
 # invalid comment - includes a special character
-# export BUILD_COMMIT_MESSAGE="£DR-1 My 101 message"
-# /bin/bash ./scripts/githooks/git-commit-msg.sh
-# if [[ $? = 0 ]]; then
-#     all_pass=1
-# fi
+export BUILD_COMMIT_MESSAGE="£DR-1 My 101 message"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
 # # # invalid comment - includes a special character
 # export BUILD_COMMIT_MESSAGE="DR-1 My #1 message"
 # /bin/bash ./scripts/githooks/git-commit-msg.sh

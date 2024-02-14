@@ -7,7 +7,7 @@ GIT_BRANCH_PATTERN=$GIT_BRANCH_PATTERN_PREFIX/$GIT_BRANCH_PATTERN_SUFFIX
 GIT_BRANCH_MAX_LENGTH=60
 GIT_COMMIT_MESSAGE_MAX_LENGTH=100
 GIT_COMMIT_MESSAGE_PATTERN_MAIN='[A-Z]{2,5}-([0-9]{1,5})[[:space:]][A-Z][a-z0-9]+[[:space:]][a-z0-9]+[[:space:]][a-z0-9]+'
-GIT_SPECIAL_CHARS_MESSAGE='[\£]'
+GIT_SPECIAL_CHARS_MESSAGE='[£]'
 function git-check-if-commit-changed-directory {
     PRECOMMIT=$1
     BUILD_BRANCH=$2
@@ -71,10 +71,10 @@ function check_commit_message_format {
     BUILD_COMMIT_MESSAGE="$1"
     if ! [[ "$$(echo '$BUILD_COMMIT_MESSAGE' | sed s/\'//g | head -1)" =~ $GIT_COMMIT_MESSAGE_PATTERN_MAIN ]] ; then
       echo The commit message $BUILD_COMMIT_MESSAGE does not conform to the required rules
-    # else
-    #   if [[ "$$(echo '$BUILD_COMMIT_MESSAGE' | sed s/\'//g | head -1)" =~ $GIT_SPECIAL_CHARS_MESSAGE ]]  ; then
-    #     echo The commit message $BUILD_COMMIT_MESSAGE includes special characters
-    #   fi
+    else
+      if [[ "$$(echo '$BUILD_COMMIT_MESSAGE' | sed s/\'//g | head -1)" =~ $GIT_SPECIAL_CHARS_MESSAGE ]]  ; then
+        echo The commit message $BUILD_COMMIT_MESSAGE includes special characters
+      fi
     fi
 }
 function check_commit_message_length {
