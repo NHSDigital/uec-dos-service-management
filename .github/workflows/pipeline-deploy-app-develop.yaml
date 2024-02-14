@@ -13,10 +13,10 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: "Code line count"
-        uses: NHSDigital/uec-dos-management/.github/actions/code-line-count@main
+        uses: NHSDigital/uec-dos-management/.github/actions/code-line-count@task/DR-596_Possible_refactor_for_ext_use
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-596_Possible_refactor_for_ext_use
   echo-repo-name:
     name: "Echo repo name"
     needs:
