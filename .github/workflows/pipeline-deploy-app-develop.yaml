@@ -7,13 +7,6 @@ on:
       - 'task/*'
 
 jobs:
-  code-line-count:
-    name: "Code Line Count"
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: "Code line count"
-        uses: NHSDigital/uec-dos-management/.github/actions/code-line-count@task/DR-596_Possible_refactor_for_ext_use
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-596_Possible_refactor_for_ext_use
