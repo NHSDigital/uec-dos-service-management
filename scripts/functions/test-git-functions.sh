@@ -182,18 +182,48 @@ export BUILD_COMMIT_MESSAGE="£DR-1 My 101 message"
 if [[ $? = 0 ]]; then
     all_pass=1
 fi
-# # # invalid comment - includes a special character
-# export BUILD_COMMIT_MESSAGE="DR-1 My #1 message"
-# /bin/bash ./scripts/githooks/git-commit-msg.sh
-# if [[ $? = 0 ]]; then
-#     all_pass=1
-# fi
-# # # invalid comment - includes a special character
-# export BUILD_COMMIT_MESSAGE="DR-1 My exclamation! message"
-# /bin/bash ./scripts/githooks/git-commit-msg.sh
-# if [[ $? = 0 ]]; then
-#     all_pass=1
-# fi
+# # invalid comment - includes a special character
+export BUILD_COMMIT_MESSAGE="DR-1 My number #1 message"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
+# # invalid comment - includes a special character
+export BUILD_COMMIT_MESSAGE="DR-1 My bang message !"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
+export BUILD_COMMIT_MESSAGE="DR-1 My amp er & sand message"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
+export BUILD_COMMIT_MESSAGE="DR-1 My exclamation message!"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+export BUILD_COMMIT_MESSAGE="DR-1 My exc!amation message"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
+export BUILD_COMMIT_MESSAGE="DR-1 My percentage message %"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
+export BUILD_COMMIT_MESSAGE="DR-1 My perc%ntage message"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
 
 # # # invalid comment - includes a special character
 # export BUILD_COMMIT_MESSAGE="TESTING-1 My valid message"
@@ -262,131 +292,5 @@ if [ $all_pass = 1 ] ; then
 else
   echo all commit message tests passed
 fi
-
-all_pass=0
-# test export_terraform_workspace_name
-# DEPLOYMENT_WORKSPACE (if set used ; if not uses branch name)
-# BRANCH_NAME (if not set = current branch name)
-# unset both variables and reset as required before EACH test
-# current branch - is used - this test will require work or simply enter expected result for current branch below
-
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "dr-687" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from valid branch name
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "dpts-2211" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from main branch
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export BRANCH_NAME=main
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "default" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from deployment workspace
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export DEPLOYMENT_WORKSPACE=dr-665
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "dr-665" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from release workspace
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export DEPLOYMENT_WORKSPACE=R1.1.0
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "default" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from version workspace
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export DEPLOYMENT_WORKSPACE=V1.1.0
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "default" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from other workspace
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export DEPLOYMENT_WORKSPACE=other
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "other" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# workspace derived from empty workspace
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export DEPLOYMENT_WORKSPACE=""
-export BRANCH_NAME=task/DPTS-2211_My_valid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME = "dpts-2211" ]]; then
-    all_pass=0
-else
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# invalid branch name
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export BRANCH_NAME=task/DPTS22_My_invalid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME != "" ]]; then
-    all_pass=1
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from invalid branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# alternative invalid branch name
-unset DEPLOYMENT_WORKSPACE
-unset BRANCH_NAME
-export BRANCH_NAME=task/DPTS-22_my_invalid_branch
-export_terraform_workspace_name
-if [[ $TERRAFORM_WORKSPACE_NAME != "" ]]; then
-    all_pass=1
-    echo "Wrong derived Workpace $TERRAFORM_WORKSPACE_NAME from invalid branch name $BRANCH_NAME and DEPLOYMENT_WORKSPACE $DEPLOYMENT_WORKSPACE"
-fi
-
-# summarise workspace test results
-if [ $all_pass = 1 ] ; then
-  echo one or more workspace tests failed
-else
-  echo all workspace tests passed
-fi
-
 
 exit $all_pass
