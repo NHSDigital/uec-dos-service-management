@@ -9,7 +9,7 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-596_Possible_refactor_for_ext_use
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
   scan-secrets:
     uses: ./.github/workflows/scan-secrets.yaml
   check-file-format:
