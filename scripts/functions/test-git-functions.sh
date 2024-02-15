@@ -225,13 +225,6 @@ if [[ $? = 0 ]]; then
     all_pass=1
 fi
 
-# # # invalid comment - includes a special character
-# export BUILD_COMMIT_MESSAGE="TESTING-1 My valid message"
-# /bin/bash ./scripts/githooks/git-commit-msg.sh
-# if [[ $? = 0 ]]; then
-#     all_pass=1
-# fi
-
 # # invalid comment - no jira ref
 export BUILD_COMMIT_MESSAGE="My invalid commit message"
 /bin/bash ./scripts/githooks/git-commit-msg.sh
@@ -288,7 +281,7 @@ if [[ $? = 0 ]]; then
 fi
 
 # invalid comment - More than 5 u/c at start
-export BUILD_COMMIT_MESSAGE="ABCDe-11111 My valid messsage"
+export BUILD_COMMIT_MESSAGE="TESTe-11 My valid messsage"
 /bin/bash ./scripts/githooks/git-commit-msg.sh
 if [[ $? = 0 ]]; then
     all_pass=1
