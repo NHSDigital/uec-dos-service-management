@@ -287,6 +287,13 @@ if [[ $? = 0 ]]; then
     all_pass=1
 fi
 
+# invalid comment - More than 5 u/c at start
+export BUILD_COMMIT_MESSAGE="ABCDe-11111 My valid messsage"
+/bin/bash ./scripts/githooks/git-commit-msg.sh
+if [[ $? = 0 ]]; then
+    all_pass=1
+fi
+
 if [ $all_pass = 1 ] ; then
   echo one or more commit message tests failed
 else
