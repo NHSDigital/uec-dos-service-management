@@ -60,13 +60,6 @@ function check_git_commit_message {
     fi
 }
 
-function check_special_characters_in_message {
-    BUILD_COMMIT_MESSAGE="$1"
-    if [[ "$$(echo '$BUILD_COMMIT_MESSAGE' | sed s/\'//g | head -1)" =~ $GIT_SPECIAL_CHARS_MESSAGE ]]  ; then
-      echo The commit message $BUILD_COMMIT_MESSAGE includes special characters
-    fi
-}
-
 function check_commit_message_format {
     BUILD_COMMIT_MESSAGE="$1"
     if ! [[ "$$(echo '$BUILD_COMMIT_MESSAGE' | sed s/\'//g | head -1)" =~ $GIT_COMMIT_MESSAGE_PATTERN_MAIN ]] ; then
