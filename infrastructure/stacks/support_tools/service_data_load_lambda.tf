@@ -68,7 +68,7 @@ module "service_data_load_lambda" {
                     ],
                     "Resource":[
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations${local.workspace_suffix}",
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}"
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}",
                       "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/healthcare_services${local.workspace_suffix}"
                     ]
                 },
