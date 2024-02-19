@@ -110,6 +110,7 @@ jobs:
           - org_data_load
           - locations_data_load
           - organisation_affiliations_data_load
+          - service_data_load
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
