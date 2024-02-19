@@ -12,7 +12,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
   quality_check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@task/DR-596_Create_quality_check_flow
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@main
     needs:
       [
         metadata,
