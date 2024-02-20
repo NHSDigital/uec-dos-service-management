@@ -10,40 +10,24 @@ jobs:
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
-  scan-secrets:
-    uses: ./.github/workflows/scan-secrets.yaml
-  check-file-format:
-    uses: ./.github/workflows/check-file-format.yaml
-  check-markdown-format:
-    uses: ./.github/workflows/check-markdown-format.yaml
-  check-terraform-format:
-      uses: ./.github/workflows/check-terraform-format.yaml
-  validate-terraform:
-    name: Validate terraform code
-    uses: ./.github/workflows/validate-terraform.yaml
-    needs: metadata
+  quality_check:
+    name: "Quality Check"
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@main
+    needs:
+      [
+        metadata,
+      ]
     with:
-      ENV: dev
-      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
+      env: dev
+      repo_name : ${{ needs.metadata.outputs.reponame }}
+      stack: '["github-runner", "terraform_management", "application", "support_tools"]'
+      tf_version: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
-  check-python-black-format:
-      uses: ./.github/workflows/check-python-black-format.yaml
-  check-python-flake-rules:
-      uses: ./.github/workflows/check-python-flake-rules.yaml
-  cloc-repository:
-    uses: ./.github/workflows/cloc-repository.yaml
   unit-tests:
     needs:
       [
         metadata,
-        scan-secrets,
-        check-file-format,
-        check-markdown-format,
-        check-terraform-format,
-        check-python-black-format,
-        check-python-flake-rules,
-        cloc-repository,
-        validate-terraform,
+        quality_check,
       ]
     name: Run unit test
     uses: ./.github/workflows/unit-test.yaml
@@ -53,7 +37,7 @@ jobs:
   deploy-vpc-vpn-infrastructure:
     needs:
       [
-        validate-terraform,
+        quality_check,
         metadata,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
@@ -67,7 +51,7 @@ jobs:
   deploy-application-infrastructure:
       needs:
         [
-          validate-terraform,
+          quality_check,
           metadata,
         ]
       uses: ./.github/workflows/action-infrastructure-stack.yaml
@@ -80,7 +64,7 @@ jobs:
   deploy-aurora-related-infrastructure:
     needs:
       [
-        validate-terraform,
+        quality_check,
         metadata,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
@@ -94,7 +78,7 @@ jobs:
   deploy-support-tools-infrastructure:
       needs:
         [
-          validate-terraform,
+          quality_check,
           metadata,
         ]
       uses: ./.github/workflows/action-infrastructure-stack.yaml
