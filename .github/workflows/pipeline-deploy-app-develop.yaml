@@ -33,7 +33,6 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@task/DR-5964_Add_unit_test_workflow
     with:
       env: dev
-      python_version: 3.10
     secrets: inherit
   deploy-vpc-vpn-infrastructure:
     needs:
