@@ -30,7 +30,7 @@ jobs:
         metadata,
         quality_check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@task/DR-5964_Add_unit_test_workflow
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@main
     with:
       env: dev
     secrets: inherit
