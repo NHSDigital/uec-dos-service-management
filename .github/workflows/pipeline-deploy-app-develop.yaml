@@ -24,15 +24,15 @@ jobs:
       tf_version: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   unit-tests:
+    name: Unit Test
     needs:
       [
         metadata,
         quality_check,
       ]
-    name: Run unit test
-    uses: ./.github/workflows/unit-test.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@task/DR-5964_Add_unit_test_workflow
     with:
-      github_environment: dev
+      env: dev
     secrets: inherit
   deploy-vpc-vpn-infrastructure:
     needs:
