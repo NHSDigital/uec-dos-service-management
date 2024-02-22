@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.1
   quality_check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@main
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.1
     needs:
       [
         metadata,
