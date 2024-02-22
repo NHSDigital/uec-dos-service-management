@@ -17,6 +17,8 @@ function terraform-initialise {
     TERRAFORM_STATE_LOCK=$TERRAFORM_LOCK_TABLE
     TERRAFORM_STATE_KEY=$STACK/terraform.state
 
+    echo "Bucket: ${TERRAFORM_BUCKET_NAME}"
+
     if [[ "$TERRAFORM_USE_STATE_STORE" =~ ^(false|no|n|off|0|FALSE|NO|N|OFF) ]]; then
       terraform init
     else
