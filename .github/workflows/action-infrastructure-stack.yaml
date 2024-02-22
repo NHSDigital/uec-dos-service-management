@@ -18,10 +18,6 @@ on:
       action:
         required: true
         type: string
-      tf_vers:
-        description: "Version of terraform used"
-        required: true
-        type: string
       git_ref:
         description: "Git tag or not set to use head of current branch"
         required: false
@@ -52,10 +48,14 @@ jobs:
         with:
           ref: ${{ inputs.git_ref }}
 
+      - name: "Derive TF Version"
+        id: derive_tf_version
+        uses: NHSDigital/uec-dos-management/.github/actions/derive-tf-version@main
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ inputs.tf_vers }}
+          terraform_version: ${{ steps.derive_tf_version.outputs.terraform_version }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2.2.0
