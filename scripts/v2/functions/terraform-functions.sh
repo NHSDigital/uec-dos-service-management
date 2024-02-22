@@ -4,10 +4,10 @@ PROGRAM_CODE="${PROGRAM_CODE:-"nhse-uec"}"
 AWS_REGION="${AWS_REGION:-"eu-west-2"}"
 INFRASTRUCTURE_DIR="${INFRASTRUCTURE_DIR:-"infrastructure"}"
 TERRAFORM_DIR="${TERRAFORM_DIR:-"$INFRASTRUCTURE_DIR/stacks"}"
-ACCOUNT_TYPE="${ACCOUNT_TYPE:-""}"
+ENVIRONMENT="${ENVIRONMENT:-""}"
 
-export TERRAFORM_BUCKET_NAME="nhse-$ACCOUNT_TYPE-$TF_VAR_repo_name-terraform-state"  # globally unique name
-export TERRAFORM_LOCK_TABLE="nhse-$ACCOUNT_TYPE-$TF_VAR_repo_name-terraform-state-lock"
+export TERRAFORM_BUCKET_NAME="nhse-$ENVIRONMENT-$TF_VAR_repo_name-terraform-state"  # globally unique name
+export TERRAFORM_LOCK_TABLE="nhse-$ENVIRONMENT-$TF_VAR_repo_name-terraform-state-lock"
 
 function terraform-initialise {
     STACK=$1

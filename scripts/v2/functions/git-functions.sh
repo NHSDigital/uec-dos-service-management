@@ -69,28 +69,6 @@ function check_commit_message_length {
     fi
 }
 
-# exports string to use as terraform workspace
-# equal to DEPLOYMENT_WORKSPACE if previously exported and not a R or V tag
-# or derived from branch name
-function export_terraform_workspace_name {
-    TERRAFORM_WORKSPACE_NAME="default"
-    if [ -n "$DEPLOYMENT_WORKSPACE" ] ; then
-        if  ! [[ $DEPLOYMENT_WORKSPACE =~ ^[RV]{1} ]]; then
-          TERRAFORM_WORKSPACE_NAME=$(echo "$DEPLOYMENT_WORKSPACE" | tr "." "-")
-        fi
-    else
-      BRANCH_NAME="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
-      BRANCH_NAME=$(echo $BRANCH_NAME | sed 's/refs\/heads\/task/task/g')
-      if [ "$BRANCH_NAME" != 'main' ] && [[ $BRANCH_NAME =~ $GIT_BRANCH_PATTERN ]]  ; then
-        IFS='/' read -r -a name_array <<< "$BRANCH_NAME"
-        IFS='_' read -r -a ref <<< "${name_array[1]}"
-        TERRAFORM_WORKSPACE_NAME=$(echo "${ref[0]}" | tr "[:upper:]" "[:lower:]")
-      fi
-    fi
-
-    export TERRAFORM_WORKSPACE_NAME
-}
-
 # generate tag based on jira ref (derived from branch name ) commit hash and tag type
 function generate_tag {
     if [ -z "$TAG_TYPE" ] ; then

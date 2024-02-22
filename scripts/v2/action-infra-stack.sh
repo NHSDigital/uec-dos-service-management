@@ -1,44 +1,40 @@
 #! /bin/bash
 # You will need to export
-# ACTION eg plan, apply, destroy
-# STACK eg iam-policy
-# ACCOUNT_TYPE eg dev,test
-# Optional exports
-# DEPLOYMENT_WORKSPACE name of terraform workspace to be created/used
+# ACTION - The terraform action to perform, e.g. plan, apply, destroy, validate
+# STACK - The infrastructure stack to action
+# ENVIRONEMNT - The name of the environment to run the terraform action on, e.g. dev, test
+# WORKSPACE - The name of the workspace to action the terraform into, e.g. DR-123
 
 # fail on first error
 set -e
 # functions
 source ./scripts/v2/project-common.sh
 source ./scripts/v2/functions/terraform-functions.sh
-source ./scripts/v2/functions/git-functions.sh
 
-export ACTION="${ACTION:-""}"               # The terraform action to execute
-export STACK="${STACK:-""}"                 # The terraform stack to be actioned
-export ACCOUNT_TYPE="${ACCOUNT_TYPE:-""}"     # The type of account being used - dev test
+export ACTION="${ACTION:-""}"
+export STACK="${STACK:-""}"
+export ENVIRONMENT="${ENVIRONMENT:-""}"
 export USE_REMOTE_STATE_STORE="${USE_REMOTE_STATE_STORE:-true}"
-
-export_terraform_workspace_name
 
 # check exports have been done
 EXPORTS_SET=0
 # Check key variables have been exported - see above
 if [ -z "$ACTION" ] ; then
-  echo Set ACTION to terraform action one of plan apply or destroy
+  echo Set ACTION to terraform action one of plan, apply, destroy, or validate
   EXPORTS_SET=1
 fi
 
 if [ -z "$STACK" ] ; then
-  echo Set STACK to name of the stack to be planned, applied, destroyed
+  echo Set STACK to name of the stack to be actioned
   EXPORTS_SET=1
 fi
 
-if [ -z "$ACCOUNT_TYPE" ] ; then
-  echo Set ACCOUNT_TYPE type of ACCOUNT_TYPE - one of dev, test, preprod, prod
+if [ -z "$ENVIRONMENT" ] ; then
+  echo Set ENVIRONMENT to the environment to action the terraform in - one of dev, test, preprod, prod
   EXPORTS_SET=1
 else
-  if [[ ! $ACCOUNT_TYPE =~ ^(mgmt|dev|test|preprod|prod|security) ]]; then
-      echo ACCOUNT_TYPE should be mgmt dev test preprod security or prod
+  if [[ ! $ENVIRONMENT =~ ^(mgmt|dev|test|preprod|prod|security) ]]; then
+      echo ENVIRONMENT should be mgmt dev test preprod security or prod
       EXPORTS_SET=1
   fi
 fi
@@ -53,8 +49,8 @@ else
   fi
 fi
 
-if [ -z "$TERRAFORM_WORKSPACE_NAME" ] ; then
-  echo Set TERRAFORM_WORKSPACE_NAME
+if [ -z "$WORKSPACE" ] ; then
+  echo Set WORKSPACE to the workspace to action the terraform in
   EXPORTS_SET=1
 fi
 
@@ -66,9 +62,9 @@ fi
 COMMON_TF_VARS_FILE="common.tfvars"
 STACK_TF_VARS_FILE="$STACK.tfvars"
 PROJECT_TF_VARS_FILE="$ACCOUNT_PROJECT-project.tfvars"
-ENV_TF_VARS_FILE="$ACCOUNT_TYPE.tfvars"
+ENV_TF_VARS_FILE="$ENVIRONMENT.tfvars"
 
-echo "Preparing to run terraform $ACTION for stack $STACK to terraform workspace $TERRAFORM_WORKSPACE_NAME for account type $ACCOUNT_TYPE and project $ACCOUNT_PROJECT"
+echo "Preparing to run terraform $ACTION for stack $STACK to terraform workspace $WORKSPACE for environment $ENVIRONMENT and project $ACCOUNT_PROJECT"
 ROOT_DIR=$PWD
 # the directory that holds the stack to terraform
 STACK_DIR=$PWD/$INFRASTRUCTURE_DIR/stacks/$STACK
@@ -94,9 +90,9 @@ if [ ! -f "$ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE" ] ; then
 fi
 
 # init terraform
-terraform-initialise "$STACK" "$ACCOUNT_TYPE" "$USE_REMOTE_STATE_STORE"
+terraform-initialise "$STACK" "$ENVIRONMENT" "$USE_REMOTE_STATE_STORE"
 #
-terraform workspace select "$TERRAFORM_WORKSPACE_NAME" || terraform workspace new "$TERRAFORM_WORKSPACE_NAME"
+terraform workspace select "$WORKSPACE" || terraform workspace new "$WORKSPACE"
 #
 # plan
 if [ -n "$ACTION" ] && [ "$ACTION" = 'plan' ] ; then
@@ -135,5 +131,5 @@ if [ $TEMP_STACK_TF_VARS_FILE = 1 ] ; then
   rm -f "$ROOT_DIR/$INFRASTRUCTURE_DIR/$STACK_TF_VARS_FILE"
 fi
 
-echo "Completed terraform $ACTION for stack $STACK to terraform workspace $TERRAFORM_WORKSPACE_NAME for account type $ACCOUNT_TYPE  and project $ACCOUNT_PROJECT"
+echo "Completed terraform $ACTION for stack $STACK to terraform workspace $WORKSPACE for account type $ENVIRONMENT  and project $ACCOUNT_PROJECT"
 
