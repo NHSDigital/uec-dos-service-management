@@ -18,11 +18,9 @@ jobs:
         metadata,
       ]
     with:
-      env: dev
-      repo_name : ${{ needs.metadata.outputs.reponame }}
+      environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
-      stack: '["github-runner", "terraform_management", "application", "support_tools"]'
-      tf_version: ${{ needs.metadata.outputs.tf_max_version }}
+      stacks: '["github-runner", "terraform_management", "application", "support_tools"]'
     secrets: inherit
   unit-tests:
     needs:
