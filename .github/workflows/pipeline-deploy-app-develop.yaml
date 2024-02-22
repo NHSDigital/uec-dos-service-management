@@ -20,6 +20,7 @@ jobs:
     with:
       env: dev
       repo_name : ${{ needs.metadata.outputs.reponame }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
       stack: '["github-runner", "terraform_management", "application", "support_tools"]'
       tf_version: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
