@@ -9,11 +9,6 @@ on:
         type: string
 
 jobs:
-  derive-tf-versions:
-    name: Derive terraform version
-    uses: ./.github/workflows/derive-tf-version.yaml
-    with:
-      git_ref: ${{ inputs.git_tag }}
   get-metadata:
     name: Get metadata
     runs-on: ubuntu-latest
@@ -46,7 +41,6 @@ jobs:
     name: Deploy application infrastructure
     needs:
       [
-        derive-tf-versions,
         derive-deployment-workspace,
       ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
@@ -55,22 +49,16 @@ jobs:
       deployment_workspace: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
       stack: application
       action: apply
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
       git_ref: ${{ inputs.git_tag }}
     secrets: inherit
 
   deploy-support-tools-infrastructure:
-    needs:
-      [
-        derive-tf-versions,
-      ]
     uses: ./.github/workflows/action-infrastructure-stack.yaml
     with:
       github_environment: test
       stack: support_tools
       action: plan
       deployment_workspace: default
-      tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
     secrets: inherit
   build-and-deploy-application-code:
     runs-on: ubuntu-latest

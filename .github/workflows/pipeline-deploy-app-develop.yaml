@@ -9,19 +9,18 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@main
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.1
   quality_check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@main
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.1
     needs:
       [
         metadata,
       ]
     with:
-      env: dev
-      repo_name : ${{ needs.metadata.outputs.reponame }}
-      stack: '["github-runner", "terraform_management", "application", "support_tools"]'
-      tf_version: ${{ needs.metadata.outputs.tf_max_version }}
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["github-runner", "terraform_management", "application", "support_tools"]'
     secrets: inherit
   unit-tests:
     name: Unit Test
@@ -46,7 +45,6 @@ jobs:
       stack: network
       action: plan
       deployment_workspace: default
-      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   deploy-application-infrastructure:
       needs:
@@ -59,7 +57,6 @@ jobs:
         github_environment: dev
         stack: application
         action: apply
-        tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
       secrets: inherit
   deploy-aurora-related-infrastructure:
     needs:
@@ -73,7 +70,6 @@ jobs:
       stack: aurora
       action: apply
       deployment_workspace: default
-      tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
     secrets: inherit
   deploy-support-tools-infrastructure:
       needs:
@@ -86,7 +82,6 @@ jobs:
         github_environment: dev
         stack: support_tools
         action: apply
-        tf_vers: ${{ needs.metadata.outputs.tf_max_version }}
       secrets: inherit
   build-and-deploy-application-code:
     runs-on: ubuntu-latest
