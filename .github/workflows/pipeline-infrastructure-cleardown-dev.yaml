@@ -1,9 +1,9 @@
 name: Pipeline Cleardown Application Development Environment
 
 on:
-  delete:
+  push:
     branches:
-      - 'task/*'
+      - 'task/DR-5968_Patch_teardown_pipeline'
 jobs:
   destroy:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
