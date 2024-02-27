@@ -56,7 +56,7 @@ jobs:
       with:
         environment: dev
         workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: application
+        stacks: "['application']"
         action: apply
       secrets: inherit
   deploy-aurora-related-infrastructure:
