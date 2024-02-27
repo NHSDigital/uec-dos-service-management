@@ -52,7 +52,7 @@ jobs:
           quality_check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy_infrastructure.yaml@v0.3
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.3
       with:
         environment: dev
         workspace: ${{ needs.metadata.outputs.workspace }}
