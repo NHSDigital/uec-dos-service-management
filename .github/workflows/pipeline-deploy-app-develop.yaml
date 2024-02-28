@@ -52,10 +52,12 @@ jobs:
           quality_check,
           metadata,
         ]
-      uses: ./.github/workflows/action-infrastructure-stack.yaml
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.3
       with:
-        github_environment: dev
-        stack: application
+        environment: dev
+        domain: "uec-dos-service-management"
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        stacks: "['application']"
         action: apply
       secrets: inherit
   deploy-aurora-related-infrastructure:
