@@ -1,0 +1,75 @@
+name: Pipeline Deploy Account Level Infrastructure
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'task/*'
+
+jobs:
+    metadata:
+      name: "Get Metadata"
+      uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.3
+    # deploy-bootstrap-dos-dev:
+    #   name: Maintain github runner and terraform management for dos dev account
+    #   uses: ./.github/workflows/deploy-bootstrap.yaml
+    #   with:
+    #     ENV: dev
+    #   secrets: inherit
+    # deploy-bootstrap-dos-test:
+    #   name: Maintain github runner and terraform management for dos test account
+    #   uses: ./.github/workflows/deploy-bootstrap.yaml
+    #   with:
+    #     ENV: test
+    #   secrets: inherit
+    deploy-account-infrastructure-apply:
+      name: "Deploy VPN and Aurora Infrastructure"
+      needs:
+        [
+          metadata,
+        ]
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.3
+      with:
+        environment: dev
+        domain: "uec-dos-service-management"
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        stacks: "['network','aurora']"
+        action: plan
+      secrets: inherit
+    # deploy-vpc-vpn-infrastructure:
+    #   name: Maintain the vpc infrastructure
+    #   needs:
+    #     [
+    #       metadata,
+    #     ]
+    #   uses: ./.github/workflows/action-infrastructure-stack.yaml
+    #   with:
+    #     github_environment: dev
+    #     stack: network
+    #     action: plan
+    #     deployment_workspace: default
+    #   secrets: inherit
+    # deploy-aurora-related-infrastructure:
+    #   needs:
+    #     [
+    #       metadata,
+    #     ]
+    #   uses: ./.github/workflows/action-infrastructure-stack.yaml
+    #   with:
+    #     github_environment: dev
+    #     stack: aurora
+    #     action: apply
+    #     deployment_workspace: default
+    #   secrets: inherit
+    slack-notifications:
+      needs: [
+        metadata,
+        deploy-account-infrastructure-apply,
+      ]
+      if: always()
+      uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.3
+      with:
+        env: dev
+      secrets: inherit
+
+
