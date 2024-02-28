@@ -50,7 +50,6 @@ jobs:
   destroy-application-infrastructure:
         needs:
           [
-            derive-tf-versions,
             derive-workspace
           ]
         uses: ./.github/workflows/action-infrastructure-stack.yaml
@@ -59,7 +58,6 @@ jobs:
           stack: application
           action: destroy
           deployment_workspace: ${{needs.derive-workspace.outputs.workspace}}
-          tf_vers: ${{needs.derive-tf-versions.outputs.maxVersion}}
         secrets: inherit
   cleardown-terraform-state:
       needs:
