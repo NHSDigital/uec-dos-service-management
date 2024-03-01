@@ -46,3 +46,7 @@ variable "layers" {
 variable "timeout" {
   default = "3"
 }
+
+variable "log_level" {
+  default = "info"
+}
