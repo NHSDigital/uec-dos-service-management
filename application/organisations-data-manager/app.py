@@ -10,8 +10,9 @@ app = APIGatewayRestResolver()
 # Auto resolves the type of request comming through and sets APIGatewayRestResolver
 # fields
 
-log_level = os.environ.get('LOG_LEVEL', 'info')
-logger = Logger(service='organisations', level=log_level)
+log_level = os.environ.get("LOG_LEVEL", "info")
+logger = Logger(service="organisations", level=log_level)
+
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
