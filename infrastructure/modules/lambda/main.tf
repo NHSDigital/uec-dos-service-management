@@ -15,6 +15,6 @@ module "lambda" {
   policy_jsons            = var.policy_jsons
   timeout                 = var.timeout
 
-  environment_variables = merge(var.environment_variables, { WORKSPACE = "${local.environment_workspace}", LOG_LEVEL = "${var.log_level}"})
+  environment_variables = merge(var.environment_variables, { WORKSPACE = "${local.environment_workspace}", LOG_LEVEL = "${var.log_level}" })
   layers                = concat(local.common_layers, var.layers)
 }
