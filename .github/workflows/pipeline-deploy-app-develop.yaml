@@ -86,43 +86,30 @@ jobs:
         action: apply
       secrets: inherit
   build-and-deploy-application-code:
-    runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      id-token: write
-      contents: read
+    name: Build and deploy application
     needs:
       [
-        deploy-application-infrastructure,
+        metadata,
+        deploy-application-infrastructure
       ]
-    strategy:
-      matrix:
-        service-name:
-          - healthcare-services-data-manager
-          - locations-data-manager
-          - organisation-affiliations-data-manager
-          - organisations-data-manager
-          - questionnaire-responses-data-manager
-          - questionnaires-data-manager
-          - org_data_load
-          - locations_data_load
-          - organisation_affiliations_data_load
-          - service_data_load
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
-          role-session-name: github-pipeline-session
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Build and deploy application code
-        run: |
-          export SERVICE_NAME=${{ matrix.service-name }}
-          /bin/bash ./scripts/app-build-deploy.sh
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.5
+    with:
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager',
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load'
+        ]"
+    secrets: inherit
   slack-notifications:
     needs: [
       build-and-deploy-application-code,
