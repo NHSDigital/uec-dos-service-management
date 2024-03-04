@@ -34,43 +34,30 @@ jobs:
       deployment_workspace: default
     secrets: inherit
   build-and-deploy-application-code:
-    runs-on: ubuntu-latest
-    environment: test
-    permissions:
-      id-token: write
-      contents: read
+    name: Build and deploy application
     needs:
       [
-        deploy-application-infrastructure,
-        derive-deployment-workspace,
+        metadata,
+        deploy-application-infrastructure
       ]
-    strategy:
-      matrix:
-        service-name:
-          - healthcare-services-data-manager
-          - locations-data-manager
-          - organisation-affiliations-data-manager
-          - organisations-data-manager
-          - questionnaire-responses-data-manager
-          - questionnaires-data-manager
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.git_tag }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
-          role-session-name: github-pipeline-session
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Build and deploy application code
-        run: |
-          export SERVICE_NAME=${{ matrix.service-name }}
-          export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
-          /bin/bash ./scripts/app-build-deploy.sh
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.5
+    with:
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager',
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load'
+        ]"
+    secrets: inherit
   integration-test:
       needs:
         [
