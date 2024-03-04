@@ -28,7 +28,7 @@ jobs:
         [
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.3
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@task/DR-5967_Refactor_bootstrapper_workflow
       with:
         environment: dev
         domain: "uec-dos-service-management"
