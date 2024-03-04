@@ -32,7 +32,9 @@ jobs:
       with:
         environment: dev
         domain: "uec-dos-service-management"
-        workspace: ${{ needs.metadata.outputs.workspace }}
+        # TODO
+        # workspace: ${{ needs.metadata.outputs.workspace }}
+        workspace: "default"
         stacks: "['network','aurora','terraform_management','github-runner']"
         action: plan
       secrets: inherit
