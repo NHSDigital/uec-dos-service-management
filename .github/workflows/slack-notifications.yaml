@@ -7,6 +7,14 @@ on:
           description: "Pass environment for slack notification channel "
           required: true
           type: string
+        organisation:
+          description: "organisation name"
+          type: string
+          default: NHSDigital
+        reponame:
+          description: "repo name"
+          type: string
+          default: uec-dos-management
 
 jobs:
   slack-notifications:
@@ -36,13 +44,13 @@ jobs:
       with:
         payload: |
             {
-            "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }} \nPushed by: @${{ github.actor }}",
+            "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/${{ inputs.organisation }}/${{ inputs.reponame }}/actions/runs/${{ github.run_id }} \nPushed by: @${{ github.actor }}",
             "blocks": [
                 {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/NHSDigital/uec-dos-service-management/actions/runs/${{ github.run_id }}\nPushed by: @${{ github.actor }}"
+                    "text": "GitHub Action build result: ${{ env.WORKFLOW_CONCLUSION }}\nhttps://github.com/${{ inputs.organisation }}/${{ inputs.reponame }}/actions/runs/${{ github.run_id }}\nPushed by: @${{ github.actor }}"
                 }
                 }
             ]
