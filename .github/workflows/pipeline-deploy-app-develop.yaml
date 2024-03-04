@@ -4,15 +4,15 @@ on:
   push:
     branches:
       - main
-#      - 'task/*'
+      - 'task/*'
 
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.3
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.6
   quality_check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.3
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.6
     needs:
       [
         metadata,
@@ -29,23 +29,10 @@ jobs:
         metadata,
         quality_check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@v0.3
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@v0.6
     with:
       env: dev
     secrets: inherit
-  # deploy-vpc-vpn-infrastructure:
-  #   needs:
-  #     [
-  #       quality_check,
-  #       metadata,
-  #     ]
-  #   uses: ./.github/workflows/action-infrastructure-stack.yaml
-  #   with:
-  #     github_environment: dev
-  #     stack: network
-  #     action: plan
-  #     deployment_workspace: default
-  #   secrets: inherit
   deploy-application-infrastructure:
       needs:
         [
@@ -60,19 +47,6 @@ jobs:
         stacks: "['application']"
         action: apply
       secrets: inherit
-  # deploy-aurora-related-infrastructure:
-  #   needs:
-  #     [
-  #       quality_check,
-  #       metadata,
-  #     ]
-  #   uses: ./.github/workflows/action-infrastructure-stack.yaml
-  #   with:
-  #     github_environment: dev
-  #     stack: aurora
-  #     action: apply
-  #     deployment_workspace: default
-  #   secrets: inherit
   deploy-support-tools-infrastructure:
       needs:
         [
@@ -115,7 +89,6 @@ jobs:
       build-and-deploy-application-code,
       unit-tests,
       deploy-support-tools-infrastructure,
-      deploy-vpc-vpn-infrastructure,
     ]
     if: always()
     uses: ./.github/workflows/slack-notifications.yaml
