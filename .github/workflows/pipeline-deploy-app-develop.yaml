@@ -92,7 +92,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.5
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
