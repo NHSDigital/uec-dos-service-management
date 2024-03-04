@@ -9,49 +9,22 @@ on:
         type: string
 
 jobs:
-  get-metadata:
-    name: Get metadata
-    runs-on: ubuntu-latest
-    outputs:
-      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
-      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
-      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
-    steps:
-      - id: metadata
-        run: |
-          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
-          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
-          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
-          echo "triggering action: ${{ github.event_name }}"
-          echo "ref type: ${{ github.ref_type }}"
-          echo "triggering git reference: ${{ github.ref_name }}"
-          echo "deploying from git tag ${{ inputs.git_tag }}"
-  derive-deployment-workspace:
-    name: Derive deployment workspace
-    runs-on: ubuntu-latest
-    outputs:
-      deployment_workspace: ${{ steps.derive-workspace-from-tag.outputs.deployment_workspace }}
-    steps:
-      - id: derive-workspace-from-tag
-        name: Extract deployment workspace from git tag
-        run: |
-            echo "deployment_workspace=$(awk -F- '{print $1}' <<< ${{ inputs.git_tag }})-$(awk -F- '{print $2}' <<< ${{ inputs.git_tag }})" >> $GITHUB_OUTPUT
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.5
   deploy-application-infrastructure:
-    name: Deploy application infrastructure
     needs:
       [
-        derive-deployment-workspace,
+        metadata,
       ]
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.5
     with:
-      github_environment: "test"
-      deployment_workspace: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
-      stack: application
+      environment: test
+      domain: "uec-dos-service-management"
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: "['application']"
       action: apply
-      git_ref: ${{ inputs.git_tag }}
     secrets: inherit
-
   deploy-support-tools-infrastructure:
     uses: ./.github/workflows/action-infrastructure-stack.yaml
     with:
