@@ -61,15 +61,15 @@ jobs:
   integration-test:
       needs:
         [
+          metadata,
           deploy-application-infrastructure,
-          build-and-deploy-application-code,
-          derive-deployment-workspace,
+          build-and-deploy-application-code
         ]
       name: Run integration tests
       uses: ./.github/workflows/integration-test.yaml
       with:
         github_environment: test
-        DEPLOYMENT_WORKSPACE: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
+        DEPLOYMENT_WORKSPACE: ${{ needs.metadata.outputs.workspace }}
       secrets: inherit
 
 
