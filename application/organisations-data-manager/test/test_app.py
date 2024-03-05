@@ -3,6 +3,7 @@ import service
 import boto3
 import json
 from moto import mock_dynamodb
+from types import SimpleNamespace
 
 mock_id = "2690664379947884"
 mock_active = "true"
@@ -70,7 +71,8 @@ def test_get_record_by_id():
     organisations_record = build_mock_organisations_item()
     table.put_item(Item=organisations_record, TableName=service.TABLE_NAME)
     "Test GET method"
-    mock_context = None
+    lambda_context_data = load_lambda_context_from_file("lambda_context.json")
+    mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_get_event.json")
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
@@ -82,7 +84,8 @@ def test_get_record_by_id():
 def test_put_record():
     table = create_mock_dynamodb()
     "Test PUT method"
-    mock_context = None
+    lambda_context_data = load_lambda_context_from_file("lambda_context.json")
+    mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_put_event.json")
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
@@ -94,7 +97,8 @@ def test_put_record():
 def test_post_record():
     table = create_mock_dynamodb()
     "Test POST method"
-    mock_context = None
+    lambda_context_data = load_lambda_context_from_file("lambda_context.json")
+    mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_post_event.json")
     response = app.lambda_handler(mock_load, mock_context)
     assert str(response["statusCode"]) == "HTTPStatus.OK"
@@ -108,7 +112,8 @@ def test_delete_record_by_id():
     organisations_record = build_mock_organisations_item()
     table.put_item(Item=organisations_record, TableName=service.TABLE_NAME)
     "Test DELETE method"
-    mock_context = None
+    lambda_context_data = load_lambda_context_from_file("lambda_context.json")
+    mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_delete_event.json")
     app.lambda_handler(mock_load, mock_context)
     organisations_record = table.get_item(Key={"id": mock_id})
@@ -124,3 +129,12 @@ def load_sample_event_from_file(filename) -> dict:
         json_str = file_handle.read()
         event = json.loads(json_str)
         return event
+
+
+def load_lambda_context_from_file(filename):
+    """
+    load Lambda context from a JSON file
+    """
+    context_file_name = "tests/integration/lambda_context_json/" + filename
+    with open(context_file_name, "r") as f:
+        return json.load(f)

@@ -1,0 +1,12 @@
+{
+    "aws_request_id": "ca28f6f7-d82a-402c-bf7e-8dfacbab7f7d",
+    "log_group_name": "/aws/lambda/data-manager-dr-xxx",
+    "log_stream_name": "2024/03/04/[$LATEST]acfa1f87f4744707b2aa9cac7d350637",
+    "function_name": "data-manager-dr-xxx",
+    "memory_limit_in_mb": "128",
+    "function_version": "$LATEST",
+    "invoked_function_arn": "function:data-manager-dr-xxx",
+    "client_context": null,
+    "identity": "CognitoIdentity([cognito_identity_id=None,cognito_identity_pool_id=None])",
+    "_epoch_deadline_time_in_ms": 1709547977406
+}
