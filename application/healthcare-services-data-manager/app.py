@@ -17,7 +17,6 @@ logger = Logger(service="healthcare_services", level=log_level)
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     logger.info(event)
-    logger.debug(event)
     return app.resolve(event, context)
 
 
