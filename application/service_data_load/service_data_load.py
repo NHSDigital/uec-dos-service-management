@@ -26,7 +26,7 @@ def read_s3_file():
 
 
 # Common schema mapping
-def common_schema(value1, value2, name_value, odscode):
+def common_schema(value1, value2, name_value, odscode, day_list):
     time = common_functions.get_formatted_datetime()
     return {
         "id": common_functions.generate_random_id(),
@@ -48,29 +48,8 @@ def common_schema(value1, value2, name_value, odscode):
         "modifiedDateTime": time,
         "providedBy": "",
         "location": "",
+        "ServiceAvailability": day_list,
     }
-
-
-# Schema mapping function
-def map_to_json_schema(row):
-    value1 = row["uid"]
-    value2 = row["id"]
-    name_value = row["dosrewrite_name"]
-    odscode = row["modified_odscode"]
-
-    return common_schema(value1, value2, name_value, odscode)
-
-
-def map_to_json_schema2(duplicate_rows, groupkey):
-    id_mapping = []
-    uid_mapping = []
-    odscode_map = groupkey
-    name_value = "Community Pharmacy Consultation Service"
-    for index, row in duplicate_rows.iterrows():
-        id_mapping.append(row["id"])
-        uid_mapping.append(row["uid"])
-
-    return common_schema(id_mapping, uid_mapping, name_value, odscode_map)
 
 
 def write_to_dynamodb(table_name, json_data_list):
@@ -150,26 +129,36 @@ def schema_mapping():
         healthcare_table_name
     )
     json_data_list = []
-    read_file = read_s3_file.groupby("modified_odscode")
+    read_file = read_s3_file.groupby("id", "uid")
 
     for groupkey, group in read_file:
         unique_rows = group[
             group["dosrewrite_name"] != "Community Pharmacy Consultation Service"
         ]
-        duplicate_rows = group[
-            group["dosrewrite_name"] == "Community Pharmacy Consultation Service"
-        ]
 
         for index, row in unique_rows.iterrows():
-            json_data = map_to_json_schema(row)
-            json_data_list.append(json_data)
+            id_val = row["id"]
+            uid_val = row["uid"]
+            day_list = []
+            for _, r in group.iterrows():
+                if r["id"] == id_val and r["uid"] == uid_val:
+                    day_list.append(
+                        {
+                            "dayofweek": r["dayofweek"],
+                            "starttime": r["starttime"],
+                            "endtime": r["endtime"],
+                        }
+                    )
+                    break
 
-        json_data = map_to_json_schema2(duplicate_rows, groupkey)
-        json_data_list.append(json_data)
+            json_data = common_schema(
+                id_val, uid_val, row["dosrewrite_name"], row["code"], day_list
+            )
+            json_data_list.append(json_data)
 
     # Move the following lines outside the loop to write data to DynamoDB after processing all groups
     write_to_dynamodb(healthcare_workspaced_table_name, json_data_list)
     update_services_providedby(healthcare_workspaced_table_name, json_data_list)
     update_services_location(healthcare_workspaced_table_name, json_data_list)
 
-    print("All data written to all_data.json successfully!")
+    print("All data written to Healthcareservice Table successfully!")
