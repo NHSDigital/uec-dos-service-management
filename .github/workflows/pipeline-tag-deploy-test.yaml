@@ -4,49 +4,43 @@ on:
     types: [ labeled ]
 
 jobs:
-  generate-test-ready-tag:
-    name: Format test ready tag
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.7
+  generate-tag-name:
+    name: "Generate Tag Name"
     if: ${{ github.event.label.name == 'Test Ready' }} && startswith(github.head_ref, 'task/')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Echo branch
-        run: |
-          echo "${{ github.head_ref  }}"
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Get text of test ready tag
-        id: get-test-tag
-        run: |
-          export TAG_TYPE="test"
-          export BRANCH_NAME=${{ github.head_ref }}
-          echo "TEST_TAG=$(/bin/bash ./scripts/tag-code.sh)" >> $GITHUB_OUTPUT
-    outputs:
-      test_tag: "${{ steps.get-test-tag.outputs.TEST_TAG }}"
-  apply-test-ready-tag:
-    name: Tag code
-    runs-on: ubuntu-latest
-    needs: generate-test-ready-tag
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Tag test ready code
-        id: "tag-code"
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{needs.generate-test-ready-tag.outputs.test_tag}}
-          tag_prefix: ""
+    needs:
+      [
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@v0.7
+    with:
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      tag_type: test
+      use_commit_hash: "yes"
+  tag-repository:
+    name: "Tag Repository"
+    needs:
+      [
+        metadata,
+        generate-tag-name,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/tag-repository.yaml@v0.7
+    with:
+      tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
+      tag_overwrite: "yes"
   deploy-to-test:
     name: Deploy to test
     needs: [
-      generate-test-ready-tag,
-      apply-test-ready-tag,
+      metadata,
+      generate-tag-name,
+      tag-repository,
     ]
     uses: ./.github/workflows/pipeline-deploy-app-test.yaml
     with:
-      git_tag: ${{needs.generate-test-ready-tag.outputs.test_tag}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      tag: ${{needs.generate-tag-name.outputs.tag_name}}
     secrets: inherit
   slack-notifications:
     needs: [
