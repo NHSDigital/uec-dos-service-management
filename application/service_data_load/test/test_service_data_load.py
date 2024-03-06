@@ -78,45 +78,6 @@ class TestAll(unittest.TestCase):
         mock_generate_random_id.assert_called_once()
         mock_get_formatted_datetime.assert_called_once()
 
-    # @patch("application.service_data_load.service_data_load.common_schema")
-    # def test_map_to_json_schema(self, mock_common_schema):
-    #     # Mock the input row
-    #     input_row = {
-    #         "uid": "value1",
-    #         "id": "value2",
-    #         "dosrewrite_name": "name_value",
-    #         "modified_odscode": "odscode",
-    #     }
-
-    #     # Call the function with the input row
-    #     map_to_json_schema(input_row)
-
-    #     # Assert that common_schema was called with the correct arguments
-    #     mock_common_schema.assert_called_once_with(
-    #         "value1", "value2", "name_value", "odscode"
-    #     )
-
-    # @patch("application.service_data_load.service_data_load.common_schema")
-    # def test_map_to_json_schema2(self, mock_common_schema):
-    #     # Mock the input parameters
-    #     duplicate_rows = Mock()
-    #     duplicate_rows.iterrows.return_value = [
-    #         (0, {"id": "id1", "uid": "uid1"}),
-    #         (1, {"id": "id2", "uid": "uid2"}),
-    #     ]
-    #     groupkey = "groupkey_value"
-
-    #     # Call the function with the input parameters
-    #     map_to_json_schema2(duplicate_rows, groupkey)
-
-    #     # Assert that common_schema was called with the correct arguments
-    #     mock_common_schema.assert_called_once_with(
-    #         ["id1", "id2"],
-    #         ["uid1", "uid2"],
-    #         "Community Pharmacy Consultation Service",
-    #         "groupkey_value",
-    #     )
-
     @patch("application.service_data_load.service_data_load.boto3.resource")
     def test_write_to_dynamodb(self, mock_resource):
         # Mock the DynamoDB table and put_item method
