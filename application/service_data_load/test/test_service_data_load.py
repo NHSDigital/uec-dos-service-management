@@ -1,8 +1,6 @@
 from application.service_data_load.service_data_load import (
     read_s3_file,
     common_schema,
-    map_to_json_schema,
-    map_to_json_schema2,
     write_to_dynamodb,
     update_services_providedby,
     update_services_location,
@@ -49,7 +47,7 @@ class TestAll(unittest.TestCase):
         mock_get_formatted_datetime.return_value = "2024-01-24T12:00:00"
 
         # Call the function with sample inputs
-        result = common_schema("value1", "value2", "name_value", "odscode")
+        result = common_schema("value1", "value2", "name_value", "odscode", "day_list")
 
         # Assert the structure and values of the returned dictionary
         expected_result = {
@@ -72,51 +70,13 @@ class TestAll(unittest.TestCase):
             "modifiedDateTime": "2024-01-24T12:00:00",
             "providedBy": "",
             "location": "",
+            "ServiceAvailability": "day_list",
         }
         self.assertEqual(result, expected_result)
 
         # Assert that generate_random_id and get_formatted_datetime were called
         mock_generate_random_id.assert_called_once()
         mock_get_formatted_datetime.assert_called_once()
-
-    @patch("application.service_data_load.service_data_load.common_schema")
-    def test_map_to_json_schema(self, mock_common_schema):
-        # Mock the input row
-        input_row = {
-            "uid": "value1",
-            "id": "value2",
-            "dosrewrite_name": "name_value",
-            "modified_odscode": "odscode",
-        }
-
-        # Call the function with the input row
-        map_to_json_schema(input_row)
-
-        # Assert that common_schema was called with the correct arguments
-        mock_common_schema.assert_called_once_with(
-            "value1", "value2", "name_value", "odscode"
-        )
-
-    @patch("application.service_data_load.service_data_load.common_schema")
-    def test_map_to_json_schema2(self, mock_common_schema):
-        # Mock the input parameters
-        duplicate_rows = Mock()
-        duplicate_rows.iterrows.return_value = [
-            (0, {"id": "id1", "uid": "uid1"}),
-            (1, {"id": "id2", "uid": "uid2"}),
-        ]
-        groupkey = "groupkey_value"
-
-        # Call the function with the input parameters
-        map_to_json_schema2(duplicate_rows, groupkey)
-
-        # Assert that common_schema was called with the correct arguments
-        mock_common_schema.assert_called_once_with(
-            ["id1", "id2"],
-            ["uid1", "uid2"],
-            "Community Pharmacy Consultation Service",
-            "groupkey_value",
-        )
 
     @patch("application.service_data_load.service_data_load.boto3.resource")
     def test_write_to_dynamodb(self, mock_resource):
@@ -215,8 +175,6 @@ class TestAll(unittest.TestCase):
         )
 
     @patch("application.service_data_load.service_data_load.read_s3_file")
-    @patch("application.service_data_load.service_data_load.map_to_json_schema")
-    @patch("application.service_data_load.service_data_load.map_to_json_schema2")
     @patch("application.service_data_load.service_data_load.write_to_dynamodb")
     @patch("application.service_data_load.service_data_load.update_services_providedby")
     @patch("application.service_data_load.service_data_load.update_services_location")
@@ -225,8 +183,6 @@ class TestAll(unittest.TestCase):
         mock_update_services_location,
         mock_update_services_providedby,
         mock_write_to_dynamodb,
-        mock_map_to_json_schema2,
-        mock_map_to_json_schema,
         mock_read_s3_file,
     ):
         # Mocking dependencies
@@ -235,7 +191,6 @@ class TestAll(unittest.TestCase):
         mock_unique_rows = MagicMock()
         mock_duplicate_rows = MagicMock()
         mock_row = MagicMock()
-        mock_json_data = {"mock": "data"}
 
         # Set up the mock to return an iterator with expected values
         mock_read_s3_file.return_value.groupby.return_value.__iter__.return_value = (
@@ -245,9 +200,6 @@ class TestAll(unittest.TestCase):
 
         # Set up the mock for unique_rows.iterrows() to return an iterator that doesn't raise StopIteration
         mock_unique_rows.iterrows.return_value = iter([(0, mock_row)])
-
-        mock_map_to_json_schema.return_value = mock_json_data
-        mock_map_to_json_schema2.return_value = mock_json_data
 
         # Call the function to test
         schema_mapping()
