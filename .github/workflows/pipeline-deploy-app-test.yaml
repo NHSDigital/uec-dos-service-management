@@ -18,6 +18,7 @@ jobs:
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
+      domain: "uec-dos-service-management"
       stacks: "['application']"
       tag: ${{ inputs.tag }}
       action: apply
