@@ -2,15 +2,22 @@ name: Manually deploy tagged code to test
 on:
   workflow_dispatch:
     inputs:
-      git_tag:
-        description: "Specify the git commit tag to be used for deployment"
+      tag:
+        description: "Specify the tag to be used for deployment"
         required: true
         type: string
 
 jobs:
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-774_Bug_fixes_refactor
   deploy-to-test:
     name: Deploy tagged code to test
+    needs: [
+      metadata,
+    ]
     uses: ./.github/workflows/pipeline-deploy-app-test.yaml
     with:
-      git_tag: ${{ inputs.git_tag }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      tag: ${{ inputs.tag }}
     secrets: inherit
