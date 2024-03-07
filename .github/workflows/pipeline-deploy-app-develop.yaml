@@ -110,6 +110,20 @@ jobs:
           'service_data_load'
         ]"
     secrets: inherit
+  # TODO for test only
+  run-integration-tests:
+    needs:
+      [
+        quality_check,
+        metadata,
+        build-and-deploy-application-code,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/integration_test.yaml@task/DR-771_Int_test_flow
+    with:
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+    secrets: inherit
+    # TODO end
   slack-notifications:
     needs: [
       build-and-deploy-application-code,
