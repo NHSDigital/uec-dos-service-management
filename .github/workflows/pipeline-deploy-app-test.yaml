@@ -3,115 +3,55 @@ name: Pipeline Deployment Application Test Environment
 on:
   workflow_call:
     inputs:
-      git_tag:
-        description: "Defines git commit tag to be used for deployment"
+      workspace:
+        description: "The workspace to deploy the service into"
         required: true
         type: string
-
+      tag:
+        description: "Defines the tag to be used for deployment"
+        required: true
+        type: string
 jobs:
-  get-metadata:
-    name: Get metadata
-    runs-on: ubuntu-latest
-    outputs:
-      build_datetime: ${{ steps.metadata.outputs.build_datetime }}
-      build_timestamp: ${{ steps.metadata.outputs.build_timestamp }}
-      build_epoch: ${{ steps.metadata.outputs.build_epoch }}
-    steps:
-      - id: metadata
-        run: |
-          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
-          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
-          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
-          echo "triggering action: ${{ github.event_name }}"
-          echo "ref type: ${{ github.ref_type }}"
-          echo "triggering git reference: ${{ github.ref_name }}"
-          echo "deploying from git tag ${{ inputs.git_tag }}"
-  derive-deployment-workspace:
-    name: Derive deployment workspace
-    runs-on: ubuntu-latest
-    outputs:
-      deployment_workspace: ${{ steps.derive-workspace-from-tag.outputs.deployment_workspace }}
-    steps:
-      - id: derive-workspace-from-tag
-        name: Extract deployment workspace from git tag
-        run: |
-            echo "deployment_workspace=$(awk -F- '{print $1}' <<< ${{ inputs.git_tag }})-$(awk -F- '{print $2}' <<< ${{ inputs.git_tag }})" >> $GITHUB_OUTPUT
   deploy-application-infrastructure:
     name: Deploy application infrastructure
-    needs:
-      [
-        derive-deployment-workspace,
-      ]
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.7
     with:
-      github_environment: "test"
-      deployment_workspace: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
-      stack: application
+      environment: test
+      workspace: ${{ inputs.workspace }}
+      domain: "uec-dos-service-management"
+      stacks: "['application']"
+      tag: ${{ inputs.tag }}
       action: apply
-      git_ref: ${{ inputs.git_tag }}
     secrets: inherit
-
-  deploy-support-tools-infrastructure:
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
-    with:
-      github_environment: test
-      stack: support_tools
-      action: plan
-      deployment_workspace: default
-    secrets: inherit
-  build-and-deploy-application-code:
-    runs-on: ubuntu-latest
-    environment: test
-    permissions:
-      id-token: write
-      contents: read
+  build-and-deploy-application:
+    name: Build and deploy application
     needs:
       [
         deploy-application-infrastructure,
-        derive-deployment-workspace,
       ]
-    strategy:
-      matrix:
-        service-name:
-          - healthcare-services-data-manager
-          - locations-data-manager
-          - organisation-affiliations-data-manager
-          - organisations-data-manager
-          - questionnaire-responses-data-manager
-          - questionnaires-data-manager
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.git_tag }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2.2.0
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/uec-dos-service-management-github-runner
-          role-session-name: github-pipeline-session
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Build and deploy application code
-        run: |
-          export SERVICE_NAME=${{ matrix.service-name }}
-          export DEPLOYMENT_WORKSPACE=${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
-          /bin/bash ./scripts/app-build-deploy.sh
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.7
+    with:
+      environment: test
+      workspace: ${{ inputs.workspace }}
+      services: "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager',
+        ]"
+      tag: ${{ inputs.tag }}
+    secrets: inherit
   integration-test:
       needs:
         [
           deploy-application-infrastructure,
-          build-and-deploy-application-code,
-          derive-deployment-workspace,
+          build-and-deploy-application,
         ]
       name: Run integration tests
       uses: ./.github/workflows/integration-test.yaml
       with:
         github_environment: test
-        DEPLOYMENT_WORKSPACE: ${{ needs.derive-deployment-workspace.outputs.deployment_workspace }}
+        DEPLOYMENT_WORKSPACE: ${{ inputs.workspace }}
       secrets: inherit
-
-
-
-
