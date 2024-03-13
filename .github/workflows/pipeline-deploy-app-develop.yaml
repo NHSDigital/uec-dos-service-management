@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.7
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.9
   quality_check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.7
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.9
     needs:
       [
         metadata,
@@ -29,22 +29,9 @@ jobs:
         metadata,
         quality_check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@v0.7
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@v0.9
     with:
       env: dev
-    secrets: inherit
-  deploy-vpc-vpn-infrastructure:
-    needs:
-      [
-        quality_check,
-        metadata,
-      ]
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
-    with:
-      github_environment: dev
-      stack: network
-      action: plan
-      deployment_workspace: default
     secrets: inherit
   deploy-application-infrastructure:
       needs:
@@ -52,7 +39,7 @@ jobs:
           quality_check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.7
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.9
       with:
         environment: dev
         domain: "uec-dos-service-management"
@@ -60,19 +47,6 @@ jobs:
         stacks: "['application']"
         action: apply
       secrets: inherit
-  deploy-aurora-related-infrastructure:
-    needs:
-      [
-        quality_check,
-        metadata,
-      ]
-    uses: ./.github/workflows/action-infrastructure-stack.yaml
-    with:
-      github_environment: dev
-      stack: aurora
-      action: apply
-      deployment_workspace: default
-    secrets: inherit
   deploy-support-tools-infrastructure:
       needs:
         [
@@ -92,7 +66,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.7
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.9
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
@@ -115,7 +89,6 @@ jobs:
       build-and-deploy-application-code,
       unit-tests,
       deploy-support-tools-infrastructure,
-      deploy-vpc-vpn-infrastructure,
     ]
     if: always()
     uses: ./.github/workflows/slack-notifications.yaml
