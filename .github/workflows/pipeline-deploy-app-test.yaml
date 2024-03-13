@@ -55,15 +55,3 @@ jobs:
       environment: test
       workspace: ${{ inputs.workspace }}
     secrets: inherit
-  # integration-test:
-  #     needs:
-  #       [
-  #         deploy-application-infrastructure,
-  #         build-and-deploy-application,
-  #       ]
-  #     name: Run integration tests
-  #     uses: ./.github/workflows/integration-test.yaml
-  #     with:
-  #       github_environment: test
-  #       DEPLOYMENT_WORKSPACE: ${{ inputs.workspace }}
-  #     secrets: inherit
