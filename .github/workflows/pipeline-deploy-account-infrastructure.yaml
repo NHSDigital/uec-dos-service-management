@@ -21,7 +21,7 @@ jobs:
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
         stacks: "['network','aurora','terraform_management','github-runner']"
-        action: plan
+        action: apply
       secrets: inherit
     slack-notifications:
       needs: [
