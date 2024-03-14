@@ -188,7 +188,7 @@ module "healthcare-services-data-manager-lambda" {
                         "dynamodb:UpdateItem"
                     ],
                     "Resource": [
-                        "${module.dynamodb_healthcare_services_table.dynamodb_table_arn}"
+                        "${module.dynamodb_healthcare_services_table.dynamodb_table_arn}",
                         "*"
                     ]
                 },
