@@ -10,7 +10,7 @@ resource "aws_subnet" "private_zone" {
   vpc_id            = aws_vpc.main.id
   availability_zone = data.aws_availability_zones.azs.names[count.index]
   cidr_block        = "10.${var.vpc_cidr_block_marker}.${var.vpc_cidr_block_range_private[count.index]}.0/23"
-    tags = {
+  tags = {
     Name = "private_subnet"
   }
 }
@@ -83,7 +83,6 @@ resource "aws_route_table" "r_nat" {
     Name = "route table for private_nat"
   }
 }
-
 
 //associate route table with private subnet (all 3 in each az)
 resource "aws_route_table_association" "nat_private" {
