@@ -57,7 +57,7 @@ jobs:
       with:
         github_environment: dev
         stack: support_tools
-        action: destroy
+        action: apply
       secrets: inherit
   build-and-deploy-application-code:
     name: Build and deploy application
