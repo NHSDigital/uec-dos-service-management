@@ -55,7 +55,7 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.r.id
 }
 
-//Create elastic IP for NAT Gateway
+//Creates elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
@@ -64,7 +64,7 @@ resource "aws_eip" "nat_eip" {
   }
 }
 
-//create nat gateway (nat per az required??
+//creates nat gateway (nat per az required??
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public_zone[0].id
