@@ -180,7 +180,6 @@ module "healthcare-services-data-manager-lambda" {
                     "Effect": "Allow",
                     "Action": [
                         "dynamodb:PutItem",
-                        "s3:*",
                         "dynamodb:DeleteItem",
                         "dynamodb:GetItem",
                         "dynamodb:Scan",
@@ -188,36 +187,8 @@ module "healthcare-services-data-manager-lambda" {
                         "dynamodb:UpdateItem"
                     ],
                     "Resource": [
-                        "${module.dynamodb_healthcare_services_table.dynamodb_table_arn}",
-                        "*"
+                        "${module.dynamodb_healthcare_services_table.dynamodb_table_arn}"
                     ]
-                },
-                {
-                    "Sid": "VPCandS3",
-                    "Effect": "Allow",
-                    "Action": [
-                        "s3:ListAccessPointsForObjectLambda",
-                        "s3:GetAccessPoint",
-                        "s3:PutAccountPublicAccessBlock",
-                        "ec2:DescribeInstances",
-                        "s3:ListAccessPoints",
-                        "s3:ListJobs",
-                        "s3:CreateStorageLensGroup",
-                        "s3:PutStorageLensConfiguration",
-                        "ec2:DeleteNetworkInterface",
-                        "s3:ListMultiRegionAccessPoints",
-                        "s3:ListStorageLensGroups",
-                        "s3:ListStorageLensConfigurations",
-                        "ec2:CreateNetworkInterface",
-                        "s3:GetAccountPublicAccessBlock",
-                        "s3:ListAllMyBuckets",
-                        "ec2:DescribeNetworkInterfaces",
-                        "s3:ListAccessGrantsInstances",
-                        "s3:PutAccessPointPublicAccessBlock",
-                        "ec2:AttachNetworkInterface",
-                        "s3:CreateJob"
-                    ],
-                    "Resource": "*"
                 }
             ]
         }
