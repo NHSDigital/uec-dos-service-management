@@ -43,13 +43,15 @@ jobs:
       tag: ${{needs.generate-tag-name.outputs.tag_name}}
     secrets: inherit
   slack-notifications:
+    name: Send notification to slack
     needs: [
-      deploy-to-test,
+      metadata,
+      generate-tag-name,
+      tag-repository,
+      deploy-to-test
     ]
     if: always()
-    uses: ./.github/workflows/slack-notifications.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.9
     with:
       env: test
     secrets: inherit
-
-

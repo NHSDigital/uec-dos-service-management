@@ -24,6 +24,7 @@ jobs:
         action: apply
       secrets: inherit
     slack-notifications:
+      name: Send notification to slack
       needs: [
         metadata,
         deploy-account-infrastructure-apply,

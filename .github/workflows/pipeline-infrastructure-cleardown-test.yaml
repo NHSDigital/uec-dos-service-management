@@ -22,12 +22,13 @@ jobs:
           echo "${{ github.actor }} closed/merged PR"
           echo "Triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.head_ref }}"
   slack-notifications:
+    name: Send notification to slack
     needs: [
-      destroy
+      destroy,
+      summarise,
     ]
     if: always()
-    uses: ./.github/workflows/slack-notifications.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.9
     with:
       env: test
     secrets: inherit
-
