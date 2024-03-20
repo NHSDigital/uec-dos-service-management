@@ -80,7 +80,6 @@ jobs:
       unit-tests,
       deploy-application-infrastructure,
       build-and-deploy-application-code,
-      deploy-support-tools-infrastructure,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.9
