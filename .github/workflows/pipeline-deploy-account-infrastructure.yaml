@@ -8,14 +8,14 @@ on:
 jobs:
     metadata:
       name: "Get Metadata"
-      uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.9
+      uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.11
     deploy-account-infrastructure-apply:
       name: "Deploy Account Level Infrastructure"
       needs:
         [
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.9
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.11
       with:
         environment: dev
         domain: "uec-dos-service-management"
@@ -30,7 +30,7 @@ jobs:
         deploy-account-infrastructure-apply,
       ]
       if: always()
-      uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.9
+      uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.11
       with:
         env: dev
       secrets: inherit

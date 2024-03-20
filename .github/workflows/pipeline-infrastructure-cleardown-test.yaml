@@ -28,7 +28,7 @@ jobs:
       summarise,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.9
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.11
     with:
       env: test
     secrets: inherit
