@@ -21,8 +21,6 @@ jobs:
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: "uec-dos-service-management"
       stacks: "['application', 'support_tools']"
-      github_environment: dev
-      branch_name: ${{ github.event.ref }}
     secrets: inherit
 
   summarise:
