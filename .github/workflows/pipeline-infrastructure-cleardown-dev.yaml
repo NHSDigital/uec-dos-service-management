@@ -9,23 +9,21 @@ jobs:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.11
-  # commented out to test correct output for workspace
-  # destroy:
-  #   if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-  #   # uses: ./.github/workflows/action-infrastructure-cleardown.yaml
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.11
-  #   needs:
-  #     [
-  #       metadata,
-  #     ]
-  #   with:
-  #     environment: dev
-  #     workspace: ${{ needs.metadata.outputs.workspace }}
-  #     domain: "uec-dos-service-management"
-  #     stacks: "['application', 'support_tools']"
-  #     #github_environment: dev
-  #     # branch_name: ${{ github.event.ref }}
-  #   secrets: inherit
+  destroy:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.11
+    needs:
+      [
+        metadata,
+      ]
+    with:
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      domain: "uec-dos-service-management"
+      stacks: "['application', 'support_tools']"
+      github_environment: dev
+      branch_name: ${{ github.event.ref }}
+    secrets: inherit
 
   summarise:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
@@ -39,7 +37,7 @@ jobs:
   slack-notifications:
     name: Send notification to slack
     needs: [
-      #destroy,
+      destroy,
       summarise,
     ]
     if: always()
