@@ -50,7 +50,7 @@ jobs:
 
       - name: "Derive TF Version"
         id: derive_tf_version
-        uses: NHSDigital/uec-dos-management/.github/actions/derive-tf-version@v0.9
+        uses: NHSDigital/uec-dos-management/.github/actions/derive-tf-version@v0.11
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
