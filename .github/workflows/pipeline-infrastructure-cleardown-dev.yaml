@@ -20,7 +20,7 @@ jobs:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: "uec-dos-service-management"
-      stacks: "['application', 'support_tools']"
+      stacks: '["application", "support_tools"]'
     secrets: inherit
 
   summarise:
