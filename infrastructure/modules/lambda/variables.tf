@@ -7,6 +7,8 @@ variable "description" { description = "The description of the lambda" }
 
 variable "policy_jsons" { description = "Policy for Lambda to write to DynamoDB" }
 
+variable "vpc_security_group_ids" { description = "Security group for lambdas" }
+
 # ==============================================================================
 # Default variables
 

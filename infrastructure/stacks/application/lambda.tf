@@ -10,7 +10,6 @@ module "organisations-data-manager-lambda" {
 
   function_name = var.organisations_function_name
   description   = "Microservice for interacting with organisations dynamodb table"
-
   policy_jsons = [
     <<-EOT
         {
@@ -35,6 +34,7 @@ module "organisations-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
@@ -88,6 +88,7 @@ module "organisation-affiliation-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
@@ -141,6 +142,7 @@ module "locations-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
@@ -194,6 +196,7 @@ module "healthcare-services-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
@@ -247,6 +250,7 @@ module "questionnaire-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
@@ -300,6 +304,7 @@ module "questionnaire-response-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 }
 
 #    allowed_triggers = {
