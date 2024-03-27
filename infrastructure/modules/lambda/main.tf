@@ -17,7 +17,7 @@ module "lambda" {
   vpc_security_group_ids  = var.vpc_security_group_ids
   # vpc_subnet_ids          = var.vpc_subnet_ids
 
-  vpc_subnet_ids         = [for s in data.aws_subnet.private_subnet : s.id]
+  vpc_subnet_ids        = [for s in data.aws_subnet.private_subnet : s.id]
   attach_network_policy = true
 
   environment_variables = merge(var.environment_variables, { WORKSPACE = "${local.environment_workspace}", LOG_LEVEL = "${var.log_level}" })
