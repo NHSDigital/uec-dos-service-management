@@ -18,9 +18,3 @@ data "aws_subnet" "private_subnet" {
   id       = each.value
 }
 
-data "aws_security_group" "lambda_sg" {
-  filter {
-    name   = "tag:Name"
-    values = ["lambda-sg"]
-  }
-}
