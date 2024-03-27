@@ -85,5 +85,5 @@ module "service_data_load_lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [data.aws_security_group.lambda_sg.id]
+  vpc_security_group_ids = [aws_security_group.support_tools_lambda_sg.id]
 }
