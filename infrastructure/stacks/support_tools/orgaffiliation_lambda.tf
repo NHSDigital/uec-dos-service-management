@@ -84,5 +84,5 @@ module "orgaffiliation-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.lambda_sg.id]
+  vpc_security_group_ids = [data.aws_security_group.lambda_sg.id]
 }
