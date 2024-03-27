@@ -26,7 +26,12 @@ variable "vpn_security_group_name" {
 
 }
 
-variable "lambda_security_group_name" {
+variable "application_lambda_security_group_name" {
+  description = "value"
+
+}
+
+variable "support_tools_lambda_security_group_name" {
   description = "value"
 
 }
