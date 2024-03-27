@@ -4,23 +4,34 @@ on:
   pull_request:
     types:
       - closed
-
 jobs:
+  metadata:
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.11
   destroy:
-    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-    uses: ./.github/workflows/action-infrastructure-cleardown.yaml
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.11
+    needs:
+      [
+        metadata,
+      ]
     with:
-      github_environment: test
-      branch_name: ${{ github.head_ref }}
+      environment: test
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      domain: "uec-dos-service-management"
+      stacks: '["application", "support_tools"]'
     secrets: inherit
+
   summarise:
-    if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Summary
         run: |
-          echo "${{ github.actor }} closed/merged PR"
-          echo "Triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.head_ref }}"
+          echo "${{ github.actor }} deleted a task branch..."
+          echo "triggering cleardown of infra in test account relating to ${{ github.ref_type }}: ${{ github.event_ref }}"
+
   slack-notifications:
     name: Send notification to slack
     needs: [
