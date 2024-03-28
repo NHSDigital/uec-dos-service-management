@@ -26,6 +26,16 @@ variable "vpn_security_group_name" {
 
 }
 
+variable "application_lambda_security_group_name" {
+  description = "value"
+
+}
+
+variable "support_tools_lambda_security_group_name" {
+  description = "value"
+
+}
+
 variable "tag_version" {
   description = "Identifies the version of tagging policy in use and supports changing it over time and any automation around the version."
   type        = string
