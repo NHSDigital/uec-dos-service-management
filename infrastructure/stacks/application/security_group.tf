@@ -1,10 +1,14 @@
 resource "aws_security_group" "application_lambda_sg" {
-  name        = "application-lambda-sg"
-  description = "Security group for application lambda"
-  vpc_id      = data.aws_vpc.main.id
+  name_prefix        = "application-lambda-sg"
+  description        = "Security group for application lambda"
+  vpc_id             = data.aws_vpc.main.id
 
   tags = {
     Name = "application-lambda-sg"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
