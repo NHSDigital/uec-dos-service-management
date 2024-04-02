@@ -1,20 +1,9 @@
-resource "aws_security_group" "application_lambda_sg" {
-  name_prefix = "application-lambda-sg"
+module "application_lambda_security_group" {
+  source = "../../modules/security-group"
+
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
+  name = "application_lambda_sg"
   description = "Security group for application lambda"
-  vpc_id      = data.aws_vpc.main.id
+  apply_default_egress = true
 
-  tags = {
-    Name = "application-lambda-sg"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_vpc_security_group_egress_rule" "lambda_egress" {
-  security_group_id = aws_security_group.application_lambda_sg.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "-1"
 }
