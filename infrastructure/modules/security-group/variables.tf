@@ -9,5 +9,5 @@ variable "vpc_name" { description = "The name of the VPC to create the security 
 
 variable "apply_default_egress" {
   description = "Option to apply default egress to anywhere for this security group"
-  default = false
+  default     = false
 }
