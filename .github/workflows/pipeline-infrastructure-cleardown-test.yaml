@@ -5,23 +5,6 @@ on:
     types:
       - closed
 jobs:
-  temp:
-    name: temp
-    runs-on: ubuntu-latest
-    steps:
-      - id: metadata
-        run: |
-          datetime=$(date -u +'%Y-%m-%dT%H:%M:%S%z')
-          echo "build_datetime=$datetime" >> $GITHUB_OUTPUT
-          echo "build_timestamp=$(date --date=$datetime -u +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-          echo "build_epoch=$(date --date=$datetime -u +'%s')" >> $GITHUB_OUTPUT
-          echo "triggering action: ${{ github.event_name }}"
-          echo "ref type: ${{ github.ref_type }}"
-          echo "triggering reference: ${{ github.ref_name }}"
-          echo "github.event.ref : ${{ github.event.ref }}"
-          echo "github.event.ref.type : ${{ github.event.ref_type }}"
-          echo "github.head_ref" ${{github.head_ref }}
-          echo "username of user triggering the workflow: ${{ github.actor }}"
   metadata:
     if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
