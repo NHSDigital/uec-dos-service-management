@@ -9,8 +9,8 @@ jobs:
     metadata:
       name: "Get Metadata"
       uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.11
-    deploy-account-infrastructure-apply:
-      name: "Deploy Account Level Infrastructure"
+    deploy-account-infrastructure-apply-dev:
+      name: "Deploy Account Level Infrastructure to dev account"
       needs:
         [
           metadata,
@@ -23,11 +23,26 @@ jobs:
         stacks: '["network", "aurora", "terraform_management", "github-runner"]'
         action: apply
       secrets: inherit
+    deploy-account-infrastructure-apply-test:
+      name: "Deploy Account Level Infrastructure to test account"
+      needs:
+        [
+          metadata,
+        ]
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.11
+      with:
+        environment: test
+        domain: "uec-dos-service-management"
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        stacks: '["network", "terraform_management", "github-runner"]'
+        action: apply
+      secrets: inherit
     slack-notifications:
       name: Send notification to slack
       needs: [
         metadata,
-        deploy-account-infrastructure-apply,
+        deploy-account-infrastructure-apply-dev,
+        deploy-account-infrastructure-apply-test,
       ]
       if: always()
       uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.11
