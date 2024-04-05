@@ -18,3 +18,6 @@ data "aws_subnet" "private_subnet" {
   id       = each.value
 }
 
+data "aws_security_group" "aurora_security_group" {
+  name = var.aurora_security_group_name
+}

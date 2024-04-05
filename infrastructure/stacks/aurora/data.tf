@@ -16,11 +16,3 @@ data "aws_ec2_client_vpn_endpoint" "service_management_vpn" {
 data "aws_security_group" "vpn_secgroup" {
   name = var.vpn_security_group_name
 }
-
-data "aws_security_group" "application_lambda_sg" {
-  name = var.application_lambda_security_group_name
-}
-
-data "aws_security_group" "support_tools_lambda_sg" {
-  name = var.support_tools_lambda_security_group_name
-}

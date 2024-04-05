@@ -1,20 +1,20 @@
-resource "aws_security_group" "support_tools_lambda_sg" {
-  name_prefix = "support-tools-lambda-sg"
-  description = "Security group for support tools lambdas"
-  vpc_id      = data.aws_vpc.main.id
+module "support_tools_lambda_security_group" {
+  source = "../../modules/security-group"
 
-  tags = {
-    Name = "support-tools-lambda-sg"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  vpc_name             = "${var.project}-${var.vpc_name}-${var.environment}"
+  name                 = var.support_tools_lambda_security_group_name
+  description          = "Security group for support tool lambdas"
+  apply_default_egress = true
 }
 
-resource "aws_vpc_security_group_egress_rule" "lambda_egress" {
-  security_group_id = aws_security_group.support_tools_lambda_sg.id
+# Add ingress to the aurora SG from this SG
+resource "aws_vpc_security_group_ingress_rule" "support_tools_lambda_ingress" {
+  security_group_id = data.aws_security_group.aurora_security_group.id
 
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "-1"
+  referenced_security_group_id = module.support_tools_lambda_security_group.id
+  from_port                    = 5432
+  ip_protocol                  = "tcp"
+  to_port                      = 5432
+
+  description = "A rule to allow incomming connections from the Support Tools Lambda SG"
 }

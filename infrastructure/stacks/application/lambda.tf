@@ -34,6 +34,7 @@ module "organisations-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
@@ -88,6 +89,7 @@ module "organisation-affiliation-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
@@ -142,6 +144,7 @@ module "locations-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
@@ -196,6 +199,7 @@ module "healthcare-services-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
@@ -250,6 +254,7 @@ module "questionnaire-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
@@ -304,6 +309,7 @@ module "questionnaire-response-data-manager-lambda" {
         }
         EOT
   ]
+  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
   vpc_security_group_ids = [module.application_lambda_security_group.id]
 }
 
