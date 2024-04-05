@@ -1,1 +1,1 @@
-aurora_security_group_name               = "aurora-sg"
+aurora_security_group_name = "aurora-sg"
