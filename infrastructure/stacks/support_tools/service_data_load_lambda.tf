@@ -85,6 +85,6 @@ module "service_data_load_lambda" {
         }
         EOT
   ]
-  vpc_name = "${var.project}-${var.vpc_name}-${var.environment}"
-  vpc_security_group_ids = [module.support_tools_lambda_security_group.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.support_tools_lambda_security_group.id]
 }

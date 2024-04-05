@@ -49,7 +49,3 @@ variable "questionnaire_responses_dynamodb_table_name" {
 variable "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group"
 }
-
-variable "aurora_security_group_name" {
-  description = "Security group name for Aurora"
-}
