@@ -17,10 +17,10 @@ data "aws_security_group" "vpn_secgroup" {
   name = var.vpn_security_group_name
 }
 
-data "aws_security_group" "application_lambda_sg" {
+data "aws_security_group" "application_lambda_security_group" {
   name = var.application_lambda_security_group_name
 }
 
-data "aws_security_group" "support_tools_lambda_sg" {
+data "aws_security_group" "support_tools_lambda_security_group" {
   name = var.support_tools_lambda_security_group_name
 }

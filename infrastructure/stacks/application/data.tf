@@ -17,3 +17,7 @@ data "aws_subnet" "private_subnet" {
   for_each = toset(data.aws_subnets.private_subnets.ids)
   id       = each.value
 }
+
+data "aws_security_group" "application_lambda_security_group" {
+  name = var.application_lambda_security_group_name
+}

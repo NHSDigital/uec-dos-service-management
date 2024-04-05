@@ -34,7 +34,8 @@ module "organisations-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
@@ -88,7 +89,8 @@ module "organisation-affiliation-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
@@ -142,7 +144,8 @@ module "locations-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
@@ -196,7 +199,8 @@ module "healthcare-services-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
@@ -250,7 +254,8 @@ module "questionnaire-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
@@ -304,7 +309,8 @@ module "questionnaire-response-data-manager-lambda" {
         }
         EOT
   ]
-  vpc_security_group_ids = [aws_security_group.application_lambda_sg.id]
+  vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
+  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
