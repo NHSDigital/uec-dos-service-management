@@ -1,6 +1,8 @@
 # ==============================================================================
 # Mandatory variables
 
+variable "vpc_name" { description = "The name of the VPC to spin the Lambda up in" }
+
 variable "function_name" { description = "The function name of the lambda" }
 
 variable "description" { description = "The description of the lambda" }
