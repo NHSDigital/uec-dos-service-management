@@ -3,7 +3,7 @@ import boto3
 
 from moto import mock_dynamodb
 
-mock_id = ""
+mock_id = "999"
 mock_active = "true"
 mock_created_by = "Admin"
 mock_timestamp_created = "15-12-2023 16:00:12"
