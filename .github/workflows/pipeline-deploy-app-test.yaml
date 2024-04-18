@@ -50,7 +50,7 @@ jobs:
         deploy-application-infrastructure,
         build-and-deploy-application,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/integration_test.yaml@v0.13
+    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.13
     with:
       environment: test
       workspace: ${{ inputs.workspace }}

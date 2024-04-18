@@ -10,9 +10,9 @@ jobs:
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.13
-  quality_check:
+  quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality_checks.yaml@v0.13
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.13
     needs:
       [
         metadata,
@@ -27,16 +27,16 @@ jobs:
     needs:
       [
         metadata,
-        quality_check,
+        quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit_test.yaml@v0.13
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.13
     with:
       env: dev
     secrets: inherit
   deploy-application-infrastructure:
       needs:
         [
-          quality_check,
+          quality-check,
           metadata,
         ]
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.13
@@ -76,7 +76,7 @@ jobs:
     name: Send notification to slack
     needs: [
       metadata,
-      quality_check,
+      quality-check,
       unit-tests,
       deploy-application-infrastructure,
       build-and-deploy-application-code,
