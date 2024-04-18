@@ -10,7 +10,7 @@ module "organisations-data-manager-lambda" {
 
   function_name = var.organisations_function_name
   description   = "Microservice for interacting with organisations dynamodb table"
-        policy_jsons = [
+  policy_jsons = [
     <<-EOT
         {
             "Version": "2012-10-17",
