@@ -21,7 +21,7 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 
 
 @app.post("/healthcare_services")
-def create_healthcareservices()
+def create_healthcareservices():
     post_data: dict = app.current_event.json_body
     response = service.add_record(post_data)
     return response

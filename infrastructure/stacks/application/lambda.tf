@@ -29,7 +29,6 @@ module "organisations-data-manager-lambda" {
                     "Resource": [
                         "${module.dynamodb_organisations_table.dynamodb_table_arn}"
                     ]
-                }
             ]
         }
         EOT
