@@ -63,7 +63,7 @@ After a successful installation, provide an informative example of how this proj
 
 ## Architecture
 
-## Diagrams
+### Diagrams
 
 The [C4 model](https://c4model.com/) is a simple and intuitive way to create software architecture diagrams that are clear, consistent, scalable and most importantly collaborative. This should result in documenting all the system interfaces, external dependencies and integration points.
 
