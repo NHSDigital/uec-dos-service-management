@@ -5,7 +5,7 @@ import json
 from moto import mock_dynamodb
 from types import SimpleNamespace
 
-mock_id = "2690664379947884"
+mock_id = ""
 mock_active = "true"
 mock_created_by = "Admin"
 mock_timestamp_created = "15-12-2023 16:00:12"
