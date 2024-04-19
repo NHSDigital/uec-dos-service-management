@@ -44,7 +44,7 @@ def update_healthcareservices():
 
 @app.delete("/healthcare_services")
 def delete_healthcareservices():
-    delete_data: dict = app.current_event.json_body
-    hs_id = delete_data["id"]
-    response = service.delete_record(hs_id)
+    delete_datas: dict = app.current_event.json_body
+    hs_id = delete_datas["id"]
+    response = service.delete_records(hs_id)
     return response
