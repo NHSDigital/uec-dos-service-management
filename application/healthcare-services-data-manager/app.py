@@ -21,7 +21,7 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 
 
 @app.post("/healthcare_services")
-def create_healthcareservices():
+def create_healthcareservices()
     post_data: dict = app.current_event.json_body
     response = service.add_record(post_data)
     return response
@@ -44,7 +44,7 @@ def update_healthcareservices():
 
 @app.delete("/healthcare_services")
 def delete_healthcareservices():
-    delete_datas: dict = app.current_event.json_body
-    hs_id = delete_datas["id"]
-    response = service.delete_records(hs_id)
+    delete_data: dict = app.current_event.json_body
+    hs_id = delete_data["id"]
+    response = service.delete_record(hs_id)
     return response
