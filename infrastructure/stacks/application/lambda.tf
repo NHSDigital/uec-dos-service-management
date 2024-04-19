@@ -34,7 +34,7 @@ module "organisations-data-manager-lambda" {
         EOT
   ]
   vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
-  vpc_security_group_ids = [data.aws_security_group.application_lambda_security_group.id]
+  vpc_security_group_ids = [data.aws_security_group.applicationssss_lambda_security_group.id]
 }
 
 #    allowed_triggers = {
