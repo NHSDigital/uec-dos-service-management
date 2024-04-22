@@ -54,7 +54,7 @@ def test_get_record_by_id():
     mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_get_event.json")
     response = app.lambda_handler(mock_load, mock_context)
-    assert str(response["statusCode"]) == "HTTPStatus.OK"
+    assert str(response["statusCode"]) == "200"
     response_body = json.loads(response["body"])
     assert response_body["Item"]["name"] == mock_name
 
@@ -67,7 +67,7 @@ def test_put_record():
     mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_put_event.json")
     response = app.lambda_handler(mock_load, mock_context)
-    assert str(response["statusCode"]) == "HTTPStatus.OK"
+    assert str(response["statusCode"]) == "200"
     healthcare_services_record = table.get_item(Key={"id": mock_id})
     assert healthcare_services_record["Item"]["name"] == "Nhs PUT Integrated Care Board"
 
@@ -80,7 +80,7 @@ def test_post_record():
     mock_context = SimpleNamespace(**lambda_context_data)
     mock_load = load_sample_event_from_file("mock_proxy_post_event.json")
     response = app.lambda_handler(mock_load, mock_context)
-    assert str(response["statusCode"]) == "HTTPStatus.OK"
+    assert str(response["statusCode"]) == "200"
     healthcare_services_record = table.get_item(Key={"id": mock_id})
     assert (
         healthcare_services_record["Item"]["name"] == "Nhs POST Integrated Care Board"
