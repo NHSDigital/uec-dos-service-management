@@ -4,13 +4,6 @@ on:
   delete:
     branches:
       - 'task/*'
-  inputs:
-    inputs:
-      workflow_timeout:
-      description: "Timeout duration in minutes"
-      required: false
-      default: 5
-      type: number
 jobs:
   metadata:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
@@ -28,7 +21,6 @@ jobs:
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: "uec-dos-service-management"
       stacks: '["application", "support_tools"]'
-      timeout-minutes: ${{ inputs.workflow_timeout }}
     secrets: inherit
 
   summarise:
