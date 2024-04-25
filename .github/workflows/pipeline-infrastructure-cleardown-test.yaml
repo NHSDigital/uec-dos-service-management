@@ -21,6 +21,7 @@ jobs:
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: "uec-dos-service-management"
       stacks: '["application", "support_tools"]'
+      workflow_timeout: 8
     secrets: inherit
 
   summarise:
