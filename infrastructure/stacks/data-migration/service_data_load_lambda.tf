@@ -1,9 +1,9 @@
-module "orgaffiliation-lambda" {
+module "service_data_load_lambda" {
   source = "../../modules/lambda"
 
-  function_name = "organisation_affiliations_data_load"
-  description   = "To pull orgaffiliation data from ODS and write to DynamoDB Org. Affiliation table"
-  handler       = "orgaffiliation_lambda.lambda_handler"
+  function_name = "service_data_load"
+  description   = "To load healthcare service data"
+  handler       = "service_data_load_lambda.lambda_handler"
   layers = [
     "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
@@ -11,7 +11,7 @@ module "orgaffiliation-lambda" {
   timeout = "900"
 
   environment_variables = {
-    "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
+    "ODS_CODES_XLSX_FILE" : "Filtered_odscodes.xlsx",
     "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
   }
 
@@ -67,8 +67,9 @@ module "orgaffiliation-lambda" {
                         "dynamodb:UpdateItem"
                     ],
                     "Resource":[
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisation_affiliations${local.workspace_suffix}",
-                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations"
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/locations${local.workspace_suffix}",
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/organisations${local.workspace_suffix}",
+                      "arn:aws:dynamodb:${var.aws_region}:${local.account_id}:table/healthcare_services${local.workspace_suffix}"
                     ]
                 },
                 {
@@ -85,5 +86,5 @@ module "orgaffiliation-lambda" {
         EOT
   ]
   vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
-  vpc_security_group_ids = [data.aws_security_group.support_tools_lambda_security_group.id]
+  vpc_security_group_ids = [data.aws_security_group.data_migration_lambda_security_group.id]
 }
