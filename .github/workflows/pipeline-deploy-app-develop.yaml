@@ -20,7 +20,7 @@ jobs:
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
-      stacks: '["github-runner", "terraform_management", "application", "support_tools", "data_migration"]'
+      stacks: '["github-runner", "terraform_management", "application", "support_tools", "data-migration"]'
     secrets: inherit
   unit-tests:
     name: Unit Test
