@@ -1,4 +1,4 @@
-from application.organisation_affiliations_data_load.orgaffiliation_lambda import (
+from data_migration.organisation_affiliations_data_load.orgaffiliation_lambda import (
     lambda_handler,
     process_orgaffiliation,
     write_to_dynamodborgaffili,
@@ -13,7 +13,7 @@ from unittest.mock import patch, MagicMock
 
 class TestLambdaHandler(unittest.TestCase):
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.fetch_orgaffiliation"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.fetch_orgaffiliation"
     )
     def test_lambda_handler(self, mock_fetch_orgaffiliation):
         # Set up mock event and context
@@ -29,7 +29,7 @@ class TestLambdaHandler(unittest.TestCase):
 
 class TestUpdateRecords(unittest.TestCase):
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
     def test_update_orgaffiliation_org(self, mock_resource):
         mock_orgaffiliation_table = MagicMock()
@@ -66,7 +66,7 @@ class TestUpdateRecords(unittest.TestCase):
 
 class TestUpdateRecordsParti(unittest.TestCase):
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
     def update_orgaffiliation_partiorg(self, mock_resource):
         # Mock data with existing data in the DynamoDB tables
@@ -104,7 +104,7 @@ class TestUpdateRecordsParti(unittest.TestCase):
 
 class TestWriteToDynamoDBOrgaffili(unittest.TestCase):
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.boto3.resource"
     )
     def test_write_to_dynamodborgaffili(self, mock_boto3_resource):
         # Mock DynamoDB resource
@@ -157,9 +157,9 @@ class TestProcessorgaffiliation(unittest.TestCase):
             }
         ]
         with patch(
-            "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.uuid"
+            "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.uuid"
         ) as mock_uuid, patch(
-            "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.datetime"
+            "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.datetime"
         ) as mock_datetime:
             mock_uuid.uuid4.return_value.int = 1234567890123456
             mock_datetime.datetime.now.return_value.strftime.return_value = (
@@ -206,22 +206,22 @@ class TestProcessorgaffiliation(unittest.TestCase):
 
 class TestFetchOrgaffiliation(unittest.TestCase):
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.get_ssm"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.get_ssm"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.get_headers"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.get_headers"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.read_excel_values"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.read_excel_values"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.read_ods_api"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.common_functions.read_ods_api"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.process_orgaffiliation"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.process_orgaffiliation"
     )
     @patch(
-        "application.organisation_affiliations_data_load.orgaffiliation_lambda.write_to_dynamodborgaffili"
+        "data_migration.organisation_affiliations_data_load.orgaffiliation_lambda.write_to_dynamodborgaffili"
     )
     def test_fetch_orgaffiliation(
         self,
