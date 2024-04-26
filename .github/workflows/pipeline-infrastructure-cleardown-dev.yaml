@@ -8,10 +8,10 @@ jobs:
   metadata:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.15
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.16
   destroy:
     if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.15
+    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.16
     needs:
       [
         metadata,
@@ -39,7 +39,7 @@ jobs:
       summarise,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.15
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.16
     with:
       env: dev
     secrets: inherit
