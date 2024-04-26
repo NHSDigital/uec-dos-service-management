@@ -11,11 +11,7 @@ on:
         description: "Defines the tag to be used for deployment"
         required: true
         type: string
-      workflow_timeout:
-        description: "Timeout duration in minutes"
-        required: false
-        default: 5
-        type: number
+
 jobs:
   deploy-application-infrastructure:
     name: Deploy application infrastructure
@@ -27,7 +23,6 @@ jobs:
       stacks: "['application']"
       tag: ${{ inputs.tag }}
       action: apply
-      timeout-minutes: ${{ inputs.workflow_timeout }}
     secrets: inherit
   build-and-deploy-application:
     name: Build and deploy application
