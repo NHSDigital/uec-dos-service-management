@@ -46,6 +46,7 @@ jobs:
         workspace: ${{ needs.metadata.outputs.workspace }}
         stacks: '["application", "support_tools"]'
         action: apply
+        workflow_timeout: 10
       secrets: inherit
   build-and-deploy-application-code:
     name: Build and deploy application
