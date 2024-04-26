@@ -209,7 +209,9 @@ class TestProcessOrganizations(unittest.TestCase):
 
 
 class TestFetchOrganizations(unittest.TestCase):
-    @patch("data_migration.locations_data_load.locations_lambda.common_functions.get_ssm")
+    @patch(
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_ssm"
+    )
     @patch(
         "data_migration.locations_data_load.locations_lambda.common_functions.get_headers"
     )
@@ -256,7 +258,9 @@ class TestFetchOrganizations(unittest.TestCase):
             "locations", mock_process_organizations.return_value
         )
 
-    @patch("data_migration.locations_data_load.locations_lambda.common_functions.get_ssm")
+    @patch(
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_ssm"
+    )
     @patch(
         "data_migration.locations_data_load.locations_lambda.common_functions.get_headers"
     )

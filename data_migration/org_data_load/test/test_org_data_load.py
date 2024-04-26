@@ -437,7 +437,9 @@ class TestProcessType(unittest.TestCase):
 class TestFetchOrganizations(unittest.TestCase):
     @patch("data_migration.org_data_load.org_data_load.common_functions.get_ssm")
     @patch("data_migration.org_data_load.org_data_load.common_functions.get_headers")
-    @patch("data_migration.org_data_load.org_data_load.common_functions.read_excel_values")
+    @patch(
+        "data_migration.org_data_load.org_data_load.common_functions.read_excel_values"
+    )
     @patch("data_migration.org_data_load.org_data_load.common_functions.read_ods_api")
     @patch("data_migration.org_data_load.org_data_load.process_organizations")
     @patch("data_migration.org_data_load.org_data_load.write_to_dynamodb")

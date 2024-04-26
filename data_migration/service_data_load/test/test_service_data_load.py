@@ -176,8 +176,12 @@ class TestAll(unittest.TestCase):
 
     @patch("data_migration.service_data_load.service_data_load.read_s3_file")
     @patch("data_migration.service_data_load.service_data_load.write_to_dynamodb")
-    @patch("data_migration.service_data_load.service_data_load.update_services_providedby")
-    @patch("data_migration.service_data_load.service_data_load.update_services_location")
+    @patch(
+        "data_migration.service_data_load.service_data_load.update_services_providedby"
+    )
+    @patch(
+        "data_migration.service_data_load.service_data_load.update_services_location"
+    )
     def test_schema_mapping(
         self,
         mock_update_services_location,
