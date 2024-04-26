@@ -11,6 +11,7 @@ on:
         description: "Defines the tag to be used for deployment"
         required: true
         type: string
+
 jobs:
   deploy-application-infrastructure:
     name: Deploy application infrastructure
