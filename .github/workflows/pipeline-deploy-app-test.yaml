@@ -11,10 +11,11 @@ on:
         description: "Defines the tag to be used for deployment"
         required: true
         type: string
+
 jobs:
   deploy-application-infrastructure:
     name: Deploy application infrastructure
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.14
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.16
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
@@ -29,7 +30,7 @@ jobs:
       [
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.14
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.16
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
@@ -50,7 +51,7 @@ jobs:
         deploy-application-infrastructure,
         build-and-deploy-application,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.14
+    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.16
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
