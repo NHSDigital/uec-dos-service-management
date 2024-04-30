@@ -44,6 +44,7 @@ sbom-spdx*.json
 !project.code-workspace
 **/allure-reports/*
 **/allure-results/*
+application/*/common
 
 # IDE - VSCode
 .vscode/*

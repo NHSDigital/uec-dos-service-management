@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.16
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.17
   quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.16
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.17
     needs:
       [
         metadata,
@@ -20,7 +20,7 @@ jobs:
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
-      stacks: '["github-runner", "terraform_management", "application", "support_tools"]'
+      stacks: '["github-runner", "terraform_management", "application", "data_migration"]'
     secrets: inherit
   unit-tests:
     name: Unit Test
@@ -29,7 +29,7 @@ jobs:
         metadata,
         quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.16
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.17
     with:
       env: dev
     secrets: inherit
@@ -39,12 +39,12 @@ jobs:
           quality-check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.16
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.17
       with:
         environment: dev
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: '["application", "support_tools"]'
+        stacks: '["application", "data_migration"]'
         action: apply
       secrets: inherit
   build-and-deploy-application-code:
@@ -54,7 +54,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.16
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
@@ -82,7 +82,7 @@ jobs:
       build-and-deploy-application-code,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.16
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.17
     with:
       env: dev
     secrets: inherit

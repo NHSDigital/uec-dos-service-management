@@ -40,5 +40,5 @@ module "ods-location-comparator-lambda" {
         EOT
   ]
   vpc_name               = "${var.project}-${var.vpc_name}-${var.environment}"
-  vpc_security_group_ids = [data.aws_security_group.support_tools_lambda_security_group.id]
+  vpc_security_group_ids = [data.aws_security_group.data_migration_lambda_security_group.id]
 }

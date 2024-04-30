@@ -1,4 +1,4 @@
-from application.service_data_load.service_data_load import (
+from data_migration.service_data_load.service_data_load import (
     read_s3_file,
     common_schema,
     write_to_dynamodb,
@@ -11,9 +11,9 @@ from unittest.mock import Mock, patch, MagicMock
 
 
 class TestAll(unittest.TestCase):
-    @patch("application.service_data_load.service_data_load.os.getenv")
-    @patch("application.service_data_load.service_data_load.boto3.client")
-    @patch("application.service_data_load.service_data_load.pd.read_excel")
+    @patch("data_migration.service_data_load.service_data_load.os.getenv")
+    @patch("data_migration.service_data_load.service_data_load.boto3.client")
+    @patch("data_migration.service_data_load.service_data_load.pd.read_excel")
     def test_read_s3_file(self, mock_read_excel, mock_boto3_client, mock_getenv):
         # Mock data and environment variables
         mock_getenv.side_effect = lambda x: {"S3_DATA_BUCKET": "bucket"}.get(x)
@@ -36,10 +36,10 @@ class TestAll(unittest.TestCase):
         )
 
     @patch(
-        "application.service_data_load.service_data_load.common_functions.generate_random_id"
+        "data_migration.service_data_load.service_data_load.common_functions.generate_random_id"
     )
     @patch(
-        "application.service_data_load.service_data_load.common_functions.get_formatted_datetime"
+        "data_migration.service_data_load.service_data_load.common_functions.get_formatted_datetime"
     )
     def test_common_schema(self, mock_get_formatted_datetime, mock_generate_random_id):
         # Mock values and functions
@@ -78,7 +78,7 @@ class TestAll(unittest.TestCase):
         mock_generate_random_id.assert_called_once()
         mock_get_formatted_datetime.assert_called_once()
 
-    @patch("application.service_data_load.service_data_load.boto3.resource")
+    @patch("data_migration.service_data_load.service_data_load.boto3.resource")
     def test_write_to_dynamodb(self, mock_resource):
         # Mock the DynamoDB table and put_item method
         mock_table = Mock()
@@ -94,7 +94,7 @@ class TestAll(unittest.TestCase):
         mock_table.put_item.assert_called_with(Item=json_data_list[1])
         self.assertEqual(mock_table.put_item.call_count, 2)
 
-    @patch("application.service_data_load.service_data_load.boto3")
+    @patch("data_migration.service_data_load.service_data_load.boto3")
     def test_update_services_providedby(self, mock_boto3):
         # Mock DynamoDB resource and tables
         mock_resource = MagicMock()
@@ -134,7 +134,7 @@ class TestAll(unittest.TestCase):
             ExpressionAttributeValues={":val": "org_id"},
         )
 
-    @patch("application.service_data_load.service_data_load.boto3")
+    @patch("data_migration.service_data_load.service_data_load.boto3")
     def test_update_services_location(self, mock_boto3):
         # Mock DynamoDB resource and tables
         mock_resource = MagicMock()
@@ -174,10 +174,14 @@ class TestAll(unittest.TestCase):
             ExpressionAttributeValues={":val": "location_id"},
         )
 
-    @patch("application.service_data_load.service_data_load.read_s3_file")
-    @patch("application.service_data_load.service_data_load.write_to_dynamodb")
-    @patch("application.service_data_load.service_data_load.update_services_providedby")
-    @patch("application.service_data_load.service_data_load.update_services_location")
+    @patch("data_migration.service_data_load.service_data_load.read_s3_file")
+    @patch("data_migration.service_data_load.service_data_load.write_to_dynamodb")
+    @patch(
+        "data_migration.service_data_load.service_data_load.update_services_providedby"
+    )
+    @patch(
+        "data_migration.service_data_load.service_data_load.update_services_location"
+    )
     def test_schema_mapping(
         self,
         mock_update_services_location,

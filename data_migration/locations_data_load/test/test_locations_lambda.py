@@ -1,4 +1,4 @@
-from application.locations_data_load.locations_lambda import (
+from data_migration.locations_data_load.locations_lambda import (
     update_records,
     write_to_dynamodb,
     data_exists,
@@ -13,8 +13,8 @@ from unittest.mock import patch, MagicMock, Mock
 
 
 class TestLambdaHandler(unittest.TestCase):
-    @patch("application.locations_data_load.locations_lambda.fetch_organizations")
-    @patch("application.locations_data_load.locations_lambda.fetch_y_organizations")
+    @patch("data_migration.locations_data_load.locations_lambda.fetch_organizations")
+    @patch("data_migration.locations_data_load.locations_lambda.fetch_y_organizations")
     def test_lambda_handler(self, mock_fetch_y_organizations, mock_fetch_organizations):
         # Set up mock event and context
         event = {"some_key": "some_value"}
@@ -29,13 +29,13 @@ class TestLambdaHandler(unittest.TestCase):
 
 
 class TestUpdateRecords(unittest.TestCase):
-    @patch("application.locations_data_load.locations_lambda.boto3.resource")
+    @patch("data_migration.locations_data_load.locations_lambda.boto3.resource")
     @patch(
-        "application.locations_data_load.locations_lambda.workspace_locations_table_name",
+        "data_migration.locations_data_load.locations_lambda.workspace_locations_table_name",
         "locations_table_name",
     )
     @patch(
-        "application.locations_data_load.locations_lambda.organisations_table_name",
+        "data_migration.locations_data_load.locations_lambda.organisations_table_name",
         "organisations_table_name",
     )
     def test_update_records_with_existing_data(self, mock_resource):
@@ -74,7 +74,7 @@ class TestUpdateRecords(unittest.TestCase):
 
 
 class TestWriteToDynamoDB(unittest.TestCase):
-    @patch("application.locations_data_load.locations_lambda.boto3.resource")
+    @patch("data_migration.locations_data_load.locations_lambda.boto3.resource")
     def test_write_to_dynamodb(self, mock_boto3_resource):
         # Mock DynamoDB resource
         mock_table = MagicMock()
@@ -88,12 +88,12 @@ class TestWriteToDynamoDB(unittest.TestCase):
 
         # Mock data_exists function
         with patch(
-            "application.locations_data_load.locations_lambda.data_exists",
+            "data_migration.locations_data_load.locations_lambda.data_exists",
             return_value=False,
         ) as mock_data_exists:
             # Mock update_records function
             with patch(
-                "application.locations_data_load.locations_lambda.update_records"
+                "data_migration.locations_data_load.locations_lambda.update_records"
             ) as mock_update_records:
                 # Call the function to test
                 write_to_dynamodb("test_table", processed_data)
@@ -106,7 +106,7 @@ class TestWriteToDynamoDB(unittest.TestCase):
                 mock_table.put_item.assert_called_with(Item=processed_data[1])
                 mock_update_records.assert_called_once()
 
-    @patch("application.locations_data_load.locations_lambda.boto3.resource")
+    @patch("data_migration.locations_data_load.locations_lambda.boto3.resource")
     def test_data_exists(self, mock_boto3_resource):
         # Mock DynamoDB resource
         mock_table_true = MagicMock()
@@ -169,9 +169,9 @@ class TestProcessOrganizations(unittest.TestCase):
             }
         ]
         with patch(
-            "application.locations_data_load.locations_lambda.uuid"
+            "data_migration.locations_data_load.locations_lambda.uuid"
         ) as mock_uuid, patch(
-            "application.locations_data_load.locations_lambda.datetime"
+            "data_migration.locations_data_load.locations_lambda.datetime"
         ) as mock_datetime:
             mock_uuid.uuid4.return_value.int = 1234567890123456
             mock_datetime.datetime.now.return_value.strftime.return_value = (
@@ -209,18 +209,20 @@ class TestProcessOrganizations(unittest.TestCase):
 
 
 class TestFetchOrganizations(unittest.TestCase):
-    @patch("application.locations_data_load.locations_lambda.common_functions.get_ssm")
     @patch(
-        "application.locations_data_load.locations_lambda.common_functions.get_headers"
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_ssm"
     )
     @patch(
-        "application.locations_data_load.locations_lambda.common_functions.read_excel_values"
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_headers"
     )
     @patch(
-        "application.locations_data_load.locations_lambda.common_functions.read_ods_api"
+        "data_migration.locations_data_load.locations_lambda.common_functions.read_excel_values"
     )
-    @patch("application.locations_data_load.locations_lambda.process_organizations")
-    @patch("application.locations_data_load.locations_lambda.write_to_dynamodb")
+    @patch(
+        "data_migration.locations_data_load.locations_lambda.common_functions.read_ods_api"
+    )
+    @patch("data_migration.locations_data_load.locations_lambda.process_organizations")
+    @patch("data_migration.locations_data_load.locations_lambda.write_to_dynamodb")
     def test_fetch_organizations(
         self,
         mock_write_to_dynamodb,
@@ -256,15 +258,17 @@ class TestFetchOrganizations(unittest.TestCase):
             "locations", mock_process_organizations.return_value
         )
 
-    @patch("application.locations_data_load.locations_lambda.common_functions.get_ssm")
     @patch(
-        "application.locations_data_load.locations_lambda.common_functions.get_headers"
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_ssm"
     )
     @patch(
-        "application.locations_data_load.locations_lambda.common_functions.read_ods_api"
+        "data_migration.locations_data_load.locations_lambda.common_functions.get_headers"
     )
-    @patch("application.locations_data_load.locations_lambda.process_organizations")
-    @patch("application.locations_data_load.locations_lambda.write_to_dynamodb")
+    @patch(
+        "data_migration.locations_data_load.locations_lambda.common_functions.read_ods_api"
+    )
+    @patch("data_migration.locations_data_load.locations_lambda.process_organizations")
+    @patch("data_migration.locations_data_load.locations_lambda.write_to_dynamodb")
     def test_fetch_y_organizations(
         self,
         mock_write_to_dynamodb,

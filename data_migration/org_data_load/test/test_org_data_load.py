@@ -1,4 +1,4 @@
-from application.org_data_load.org_data_load import (
+from data_migration.org_data_load.org_data_load import (
     lambda_handler,
     write_to_dynamodb,
     process_organization,
@@ -16,7 +16,7 @@ from unittest.mock import patch, MagicMock, Mock
 
 
 class TestLambdaHandler(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.fetch_organizations")
+    @patch("data_migration.org_data_load.org_data_load.fetch_organizations")
     def test_lambda_handler(self, mock_fetch_organizations):
         # Set up mock event and context
         event = {"some_key": "some_value"}
@@ -30,9 +30,9 @@ class TestLambdaHandler(unittest.TestCase):
 
 
 class TestWriteToDynamoDB(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.boto3.resource")
-    @patch("application.org_data_load.org_data_load.update_records")
-    @patch("application.org_data_load.org_data_load.data_exists")
+    @patch("data_migration.org_data_load.org_data_load.boto3.resource")
+    @patch("data_migration.org_data_load.org_data_load.update_records")
+    @patch("data_migration.org_data_load.org_data_load.data_exists")
     def test_write_to_dynamodb_with_new_data(
         self, mock_data_exists, mock_update_records, mock_dynamodb_resource
     ):
@@ -52,9 +52,9 @@ class TestWriteToDynamoDB(unittest.TestCase):
         # Assert that update_records was called
         mock_update_records.assert_called_once_with(mock_table)
 
-    @patch("application.org_data_load.org_data_load.boto3.resource")
-    @patch("application.org_data_load.org_data_load.update_records")
-    @patch("application.org_data_load.org_data_load.data_exists")
+    @patch("data_migration.org_data_load.org_data_load.boto3.resource")
+    @patch("data_migration.org_data_load.org_data_load.update_records")
+    @patch("data_migration.org_data_load.org_data_load.data_exists")
     def test_write_to_dynamodb_with_existing_data(
         self, mock_data_exists, mock_update_records, mock_dynamodb_resource
     ):
@@ -74,7 +74,7 @@ class TestWriteToDynamoDB(unittest.TestCase):
         # Assert that update_records was called
         mock_update_records.assert_called_once_with(mock_table)
 
-    @patch("application.org_data_load.org_data_load.boto3.resource")
+    @patch("data_migration.org_data_load.org_data_load.boto3.resource")
     def test_data_exists(self, mock_boto3_resource):
         # Mock DynamoDB resource
         mock_table_true = MagicMock()
@@ -94,8 +94,8 @@ class TestWriteToDynamoDB(unittest.TestCase):
         result = data_exists(mock_table_false, "something")
         self.assertFalse(result)
 
-    @patch("application.org_data_load.org_data_load.print")
-    @patch("application.org_data_load.org_data_load.boto3.resource")
+    @patch("data_migration.org_data_load.org_data_load.print")
+    @patch("data_migration.org_data_load.org_data_load.boto3.resource")
     def test_update_records_with_existing_data(self, mock_print, mock_table):
         # Mock data with existing data in the DynamoDB table
         mock_table.scan.return_value = {
@@ -153,14 +153,14 @@ class TestProcessOrganization(unittest.TestCase):
 
 class TestProcessPharmacy(unittest.TestCase):
     @patch(
-        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+        "data_migration.org_data_load.org_data_load.common_functions.capitalize_address_item"
     )
     @patch(
-        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+        "data_migration.org_data_load.org_data_load.common_functions.generate_random_id"
     )
-    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("data_migration.org_data_load.org_data_load.process_type")
     @patch(
-        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+        "data_migration.org_data_load.org_data_load.common_functions.get_formatted_datetime"
     )
     def test_process_pharmacy_with_ph_org(
         self,
@@ -216,14 +216,14 @@ class TestProcessPharmacy(unittest.TestCase):
         )
 
     @patch(
-        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+        "data_migration.org_data_load.org_data_load.common_functions.capitalize_address_item"
     )
     @patch(
-        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+        "data_migration.org_data_load.org_data_load.common_functions.generate_random_id"
     )
-    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("data_migration.org_data_load.org_data_load.process_type")
     @patch(
-        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+        "data_migration.org_data_load.org_data_load.common_functions.get_formatted_datetime"
     )
     def test_process_pharmacy_without_ph_org(
         self,
@@ -280,14 +280,14 @@ class TestProcessPharmacy(unittest.TestCase):
 
 class TestProcessNonPharmacy(unittest.TestCase):
     @patch(
-        "application.org_data_load.org_data_load.common_functions.capitalize_address_item"
+        "data_migration.org_data_load.org_data_load.common_functions.capitalize_address_item"
     )
     @patch(
-        "application.org_data_load.org_data_load.common_functions.generate_random_id"
+        "data_migration.org_data_load.org_data_load.common_functions.generate_random_id"
     )
-    @patch("application.org_data_load.org_data_load.process_type")
+    @patch("data_migration.org_data_load.org_data_load.process_type")
     @patch(
-        "application.org_data_load.org_data_load.common_functions.get_formatted_datetime"
+        "data_migration.org_data_load.org_data_load.common_functions.get_formatted_datetime"
     )
     def test_process_non_pharmacy(
         self,
@@ -340,9 +340,9 @@ class TestProcessNonPharmacy(unittest.TestCase):
 
 
 class TestProcessOrganizations(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.process_organization")
-    @patch("application.org_data_load.org_data_load.process_pharmacy")
-    @patch("application.org_data_load.org_data_load.process_non_pharmacy")
+    @patch("data_migration.org_data_load.org_data_load.process_organization")
+    @patch("data_migration.org_data_load.org_data_load.process_pharmacy")
+    @patch("data_migration.org_data_load.org_data_load.process_non_pharmacy")
     def test_process_organizations(
         self,
         mock_process_non_pharmacy,
@@ -435,12 +435,14 @@ class TestProcessType(unittest.TestCase):
 
 
 class TestFetchOrganizations(unittest.TestCase):
-    @patch("application.org_data_load.org_data_load.common_functions.get_ssm")
-    @patch("application.org_data_load.org_data_load.common_functions.get_headers")
-    @patch("application.org_data_load.org_data_load.common_functions.read_excel_values")
-    @patch("application.org_data_load.org_data_load.common_functions.read_ods_api")
-    @patch("application.org_data_load.org_data_load.process_organizations")
-    @patch("application.org_data_load.org_data_load.write_to_dynamodb")
+    @patch("data_migration.org_data_load.org_data_load.common_functions.get_ssm")
+    @patch("data_migration.org_data_load.org_data_load.common_functions.get_headers")
+    @patch(
+        "data_migration.org_data_load.org_data_load.common_functions.read_excel_values"
+    )
+    @patch("data_migration.org_data_load.org_data_load.common_functions.read_ods_api")
+    @patch("data_migration.org_data_load.org_data_load.process_organizations")
+    @patch("data_migration.org_data_load.org_data_load.write_to_dynamodb")
     def test_fetch_organizations(
         self,
         mock_write_to_dynamodb,

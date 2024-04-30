@@ -31,7 +31,7 @@ variable "application_lambda_security_group_name" {
 
 }
 
-variable "support_tools_lambda_security_group_name" {
+variable "data_migration_lambda_security_group_name" {
   description = "value"
 
 }

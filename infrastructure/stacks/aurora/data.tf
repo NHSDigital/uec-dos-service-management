@@ -21,6 +21,6 @@ data "aws_security_group" "application_lambda_security_group" {
   name = var.application_lambda_security_group_name
 }
 
-data "aws_security_group" "support_tools_lambda_security_group" {
-  name = var.support_tools_lambda_security_group_name
+data "aws_security_group" "data_migration_lambda_security_group" {
+  name = var.data_migration_lambda_security_group_name
 }
