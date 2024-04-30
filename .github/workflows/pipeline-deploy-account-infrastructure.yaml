@@ -29,6 +29,7 @@ jobs:
         [
           metadata,
         ]
+
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.17
       with:
         environment: test
