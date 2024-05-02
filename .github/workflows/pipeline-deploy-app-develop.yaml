@@ -56,6 +56,7 @@ jobs:
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
     with:
+      directory: 'application'
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -65,7 +66,23 @@ jobs:
           'organisation-affiliations-data-manager',
           'organisations-data-manager',
           'questionnaire-responses-data-manager',
-          'questionnaires-data-manager',
+          'questionnaires-data-manager'
+        ]"
+    secrets: inherit
+build-and-deploy-data-migration-code:
+    name: Build and deploy data migration
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
+    with:
+      directory: 'data_migration'
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
           'org_data_load',
           'locations_data_load',
           'organisation_affiliations_data_load',
@@ -80,6 +97,7 @@ jobs:
       unit-tests,
       deploy-application-infrastructure,
       build-and-deploy-application-code,
+      build-and-deploy-data-migration-code,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.17
