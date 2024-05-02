@@ -2,6 +2,7 @@ from behave import given, then
 from assertpy import assert_that
 from utilities import dynamodb
 from utilities.config_reader import read_config
+import csv
 
 
 @given("I reset the data by deleting id {id} in the dynamoDB table {resource_name}")
@@ -34,3 +35,18 @@ def dynamodb_check_delete(context, id):
         response["ResponseMetadata"]["HTTPHeaders"]["content-length"]
     ).is_equal_to("2")
     assert_that(response).does_not_contain("Item")
+
+
+@given(
+    "I have the following csv file {file_name}, I can retrieve the data within the file"
+)
+def read_csv_data(context, file_name):
+    # Open the CSV file in read mode
+    with open("data_csv/{file_name}.csv", "r") as csv_file:
+        csv_reader = csv.reader(
+            csv_file, delimiter=","
+        )  # Specify the delimiter (usually a comma)
+
+    # Iterate through each row in the CSV file
+    for row in csv_reader:
+        print(row)  # Print each row (you can process the data as needed)
