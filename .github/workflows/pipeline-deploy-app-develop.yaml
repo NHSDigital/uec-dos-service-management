@@ -69,7 +69,7 @@ jobs:
           'questionnaires-data-manager'
         ]"
     secrets: inherit
-build-and-deploy-data-migration-code:
+  build-and-deploy-data-migration-code:
     name: Build and deploy data migration
     needs:
       [
