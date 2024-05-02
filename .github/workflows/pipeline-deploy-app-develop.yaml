@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.18
   quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.18
     needs:
       [
         metadata,
@@ -29,7 +29,7 @@ jobs:
         metadata,
         quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.18
     with:
       env: dev
     secrets: inherit
@@ -39,7 +39,7 @@ jobs:
           quality-check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.17
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.18
       with:
         environment: dev
         domain: "uec-dos-service-management"
@@ -54,7 +54,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
     with:
       directory: 'application'
       environment: dev
@@ -76,7 +76,7 @@ build-and-deploy-data-migration-code:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
     with:
       directory: 'data_migration'
       environment: dev
@@ -100,7 +100,7 @@ build-and-deploy-data-migration-code:
       build-and-deploy-data-migration-code,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.18
     with:
       env: dev
     secrets: inherit

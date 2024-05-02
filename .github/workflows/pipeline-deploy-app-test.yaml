@@ -15,7 +15,7 @@ on:
 jobs:
   deploy-application-infrastructure:
     name: Deploy application infrastructure
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.18
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
@@ -30,7 +30,7 @@ jobs:
       [
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
@@ -51,7 +51,7 @@ jobs:
         deploy-application-infrastructure,
         build-and-deploy-application,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.17
+    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.18
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
