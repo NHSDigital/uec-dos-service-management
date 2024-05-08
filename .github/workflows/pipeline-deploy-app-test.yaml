@@ -32,6 +32,7 @@ jobs:
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
     with:
+      directory: 'application'
       environment: test
       workspace: ${{ inputs.workspace }}
       services: "[
