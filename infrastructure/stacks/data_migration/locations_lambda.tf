@@ -5,7 +5,7 @@ module "locations_data_load-lambda" {
   description   = "To pull ODS locations data nad write to DynamoDB Locations table"
   handler       = "locations_lambda.lambda_handler"
   layers = [
-    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
+    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python312:8",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
   ]
   timeout = "900"
