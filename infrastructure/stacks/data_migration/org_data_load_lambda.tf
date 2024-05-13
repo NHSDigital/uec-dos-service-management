@@ -5,7 +5,7 @@ module "org-data-load-lambda" {
   description   = "To pull ODS organizations data and write to DynamoDB table"
   handler       = "org_data_load.lambda_handler"
   layers = [
-    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python39:14",
+    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python312:8",
     "arn:aws:lambda:${var.aws_region}:${local.account_id}:layer:requests:1"
   ]
   timeout = "900"
