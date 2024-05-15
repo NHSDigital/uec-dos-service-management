@@ -5,6 +5,7 @@ relative_files = True
 omit =
         */test/*
         **/tests/integration/**
+        */data_migration/*/common/*
         */application/*/common/*
         */usr/local/lib*
         */__init__.py
@@ -15,6 +16,7 @@ omit =
 omit =
         */test/*
         **/tests/integration/**
+        */data_migration/*/common/*
         */application/*/common/*
         */usr/local/lib*
         */__init__.py

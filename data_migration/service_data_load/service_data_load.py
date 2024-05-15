@@ -5,6 +5,64 @@ import os
 
 from common import common_functions
 
+# # for Aurora db connection
+# import psycopg2
+
+# #############################
+# ########## handler ##########
+# #############################
+# def lambda_handler(event, context):
+#     print("Running Healthcare service schema")
+#     schema_mapping()
+
+
+# #############################
+# ####### Get parameter #######
+# #############################
+# def get_ssm(name):
+#     ssm = boto3.client("ssm")
+#     response = ssm.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
+#     if response:
+#         print ("======= fetched " + name + " from SSM successfully =========")
+#     return response
+
+# #############################
+# #### Retrieve AWS secret ####
+# #############################
+# def get_secret(secret_name):
+#     secrets_extension_endpoint = "http://localhost:2773" + \
+#     "/secretsmanager/get?secretId=" + \
+#     secret_name
+
+#     headers = {"X-Aws-Parameters-Secrets-Token": os.environ.get('AWS_SESSION_TOKEN')}
+#     r = requests.get(secrets_extension_endpoint, headers=headers)
+
+#     secret = json.loads(r.text)["SecretString"] # load the Secrets Manager response into a Python dictionary, access the secret
+#     print ("===== retrieved secret " + secret_name + " =======")
+
+#     return secret[13:28]
+
+
+# ##############################
+# #### Connect to Aurora DB ####
+# ##############################
+# def read_aurora_db():
+#     aurora_endpoint = "/data/api/lambda/aurora_read_endpoint"
+#     aurora_user = "/data/api/lambda/aurora_user"
+#     db_name = "/data/api/lambda/aurora_db"
+#     db_pass = "dev/aurora-dos-postgress-password"
+#     host = get_ssm(aurora_endpoint)
+#     username = get_ssm(aurora_user)
+#     database = get_ssm(db_name)
+#     password = get_secret(db_pass)
+#     print ("==== trying connection to aurora =======")
+#     db_conn = psycopg2.connect(host=host, database=database, user=username, password=password)
+#     print ("===== connected to aurora. Querying data =====")
+#     sql = "SELECT * FROM pathwaysdos.healthcareservicesrewrite limit 2;"
+#     data_df = pd.io.sql.read_sql(sql, db_conn)
+#     return(data_df)
+#     db_conn.close()
+
 
 def lambda_handler(event, context):
     print("Running Healthcare service schema")
@@ -19,10 +77,12 @@ file = "Filtered_odscodes.xlsx"
 def read_s3_file():
     bucket_name = os.getenv("S3_DATA_BUCKET")
     # Read values from the Excel file
-    s3 = boto3.client("s3")
-    excel_object = s3.get_object(Bucket=bucket_name, Key=file)
-    df = pd.read_excel(excel_object)
-    return df
+    s3 = boto3.resource("s3")
+    s3.Object(bucket_name, file).download_file('/tmp/' + file)
+
+    df = pd.read_excel('/tmp/' + file)
+    data = df.groupby(["modified_odscode"])
+    return data
 
 
 # Common schema mapping
@@ -128,33 +188,48 @@ def schema_mapping():
     healthcare_workspaced_table_name = common_functions.get_table_name(
         healthcare_table_name
     )
+    day_list = []
+    day_list.append(
+    {
+        "dayofweek": "",
+        "starttime": "",
+        "endtime": "",
+    }
+    )
+
     json_data_list = []
-    read_file = read_s3_file.groupby("id", "uid")
+    read_file = read_s3_file()
 
     for groupkey, group in read_file:
         unique_rows = group[
             group["dosrewrite_name"] != "Community Pharmacy Consultation Service"
         ]
 
+        duplicate_rows = group[
+            group["dosrewrite_name"] == "Community Pharmacy Consultation Service"
+        ]
+
         for index, row in unique_rows.iterrows():
             id_val = row["id"]
             uid_val = row["uid"]
-            day_list = []
-            for _, r in group.iterrows():
-                if r["id"] == id_val and r["uid"] == uid_val:
-                    day_list.append(
-                        {
-                            "dayofweek": r["dayofweek"],
-                            "starttime": r["starttime"],
-                            "endtime": r["endtime"],
-                        }
-                    )
-                    break
 
             json_data = common_schema(
-                id_val, uid_val, row["dosrewrite_name"], row["code"], day_list
+                uid_val, id_val, row["dosrewrite_name"], row["odscode"], day_list
             )
             json_data_list.append(json_data)
+
+        id_mapping = []
+        uid_mapping = []
+        odscode_map = groupkey
+        for index, row in duplicate_rows.iterrows():
+            id_mapping.append(row["id"])
+            uid_mapping.append(row["uid"])
+
+            json_data = common_schema(
+                uid_mapping, id_mapping, "Community Pharmacy Consultation Service", odscode_map, day_list
+            )
+            json_data_list.append(json_data)
+
 
     # Move the following lines outside the loop to write data to DynamoDB after processing all groups
     write_to_dynamodb(healthcare_workspaced_table_name, json_data_list)
