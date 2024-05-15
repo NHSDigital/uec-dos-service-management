@@ -4,7 +4,7 @@ from data_migration.service_data_load.service_data_load import (
     write_to_dynamodb,
     update_services_providedby,
     update_services_location,
-    schema_mapping,
+    # schema_mapping,
 )
 import unittest
 from unittest.mock import Mock, patch, MagicMock
@@ -37,8 +37,8 @@ class TestAll(unittest.TestCase):
         mock_os_getenv.assert_called_once_with("S3_DATA_BUCKET")
         mock_boto3_resource.assert_called_once_with("s3")
         mock_s3_resource.Object.assert_called_once_with(mock_bucket_name, mock_file)
-        mock_s3_object.download_file.assert_called_once_with('/tmp/' + mock_file)
-        mock_read_excel.assert_called_once_with('/tmp/' + mock_file)
+        mock_s3_object.download_file.assert_called_once_with("/tmp/" + mock_file)
+        mock_read_excel.assert_called_once_with("/tmp/" + mock_file)
         mock_excel_data.groupby.assert_called_once_with(["modified_odscode"])
 
     @patch(

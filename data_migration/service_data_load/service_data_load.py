@@ -8,17 +8,14 @@ from common import common_functions
 # # for Aurora db connection
 # import psycopg2
 
-# #############################
-# ########## handler ##########
-# #############################
-# def lambda_handler(event, context):
-#     print("Running Healthcare service schema")
-#     schema_mapping()
+
+# handler
+def lambda_handler(event, context):
+    print("Running Healthcare service schema")
+    schema_mapping()
 
 
-# #############################
-# ####### Get parameter #######
-# #############################
+# # Get parameter
 # def get_ssm(name):
 #     ssm = boto3.client("ssm")
 #     response = ssm.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
@@ -26,9 +23,8 @@ from common import common_functions
 #         print ("======= fetched " + name + " from SSM successfully =========")
 #     return response
 
-# #############################
-# #### Retrieve AWS secret ####
-# #############################
+
+# # Retrieve AWS secret
 # def get_secret(secret_name):
 #     secrets_extension_endpoint = "http://localhost:2773" + \
 #     "/secretsmanager/get?secretId=" + \
@@ -36,16 +32,15 @@ from common import common_functions
 
 #     headers = {"X-Aws-Parameters-Secrets-Token": os.environ.get('AWS_SESSION_TOKEN')}
 #     r = requests.get(secrets_extension_endpoint, headers=headers)
-
-#     secret = json.loads(r.text)["SecretString"] # load the Secrets Manager response into a Python dictionary, access the secret
-#     print ("===== retrieved secret " + secret_name + " =======")
+#
+#     #load the Secrets Manager response into a Python dictionary, access the secret
+#     secret = json.loads(r.text)["SecretString"]
+#     print ("===== retrieved secret =======")
 
 #     return secret[13:28]
 
 
-# ##############################
-# #### Connect to Aurora DB ####
-# ##############################
+# # Connect to Aurora DB
 # def read_aurora_db():
 #     aurora_endpoint = "/data/api/lambda/aurora_read_endpoint"
 #     aurora_user = "/data/api/lambda/aurora_user"
@@ -55,18 +50,13 @@ from common import common_functions
 #     username = get_ssm(aurora_user)
 #     database = get_ssm(db_name)
 #     password = get_secret(db_pass)
-#     print ("==== trying connection to aurora =======")
+#     print ("==== Trying connection to aurora =======")
 #     db_conn = psycopg2.connect(host=host, database=database, user=username, password=password)
-#     print ("===== connected to aurora. Querying data =====")
+#     print ("===== Connected to aurora. Querying data =====")
 #     sql = "SELECT * FROM pathwaysdos.healthcareservicesrewrite limit 2;"
 #     data_df = pd.io.sql.read_sql(sql, db_conn)
 #     return(data_df)
 #     db_conn.close()
-
-
-def lambda_handler(event, context):
-    print("Running Healthcare service schema")
-    schema_mapping()
 
 
 # S3 file
@@ -78,9 +68,9 @@ def read_s3_file():
     bucket_name = os.getenv("S3_DATA_BUCKET")
     # Read values from the Excel file
     s3 = boto3.resource("s3")
-    s3.Object(bucket_name, file).download_file('/tmp/' + file)
+    s3.Object(bucket_name, file).download_file("/tmp/" + file)
 
-    df = pd.read_excel('/tmp/' + file)
+    df = pd.read_excel("/tmp/" + file)
     data = df.groupby(["modified_odscode"])
     return data
 
@@ -190,11 +180,11 @@ def schema_mapping():
     )
     day_list = []
     day_list.append(
-    {
-        "dayofweek": "",
-        "starttime": "",
-        "endtime": "",
-    }
+        {
+            "dayofweek": "",
+            "starttime": "",
+            "endtime": "",
+        }
     )
 
     json_data_list = []
@@ -226,12 +216,14 @@ def schema_mapping():
             uid_mapping.append(row["uid"])
 
             json_data = common_schema(
-                uid_mapping, id_mapping, "Community Pharmacy Consultation Service", odscode_map, day_list
+                uid_mapping,
+                id_mapping,
+                "Community Pharmacy Consultation Service",
+                odscode_map,
+                day_list,
             )
             json_data_list.append(json_data)
 
-
-    # Move the following lines outside the loop to write data to DynamoDB after processing all groups
     write_to_dynamodb(healthcare_workspaced_table_name, json_data_list)
     update_services_providedby(healthcare_workspaced_table_name, json_data_list)
     update_services_location(healthcare_workspaced_table_name, json_data_list)
