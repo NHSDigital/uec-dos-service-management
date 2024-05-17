@@ -6,6 +6,7 @@ omit =
         */test/*
         **/tests/integration/**
         */application/*/common/*
+        */data_migration/*/common/*
         */usr/local/lib*
         */__init__.py
         **/*database_populator.py
@@ -16,6 +17,7 @@ omit =
         */test/*
         **/tests/integration/**
         */application/*/common/*
+        */data_migration/*/common/*
         */usr/local/lib*
         */__init__.py
         **/*database_populator.py
