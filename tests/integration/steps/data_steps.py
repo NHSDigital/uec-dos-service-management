@@ -62,7 +62,7 @@ def read_csv_data(context, file_name):
         # Iterate through each row in the CSV file
         for row in rows:
             print(row)
-        print(row_count)
+
 
 
 @given("I have the following csv file {file_name}, I can assert that the file exists")
