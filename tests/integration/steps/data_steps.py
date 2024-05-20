@@ -46,7 +46,9 @@ def read_csv_data(context, file_name):
     filename = read_config("csv_files", file_name)
     file_name = os.path.basename(filename)
     with open(filename, "r") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=",")  # Specify the delimiter (usually a comma)
+        csv_reader = csv.reader(
+            csv_file, delimiter=","
+        )  # Specify the delimiter (usually a comma)
         headers = next(csv_reader)
         column_count = len(headers)
         # Convert csv_reader to a list so we can iterate over it multiple times
@@ -60,3 +62,71 @@ def read_csv_data(context, file_name):
         # Iterate through each row in the CSV file
         for row in rows:
             print(row)
+        print(row_count)
+
+
+@given("I have the following csv file {file_name}, I can assert that the file exists")
+def assert_file_exists(context, file_name):
+    filename = read_config("csv_files", file_name)
+    file_name = os.path.basename(filename)
+    assert os.path.isfile(filename)
+
+
+@given(
+    "I have the following csv file {file_name}, I can assert that the number of rows in the file is correct"
+)
+def assert_row_count(context, file_name):
+    # Open the CSV file in read mode
+    filename = read_config("csv_files", file_name)
+    file_name = os.path.basename(filename)
+    with open(filename, "r") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
+        next(csv_reader)
+        rows = list(csv_reader)
+        row_count = len(rows)
+        assert row_count == 4
+
+
+@given(
+    "I have the following csv file {file_name}, I can assert that the number of columns in the file is correct"
+)
+def assert_column_count(context, file_name):
+    # Open the CSV file in read mode
+    filename = read_config("csv_files", file_name)
+    file_name = os.path.basename(filename)
+    with open(filename, "r") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
+        headers = next(csv_reader)
+        column_count = len(headers)
+        assert column_count == 3
+
+
+@given(
+    "I have the following csv file {file_name}, I can assert that the headers in the file are correct"
+)
+def assert_file_headers(context, file_name):
+    # Open the CSV file in read mode
+    filename = read_config("csv_files", file_name)
+    file_name = os.path.basename(filename)
+    with open(filename, "r") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
+        headers = next(csv_reader)
+        assert headers == ["test_case", "some_value", "some_other_value"]
+
+
+@given(
+    "I have the csv file {file_name}, I can assert file has the correct value in row 2 of the some value column"
+)
+def assert_cell_value(context, file_name):
+    # Open the CSV file in read mode
+    filename = read_config("csv_files", file_name)
+    file_name = os.path.basename(filename)
+    with open(filename, "r") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
+        headers = next(csv_reader)
+        rows = list(csv_reader)
+        # Get the index of the column
+        col_index = headers.index("some_value")
+        # Get the specific cell value
+        cell_value = rows[1][col_index]
+        assert cell_value == "value 16"
