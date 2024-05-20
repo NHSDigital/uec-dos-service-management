@@ -1,0 +1,28 @@
+{
+  "testing": true,
+  "s3": "s3",
+  "dynamodb": "dynamodb",
+  "ddbclient": "dynamodb",
+  "bucket_name": "nhse-uec-cm-dev-databucket",
+  "file_key": "CapacityManagementFullDataset.xlsx",
+  "maximum_insert_fails": 30,
+  "log_file": "database_populator.log",
+  "FHIR_entities": [
+    {
+      "db_table_name": "organisations",
+      "spreadsheet_tab_name": "FHIR Organization"
+    },
+    {
+      "db_table_name": "healthcare_services",
+      "spreadsheet_tab_name": "FHIR Healthcare Service"
+    },
+    {
+      "db_table_name": "organisation_affiliations",
+      "spreadsheet_tab_name": "FHIR Organization affiliation"
+    },
+    {
+      "db_table_name": "locations",
+      "spreadsheet_tab_name": "FHIR Location"
+    }
+  ]
+}
