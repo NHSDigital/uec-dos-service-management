@@ -1,4 +1,4 @@
-@locations @pipeline_tests @test1
+@locations @pipeline_tests
 @critical
 Feature: Locations Manager
   As a user,
