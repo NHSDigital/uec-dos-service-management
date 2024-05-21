@@ -3,7 +3,7 @@
   "s3": "s3",
   "dynamodb": "dynamodb",
   "ddbclient": "dynamodb",
-  "bucket_name": "nhse-uec-cm-dev-databucket",
+  "bucket_name": "nhse-uec-sm-dev-databucket",
   "file_key": "CapacityManagementFullDataset.xlsx",
   "maximum_insert_fails": 30,
   "log_file": "database_populator.log",
