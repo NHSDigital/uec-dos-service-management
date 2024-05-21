@@ -19,3 +19,9 @@ variable "target_access_logging_prefix" {
   description = "A prefix for all log object keys"
   default     = null
 }
+
+variable "force_destroy" {
+  description = "Whether to forcefully destroy the bucket when it contains objects"
+  type        = bool
+  default     = false
+}

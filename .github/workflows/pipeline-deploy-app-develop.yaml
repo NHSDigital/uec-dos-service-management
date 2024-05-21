@@ -20,7 +20,7 @@ jobs:
     with:
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
-      stacks: '["github-runner", "terraform_management", "application", "data_migration"]'
+      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
     secrets: inherit
   unit-tests:
     name: Unit Test
@@ -44,7 +44,7 @@ jobs:
         environment: dev
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: '["application", "data_migration"]'
+        stacks: '["application", "data_migration", "domain-test"]'
         action: apply
       secrets: inherit
   build-application:
