@@ -337,13 +337,13 @@ class DatabasePopulator:
                 {
                     "type": "UID",
                     "use": "oldDoS",
-                    # "value": value1,
-                },  # need these values
+                    "value": row["OldDosUID"],
+                },
                 {
                     "type": "ID",
                     "use": "oldDoS",
-                    # "value": value2,
-                },  # need these values
+                    "value": row["OldDosID"],
+                },
             ],
             "name": row["Name "],
             "type": row["Type"],
@@ -536,7 +536,7 @@ class DatabasePopulator:
 
         return schema
 
-    def transpose_into_schema(self, table_name: str, row: pd.Series) -> Dict[str, Any]:
+    def transpose_into_schema(self, table_name: str, row: pd.Series) -> Any:
         """
         Transpose a row of data into a schema for a given table.
 
