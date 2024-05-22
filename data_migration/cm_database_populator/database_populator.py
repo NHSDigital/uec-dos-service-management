@@ -154,9 +154,11 @@ class DatabasePopulator:
                 excel_object = {"Body": BytesIO(file_content)}
             else:
                 # Use the S3 `get_object` method to read the Excel file
-                excel_object = self.s3.get_object(
+                response = self.s3.get_object(
                     Bucket=self.bucket_name, Key=self.file_key
                 )
+                # Read the streaming body into a BytesIO object
+                excel_object = {"Body": BytesIO(response["Body"].read())}
         except FileNotFoundError:
             self.log(f"File not found: {self.file_key}", "Error")
             raise
@@ -177,8 +179,7 @@ class DatabasePopulator:
                     BytesIO(excel_object["Body"].read()),
                     sheet_name=FHIR_entity["spreadsheet_tab_name"],
                     engine="openpyxl",
-                )
-                df = df.dropna(how="all")
+                ).fillna("")
                 # Copy the data from the spreadsheet into the relevant table
                 if df.empty:
                     self.log("Empty sheet: " + FHIR_entity["spreadsheet_tab_name"])
@@ -217,6 +218,13 @@ class DatabasePopulator:
 
         for index, row in df.iterrows():
             data_item = self.transpose_into_schema(table_name, row)
+            for key, value in data_item.items():
+                if isinstance(value, float):
+                    self.log(
+                        f"data_item contains a float value. Key: {key},"
+                        " Value: {value}",
+                        "Warning",
+                    )
             self.insert_into_table(table, data_item)
 
     def get_formatted_datetime(self) -> str:
@@ -346,7 +354,11 @@ class DatabasePopulator:
                 },
             ],
             "name": row["Name "],
-            "type": row["Type"],
+            "type": {
+                "system": "",
+                "code": "",
+                "display": row["Type"],
+            },
             "location": row["LocationID"],
             "telecom": telecom_numbers,
             "createdBy": "Admin",
@@ -427,9 +439,6 @@ class DatabasePopulator:
             "NO ID",
         ]:  # If the identifier value field is
             # blank, null, n/a, N/A, NOT FOUND or NO ID
-            self.fails["organisations"].append(
-                {"Source Identifier": schema["id"], "Error": "No Location ID"}
-            )
             # Remove the identifier field from the schema
             schema.pop("identifier")
             # Remove the odscode field from the schema
@@ -444,10 +453,6 @@ class DatabasePopulator:
             "NO ID",
         ]:  # If the location value field is
             # blank, null, n/a, N/A, NOT FOUND or NO ID
-            self.fails["organisations"].append(
-                {"Source Identifier": schema["id"], "Error": "No Location ID"}
-            )
-
             # Remove the location field from the schema
             schema.pop("location")
 
@@ -559,6 +564,8 @@ class DatabasePopulator:
             return self.transpose_organisations(formatted_datetime, row)
         elif table_name == "locations":
             return self.transpose_locations(formatted_datetime, row)
+        else:
+            self.log(f"Unknown table: {table_name}", "Error")
 
     def insert_into_table(self, table: Any, data_item: Dict[str, Any]) -> None:
         """
@@ -592,8 +599,6 @@ class DatabasePopulator:
         Main execution of the script.
         """
         aborted = self.populate_database()
-        print("failes")
-        print(self.fails)
 
         for table in self.fails:
             if self.fails[table]:
