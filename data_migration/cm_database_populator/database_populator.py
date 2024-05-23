@@ -218,13 +218,6 @@ class DatabasePopulator:
 
         for index, row in df.iterrows():
             data_item = self.transpose_into_schema(table_name, row)
-            for key, value in data_item.items():
-                if isinstance(value, float):
-                    self.log(
-                        f"data_item contains a float value. Key: {key},"
-                        " Value: {value}",
-                        "Warning",
-                    )
             self.insert_into_table(table, data_item)
 
     def get_formatted_datetime(self) -> str:
@@ -396,13 +389,12 @@ class DatabasePopulator:
             Dict[str, Any]: The transposed data item.
         """
         telecom_numbers = self.split_telecom_numbers(row["Telecom"])
+        streetAdress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
         address = {
-            "line1": str(row["Line1"]),
-            "line2": str(row["Line2"]),
-            "line3": str(row["Line3"]),
+            "line": streetAdress,
             "city": str(row["City"]),
             "district": str(row["District"]),
-            "postalcode": str(row["PostalCode"]),
+            "postalCode": str(row["PostalCode"]),
         }
         filtered_address = self.filter_empty_address_fields(address)
         schema = {
@@ -415,7 +407,6 @@ class DatabasePopulator:
                 "value": str(row["ODSCode"]),
             },
             "name": str(row["Name"]),
-            "odscode": str(row["ODSCode"]),
             "type": row["Type"],
             "location": row["LocationID"],
             "telecom": telecom_numbers,
@@ -441,8 +432,6 @@ class DatabasePopulator:
             # blank, null, n/a, N/A, NOT FOUND or NO ID
             # Remove the identifier field from the schema
             schema.pop("identifier")
-            # Remove the odscode field from the schema
-            schema.pop("odscode")
         if row["LocationID"] in [
             "",
             None,
@@ -472,13 +461,13 @@ class DatabasePopulator:
             Dict[str, Any]: The transposed data item.
         """
 
+        streetAddress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
+
         address = {
-            "line1": str(row["Line1"]),
-            "line2": str(row["Line2"]),
-            "line3": str(row["Line3"]),
+            "line": streetAddress,
             "city": str(row["City"]),
             "district": str(row["District"]),
-            "postalcode": str(row["PostalCode"]),
+            "postalCode": str(row["PostalCode"]),
         }
         filtered_address = self.filter_empty_address_fields(address)
         schema = {
@@ -486,7 +475,7 @@ class DatabasePopulator:
             "id": str(row["Identifier"]),
             "active": "true",
             "name": row["Name"],
-            "address": filtered_address,
+            "address": [filtered_address],
             "position": {
                 "latitude": str(
                     Decimal(row["Latitude"]).quantize(
@@ -528,7 +517,7 @@ class DatabasePopulator:
             # blank, null, n/a, N/A, or NO ID
             # Remove the position field from the schema
             schema.pop("position")
-        if row["Longitude"] in [
+        elif row["Longitude"] in [
             "",
             None,
             "N/A",
