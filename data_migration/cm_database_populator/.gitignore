@@ -1,0 +1,7 @@
+.vs/
+CapacityManagementFullDataset.xlsx
+CapacityManagementFullDataset_backup.xlsx
+common/
+database_populator.log
+env/
+reformat_dataset_log.log

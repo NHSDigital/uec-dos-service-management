@@ -56,3 +56,8 @@ application/*/common
 # ZIP files
 *ods_location_comparator.zip
 *deployment.zip
+.pre-commit-config.yaml
+
+# Environments
+data_migration/cm_database_populator/rhelenv/
+

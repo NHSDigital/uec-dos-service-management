@@ -1,0 +1,42 @@
+{
+  "testing": true,
+  "workbook": "CapacityManagementFullDataset.xlsx",
+  "backup_file": "CapacityManagementFullDataset_backup.xlsx",
+  "log_file": "reformat_dataset_log.log",
+  "dataset_sheets_columns": {
+    "Organisation": {
+      "sheet": "FHIR Organization",
+      "generate_column": "Identifier",
+      "id_prefix": "OR",
+      "map_columns": [
+        "partof"
+      ]
+    },
+    "Location": {
+      "sheet": "FHIR Location",
+      "generate_column": "Identifier",
+      "id_prefix": "LO",
+      "map_columns": [
+        "ManagingOrg"
+      ]
+    },
+    "Healthcare Service": {
+      "sheet": "FHIR Healthcare Service",
+      "generate_column": "Identifier",
+      "id_prefix": "HS",
+      "map_columns": [
+        "LocationID",
+        "ProvidedByID"
+      ]
+    },
+    "Organisation Affiliation": {
+      "sheet": "FHIR Organization affiliation",
+      "generate_column": "Identifier",
+      "id_prefix": "OA",
+      "map_columns": [
+        "FHIRParticipatingOrganizationnIdentifier",
+        "FHIROrganizationIdentifier"
+      ]
+    }
+  }
+}

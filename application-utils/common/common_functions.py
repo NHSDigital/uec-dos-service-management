@@ -3,6 +3,7 @@ import boto3
 import requests
 import uuid
 import datetime
+import time
 import pandas as pd
 from io import BytesIO
 
@@ -71,6 +72,14 @@ def read_ods_api(api_endpoint, headers, params):
 def generate_random_id():
     # Generate a random 16-digit ID
     return str(uuid.uuid4().int)[0:16]
+
+
+def generate_unique_id():
+    # Sleep for 1 microsecond to ensure unique ID generation
+    time.sleep(0.000001)
+    utc_now = datetime.datetime.utcnow()
+    microseconds = (utc_now - datetime.datetime(2000, 1, 1)).total_seconds()
+    return str(int(microseconds * 1000000))
 
 
 # function to get the current date and time in UK format
