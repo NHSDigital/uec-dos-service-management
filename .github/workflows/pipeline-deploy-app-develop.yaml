@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.23
   quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.23
     needs:
       [
         metadata,
@@ -29,7 +29,7 @@ jobs:
         metadata,
         quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.23
     with:
       env: dev
     secrets: inherit
@@ -39,7 +39,7 @@ jobs:
           quality-check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.18
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.23
       with:
         environment: dev
         domain: "uec-dos-service-management"
@@ -47,14 +47,14 @@ jobs:
         stacks: '["application", "data_migration"]'
         action: apply
       secrets: inherit
-  build-and-deploy-application-code:
-    name: Build and deploy application
+  build-application:
+    name: Build application
     needs:
       [
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@v0.23
     with:
       directory: 'application'
       environment: dev
@@ -68,15 +68,44 @@ jobs:
           'questionnaire-responses-data-manager',
           'questionnaires-data-manager'
         ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
-  build-and-deploy-data-migration-code:
-    name: Build and deploy data migration
+  deploy-application:
+    name: Deploy lambda application code
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+        build-application
+      ]
+    uses: ./.github/workflows/deploy-lambda-code.yaml
+    with:
+      directory: 'application'
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+
+  build-data-migration-code:
+    name: Build data migration
     needs:
       [
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.23
     with:
       directory: 'data_migration'
       environment: dev
@@ -88,7 +117,34 @@ jobs:
           'organisation_affiliations_data_load',
           'service_data_load'
         ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
+
+  deploy-data-migration-code:
+    name: Deploy data migration
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+        build-data-migration-code
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.23
+    with:
+      directory: 'data_migration'
+      environment: dev
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
   slack-notifications:
     name: Send notification to slack
     needs: [
@@ -96,11 +152,13 @@ jobs:
       quality-check,
       unit-tests,
       deploy-application-infrastructure,
-      build-and-deploy-application-code,
-      build-and-deploy-data-migration-code,
+      build-application,
+      deploy-application,
+      build-data-migration-code,
+      deploy-data-migration-code,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.18
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.23
     with:
       env: dev
     secrets: inherit
