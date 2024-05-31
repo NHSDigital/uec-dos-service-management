@@ -63,7 +63,6 @@ resource "aws_iam_policy" "access_policy_s3" {
     ]
   }
   EOF
-  # policy = file("uec-github-runner-s3-access.json")
 }
 
 resource "aws_iam_role_policy_attachment" "attach_s3_access" {
