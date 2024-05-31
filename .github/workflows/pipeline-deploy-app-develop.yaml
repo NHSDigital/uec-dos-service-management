@@ -79,7 +79,7 @@ jobs:
         deploy-application-infrastructure,
         build-application
       ]
-    uses: ./.github/workflows/deploy-lambda-code.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.23
     with:
       directory: 'application'
       environment: dev
@@ -105,7 +105,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.23
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@v0.23
     with:
       directory: 'data_migration'
       environment: dev
@@ -129,7 +129,7 @@ jobs:
         deploy-application-infrastructure,
         build-data-migration-code
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.23
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.23
     with:
       directory: 'data_migration'
       environment: dev
