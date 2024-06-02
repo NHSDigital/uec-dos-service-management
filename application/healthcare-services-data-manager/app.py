@@ -7,7 +7,7 @@ from aws_lambda_powertools.logging import correlation_paths
 
 app = APIGatewayRestResolver()
 
-# Auto resolves the type of request comming through and sets APIGatewayRestResolver
+# Auto resolves the type of request coming through and sets APIGatewayRestResolver
 # fields
 
 log_level = os.environ.get("LOG_LEVEL", "info")
