@@ -11,6 +11,14 @@ on:
         description: "Defines the tag to be used for deployment"
         required: true
         type: string
+      commit_hash:
+        description: "The commit hash to identify the version of artefacts"
+        required: true
+        type: string
+      artefact_bucket_name:
+        description: "The name of domain repository for artefacts"
+        required: true
+        type: string
 
 jobs:
   deploy-application-infrastructure:
@@ -24,33 +32,36 @@ jobs:
       tag: ${{ inputs.tag }}
       action: apply
     secrets: inherit
-  build-and-deploy-application:
-    name: Build and deploy application
+  deploy-application:
+    name: Deploy lambda application code
     needs:
       [
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-and-deploy-application.yaml@v0.23
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.23
     with:
       directory: 'application'
       environment: test
       workspace: ${{ inputs.workspace }}
-      services: "[
+      services:
+        "[
           'healthcare-services-data-manager',
           'locations-data-manager',
           'organisation-affiliations-data-manager',
           'organisations-data-manager',
           'questionnaire-responses-data-manager',
-          'questionnaires-data-manager',
+          'questionnaires-data-manager'
         ]"
-      tag: ${{ inputs.tag }}
+      commit_hash: ${{ inputs.commit_hash }}
+      artefact_bucket_name: ${{ inputs.artefact_bucket_name }}
     secrets: inherit
+
   integration-tests:
     name: Run integration tests
     needs:
       [
         deploy-application-infrastructure,
-        build-and-deploy-application,
+        deploy-application,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.23
     with:
