@@ -37,7 +37,7 @@ jobs:
       generate-tag-name,
       tag-repository,
     ]
-    uses: ./.github/workflows/pipeline-deploy-app-test.yaml@task/DR-920_Github_runner_s3_access
+    uses: ./.github/workflows/pipeline-deploy-app-test.yaml
     with:
       workspace: ${{ needs.metadata.outputs.workspace }}
       tag: ${{needs.generate-tag-name.outputs.tag_name}}
