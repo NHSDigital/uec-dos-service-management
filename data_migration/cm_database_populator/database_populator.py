@@ -5,10 +5,11 @@ import json
 import logging
 import os
 import boto3
+import tempfile
 import pandas as pd
 from decimal import ROUND_HALF_UP, Decimal
 from io import BytesIO
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 
 class DatabasePopulator:
@@ -16,6 +17,13 @@ class DatabasePopulator:
         """
         Initialize DatabasePopulator with S3 and DynamoDB clients.
         """
+
+        # Get the environment variable as a string, default to 'True' if it doesn't exist
+        testing_str = os.environ.get('ISOLATED_TESTING', 'True')
+
+        # Convert the string to a boolean
+        self.testing = testing_str.lower() in ['true', '1']
+
         print("Working in " + os.getcwd())
         try:
             with open("database_populator_config.json") as f:
@@ -24,17 +32,14 @@ class DatabasePopulator:
             print(f"Error reading config file: {e}")
             raise
 
-        # Check if we are in a testing state
-        self.testing = config.get("testing", False)
-
-        if not self.testing:
+        if self.testing:
+            print("***S3 and DynamoDB disabled***")
+        else:
             # If we are not in a testing state, initialize S3 and DynamoDB
             # clients
             self.s3 = boto3.client(config["s3"])
             self.dynamodb = boto3.resource(config["dynamodb"])
             self.ddbclient = boto3.client(config["ddbclient"])
-        else:
-            print("***S3 and DynamoDB disabled***")
 
         self.bucket_name = config["bucket_name"]
         self.file_key = config["file_key"]
@@ -42,7 +47,9 @@ class DatabasePopulator:
         self.fails = {entity["db_table_name"]: [] for entity in self.FHIR_entities}
         self.maximum_insert_fails = config["maximum_insert_fails"]
         self.insert_fails = 0
-        self.log_file = config["log_file"]
+        #Initialise the log file
+        self.log_file = os.path.join(
+            tempfile.gettempdir(), config["log_file"])
         self.setup_logger()
 
     def setup_logger(self) -> None:
@@ -58,41 +65,52 @@ class DatabasePopulator:
         # Set up the logger - logging level can be changed to DEBUG for more
         # detailed output
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # Get the log level from the environment variable, default to 'DEBUG' if it doesn't exist
+        log_level_name = os.environ.get('LOG_LEVEL', 'DEBUG')
+
+        # Convert the log level name to a log level number
+        log_level = logging.getLevelName(log_level_name)
+
+        if not isinstance(log_level, int):
+            log_level = logging.DEBUG
+
+        # Set the log level
+        logging.basicConfig(level=log_level)
 
         file_handler = logging.FileHandler(self.log_file)
         file_handler.setLevel(logging.DEBUG)
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
 
         # Create a formatter and add it to the handlers
         formatter = logging.Formatter("%(asctime)s - %(message)s")
         file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
 
         # Log the start of the process
         if removed:
             self.log(f"Old log file {self.log_file} removed.")
         else:
             self.log(
-                f"Log file {self.log_file} does not exist." f" It will be created."
+                f"Log file {self.log_file} does not exist."
+                f" It will be created."
             )
 
     def log(self, message: str, level: str = "") -> None:
         """
         Log a message at the specified level.
         """
-        levels = {
-            "Debug": self.logger.debug,
-            "": self.logger.info,
-            "Warning": self.logger.warning,
-            "Error": self.logger.error,
-        }
         log_message = f"{level} {message}"
-        levels[level](log_message)
+        if not hasattr(self, 'logger') or \
+            not isinstance(self.logger, logging.Logger):
+            print(log_message)
+        else:
+            levels = {
+                "Debug": self.logger.debug,
+                "": self.logger.info,
+                "Warning": self.logger.warning,
+                "Error": self.logger.error,
+            }
+            levels[level](log_message)
 
     def log_failures(self) -> None:
         """
@@ -250,7 +268,9 @@ class DatabasePopulator:
                 telecom_numbers.append({"system": "phone", "value": telecom_item})
         return telecom_numbers
 
-    def filter_empty_address_fields(self, address: Dict[str, str]) -> Dict[str, str]:
+    def filter_empty_address_fields(
+        self, address: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, Union[str, List[str]]]:
         """
         Filter out empty fields from an address dictionary.
 
@@ -260,11 +280,43 @@ class DatabasePopulator:
         Returns:
             Dict[str, str]: The filtered address dictionary.
         """
+        # first, remove empty address fields
+        address_line = address.get("line", [])
+
+        # Check if address_line is a list
+        if not isinstance(address_line, list):
+            self.log(f"Expected a list for 'line', but got {type(address_line).__name__}")
+            address_line = []
+
+        filtered_address_line = self.filter_empty_street_address_fields(address_line)
+
+        # set the 'line' key to the filtered address line
+        address["line"] = filtered_address_line
+
         filtered_address = {}
         for k, v in address.items():
             if isinstance(v, str) and v.strip() != "" and v.strip().lower() != "nan":
                 filtered_address[k] = v
         return filtered_address
+
+    def filter_empty_street_address_fields(self, streetAddress: List[str]) -> List[str]:
+        """
+        Filter out empty fields from a street address dictionary.
+
+        Args:
+            address (Dict[str, str]): The address dictionary.
+
+        Returns:
+            Dict[str, str]: The filtered address dictionary.
+        """
+        filtered_streetAddress = list(filter(None, streetAddress))
+        if filtered_streetAddress:
+            # It's safe to access items in the list
+            first_address = filtered_streetAddress[0]
+        else:
+            # The list is empty
+            self.log("No addresses found")
+        return filtered_streetAddress
 
     def transpose_organisation_affiliations(
         self, formatted_datetime: str, row: pd.Series
@@ -389,14 +441,15 @@ class DatabasePopulator:
             Dict[str, Any]: The transposed data item.
         """
         telecom_numbers = self.split_telecom_numbers(row["Telecom"])
-        streetAdress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
+        streetAddress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
         address = {
-            "line": streetAdress,
+            "line": streetAddress,
             "city": str(row["City"]),
             "district": str(row["District"]),
             "postalCode": str(row["PostalCode"]),
         }
-        filtered_address = self.filter_empty_address_fields(address)
+        self.filter_empty_address_fields(address)
+        filtered_address = [address]
         schema = {
             "resourceType": "Organization",
             "id": str(row["Identifier"]),
@@ -462,20 +515,20 @@ class DatabasePopulator:
         """
 
         streetAddress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
-
         address = {
             "line": streetAddress,
             "city": str(row["City"]),
             "district": str(row["District"]),
             "postalCode": str(row["PostalCode"]),
         }
-        filtered_address = self.filter_empty_address_fields(address)
+        self.filter_empty_address_fields(address)
+        filtered_address = [address]
         schema = {
             "resourceType": "Location",
             "id": str(row["Identifier"]),
             "active": "true",
             "name": row["Name"],
-            "address": [filtered_address],
+            "address": filtered_address,
             "position": {
                 "latitude": str(
                     Decimal(row["Latitude"]).quantize(
@@ -605,6 +658,9 @@ class DatabasePopulator:
                 + "**********************************\n"
             )
 
+def lambda_handler(event, context):
+    db_populator = DatabasePopulator()
+    db_populator.main()
 
 if __name__ == "__main__":
     db_populator = DatabasePopulator()
