@@ -3,6 +3,7 @@ from assertpy import assert_that
 from utilities import dynamodb, csv_reader
 from utilities.config_reader import read_config
 import os
+import boto3
 
 
 @given("I reset the data by deleting id {id} in the dynamoDB table {resource_name}")
@@ -37,6 +38,8 @@ def dynamodb_check_delete(context, id):
     assert_that(response).does_not_contain("Item")
 
 
+@given("I want to upload the file {file_name} to the s3 bucket {bucket}")
+
 @given("I have the following csv file {file_name} I have {rowcount} rows")
 def count_csv_rows(context, file_name, rowcount):
     row_count = str(csv_reader.csv_row_count(file_name))
@@ -70,3 +73,28 @@ def assert_csv_cell_value(context, file_name):
     csv_cell_value = str(csv_reader.assert_cell_value(file_name))
     cell_value = "value 13"
     assert csv_cell_value == cell_value
+
+@given(
+    "I want to upload the file {file_name} to the s3 bucket {bucket}"
+)
+def put_s3_file(context, file_name, bucket):
+    print(bucket)
+    filename = read_config("s3_files", file_name)
+    s3 = boto3.resource("s3")
+    s3.Bucket(bucket).upload_file(filename, filename)
+
+
+@given("I want to retreive the file {file_name} from the s3 bucket {bucket}")
+def get_s3_file(context, bucket, file_name):
+    s3 = boto3.client("s3")
+    filename = read_config("s3_files", file_name)
+    response = s3.get_object(Bucket=bucket, Key=filename)
+    file = response["Body"].read().decode("utf-8")
+    print("The contents of the s3 file is: ", file, "\n")
+
+
+@given("I want to delete the file {file_name} from the s3 bucket {bucket}")
+def delete_s3_file(context, bucket, file_name):
+    s3 = boto3.resource("s3")
+    filename = read_config("s3_files", file_name)
+    s3.Object(bucket, filename).delete()

@@ -28,7 +28,7 @@ jobs:
       environment: test
       workspace: ${{ inputs.workspace }}
       domain: "uec-dos-service-management"
-      stacks: "['application']"
+      stacks: "['application', 'domain-test']"
       tag: ${{ inputs.tag }}
       action: apply
     secrets: inherit
