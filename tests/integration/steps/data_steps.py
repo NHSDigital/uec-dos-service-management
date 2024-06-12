@@ -38,8 +38,6 @@ def dynamodb_check_delete(context, id):
     assert_that(response).does_not_contain("Item")
 
 
-@given("I want to upload the file {file_name} to the s3 bucket {bucket}")
-
 @given("I have the following csv file {file_name} I have {rowcount} rows")
 def count_csv_rows(context, file_name, rowcount):
     row_count = str(csv_reader.csv_row_count(file_name))
@@ -73,6 +71,7 @@ def assert_csv_cell_value(context, file_name):
     csv_cell_value = str(csv_reader.assert_cell_value(file_name))
     cell_value = "value 13"
     assert csv_cell_value == cell_value
+
 
 @given(
     "I want to upload the file {file_name} to the s3 bucket {bucket}"
