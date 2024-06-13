@@ -2,23 +2,17 @@
 Feature: process_csv
   As a user,
   I want to be able to process a csv and read it's data
+Background:
+  Given I have a static csv file called data_csv
 
   Scenario: Assert row count
-    Given I have the following csv file data_csv I have 5 rows
+    Then the file contains 5 rows
 
   Scenario: Assert column count
-    Given I have the following csv file data_csv I have 3 columns
-
-  Scenario: Assert file exists
-    Given I have the following csv file data_csv, I can assert that the file exists
+    Then the file contains 3 columns
 
   Scenario: Assert file headers
-    Given I have the following csv file data_csv I have the correct headers
+    Then the file contains the correct headers ['test_case', 'some_value', 'some_other_value']
 
   Scenario: Assert cell value
-    Given I have the following csv file data_csv I can assert the correct value in a cell
-
-
-
-
-
+    Then the file contains value 16 in row 2 column 1
