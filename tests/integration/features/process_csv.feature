@@ -3,7 +3,7 @@ Feature: process_csv
   As a user,
   I want to be able to process a csv and read it's data
 Background:
-  Given I have a static csv file called data_csv
+  Given I have a csv file called data_csv
 
   Scenario: Assert row count
     Then the file contains 5 rows
