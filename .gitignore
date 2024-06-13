@@ -38,6 +38,7 @@ __pycache__
 .coverage.*
 coverage.xml
 tests/*/reports/*
+tests/*/downloads/*
 cve-scan*.json
 sbom-spdx*.json
 *.code-workspace

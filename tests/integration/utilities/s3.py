@@ -12,7 +12,10 @@ def get_bucket(context):
 
 def get_object(context, filename):
     bucket = get_bucket(context)
-    response = s3_client.get_object(Bucket=bucket, Key=filename,)
+    response = s3_client.get_object(
+        Bucket=bucket,
+        Key=filename,
+    )
     file_data = response["Body"].read().decode("utf-8")
     return file_data
 

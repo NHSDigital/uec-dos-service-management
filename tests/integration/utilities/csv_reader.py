@@ -5,7 +5,6 @@ def get_csv_data(context):
     with open(context.file_name, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
         rows = list(csv_reader)
-        print(rows, "/n")
     return rows
 
 
