@@ -42,7 +42,7 @@ def put_s3_file(context, file_name):
 
 @then("I can download the file {file_name} from the s3 bucket")
 def download_s3_file(context, file_name):
-    downloadfile = file_name + ".csv"
+    downloadfile = file_name
     context.file_name = "downloads/" + downloadfile
     s3.download_object(context, context.file_name, downloadfile)
 
