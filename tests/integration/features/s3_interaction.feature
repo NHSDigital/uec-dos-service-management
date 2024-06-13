@@ -2,13 +2,14 @@
 Feature: S3 Interaction
   As a user,
   I want to be able to interact with an S3 bucket
+Background:
+  Given I want to upload the file s3_data_csv to the s3 bucket
 
-
-  Scenario: Upload file to S3 bucket
-    Given I want to upload the file test_file to the s3 bucket nhse-uec-cm-domain-test-bucket-dev-dr-859
 
   Scenario: Get file from S3 bucket
-    Given I want to retreive the file test_file from the s3 bucket nhse-uec-cm-domain-test-bucket-dev-dr-859
+    Then I can download the file s3_data_csv from the s3 bucket
+    And the file contains 4 rows
+
 
   Scenario: Delete file from S3 bucket
-    Given I want to delete the file test_file from the s3 bucket nhse-uec-cm-domain-test-bucket-dev-dr-859
+    Then I can delete the file s3_data_csv.csv from the s3 bucket
