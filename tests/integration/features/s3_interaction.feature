@@ -12,4 +12,4 @@ Background:
 
 
   Scenario: Delete file from S3 bucket
-    Then I can delete the file s3_data_csv.csv from the s3 bucket
+    Then I can delete the file s3_data_csv from the s3 bucket

@@ -4,10 +4,9 @@ from utilities import csv_reader, s3
 from utilities.config_reader import read_config
 
 
-@given("I have a {source} csv file called {file_name}")
-def assert_file_exists(context, source, file_name):
+@given("I have a csv file called {file_name}")
+def assert_file_exists(context, file_name):
     context.file_name = read_config("csv_files", file_name)
-    context.source = source
 
 
 @then("the file contains {rowcount} rows")
@@ -44,13 +43,13 @@ def put_s3_file(context, file_name):
 @then("I can download the file {file_name} from the s3 bucket")
 def download_s3_file(context, file_name):
     downloadfile = file_name + ".csv"
-    context.file_name = "downloads/" + context.file_name
+    context.file_name = "downloads/" + downloadfile
     s3.download_object(context, context.file_name, downloadfile)
 
 
 @then("I can retrieve the file {file_name} from the s3 bucket")
 def get_s3_file(context, file_name):
-    context.file_name = s3.get_object(context, file_name)
+    file_name = s3.get_object(context, file_name)
 
 
 @then("I can delete the file {file_name} from the s3 bucket")
