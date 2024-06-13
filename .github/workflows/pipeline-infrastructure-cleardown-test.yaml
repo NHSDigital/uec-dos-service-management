@@ -8,10 +8,10 @@ jobs:
   metadata:
     if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.30
   destroy:
     if: github.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@v0.30
     needs:
       [
         metadata,
@@ -20,7 +20,7 @@ jobs:
       environment: test
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: "uec-dos-service-management"
-      stacks: '["application", "data_migration"]'
+      stacks: '["application", "data_migration", "domain-test"]'
     secrets: inherit
 
   summarise:
@@ -39,7 +39,7 @@ jobs:
       summarise,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.30
     with:
       env: test
     secrets: inherit
