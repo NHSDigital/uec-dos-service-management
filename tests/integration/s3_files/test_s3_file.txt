@@ -1,1 +1,0 @@
-This is a test s3 file...Hello World!
