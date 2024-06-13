@@ -23,52 +23,52 @@ resource "aws_iam_role_policy_attachment" "attach_ro_iam" {
   policy_arn = aws_iam_policy.ro_policy_iam.arn
 }
 
-resource "aws_iam_policy" "access_policy_s3" {
-  name        = "${var.repo_name}-github-runner-s3-access"
-  description = "Policies to access artefact bucket in mgmt account"
-  policy      = <<-EOF
-  {
-    "Version":"2012-10-17",
-    "Statement": [
+# resource "aws_iam_policy" "access_policy_s3" {
+#   name        = "${var.repo_name}-github-runner-s3-access"
+#   description = "Policies to access artefact bucket in mgmt account"
+#   policy      = <<-EOF
+#   {
+#     "Version":"2012-10-17",
+#     "Statement": [
 
-        {
-            "Action": "s3:*",
-            "Effect": "Allow",
-            "Resource": "*",
-            "Sid": "VisualEditor5"
-        },
+#         {
+#             "Action": "s3:*",
+#             "Effect": "Allow",
+#             "Resource": "*",
+#             "Sid": "VisualEditor5"
+#         },
 
-        {
-            "Effect": "Allow",
-            "Action": "s3:ListBucket",
-            "Resource": [
-              "${data.aws_s3_bucket.artefact_bucket.arn}",
-              "${data.aws_s3_bucket.released-artefact_bucket.arn}"
-            ]
-        },
-        {
-            "Action": [
-                "s3:GetObject",
-                "s3:GetObjectTagging",
-                "s3:DeleteObject",
-                "s3:PutObject",
-                "s3:PutObjectTagging"
-            ],
-            "Effect": "Allow",
-            "Resource": [
-              "${data.aws_s3_bucket.artefact_bucket.arn}",
-              "${data.aws_s3_bucket.released-artefact_bucket.arn}"
-            ]
-        }
-    ]
-  }
-  EOF
-}
+#         {
+#             "Effect": "Allow",
+#             "Action": "s3:ListBucket",
+#             "Resource": [
+#               "${data.aws_s3_bucket.artefact_bucket.arn}",
+#               "${data.aws_s3_bucket.released-artefact_bucket.arn}"
+#             ]
+#         },
+#         {
+#             "Action": [
+#                 "s3:GetObject",
+#                 "s3:GetObjectTagging",
+#                 "s3:DeleteObject",
+#                 "s3:PutObject",
+#                 "s3:PutObjectTagging"
+#             ],
+#             "Effect": "Allow",
+#             "Resource": [
+#               "${data.aws_s3_bucket.artefact_bucket.arn}",
+#               "${data.aws_s3_bucket.released-artefact_bucket.arn}"
+#             ]
+#         }
+#     ]
+#   }
+#   EOF
+# }
 
-resource "aws_iam_role_policy_attachment" "attach_s3_access" {
-  role       = aws_iam_role.github_runner_role.name
-  policy_arn = aws_iam_policy.access_policy_s3.arn
-}
+# resource "aws_iam_role_policy_attachment" "attach_s3_access" {
+#   role       = aws_iam_role.github_runner_role.name
+#   policy_arn = aws_iam_policy.access_policy_s3.arn
+# }
 
 
 resource "aws_iam_role" "github_runner_role" {
