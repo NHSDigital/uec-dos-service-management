@@ -9,10 +9,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
   quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
     needs:
       [
         metadata,
@@ -29,7 +29,7 @@ jobs:
         metadata,
         quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
     with:
       env: dev
     secrets: inherit
@@ -39,7 +39,7 @@ jobs:
           quality-check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.30
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
       with:
         environment: dev
         domain: "uec-dos-service-management"
@@ -54,7 +54,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
       directory: 'application'
       environment: dev
@@ -79,7 +79,7 @@ jobs:
         deploy-application-infrastructure,
         build-application
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'application'
       environment: dev
@@ -105,7 +105,7 @@ jobs:
         metadata,
         deploy-application-infrastructure
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
       directory: 'data_migration'
       environment: dev
@@ -129,7 +129,7 @@ jobs:
         deploy-application-infrastructure,
         build-data-migration-code
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'data_migration'
       environment: dev
@@ -158,7 +158,7 @@ jobs:
       deploy-data-migration-code,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.30
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
     with:
       env: dev
     secrets: inherit
