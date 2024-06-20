@@ -1,6 +1,6 @@
 from behave import given, then
 from assertpy import assert_that
-from utilities import csv_reader, s3 ,directories
+from utilities import csv_reader, s3, directories
 from utilities.config_reader import read_config
 
 
