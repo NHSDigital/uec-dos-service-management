@@ -11,7 +11,6 @@ class SECRETS:
     def get_secret_value(self, secret_store_name, env):
         logger = logging.getLogger("cm-logger")
         try:
-            print(secret_store_name)
             response = self.secrets_client.get_secret_value(SecretId=secret_store_name)
         except ClientError as e:
             logger.exception(env, "Error retrieving secrets: {}".format(e))
