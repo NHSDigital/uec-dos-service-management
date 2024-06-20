@@ -1,5 +1,6 @@
 from behave import given, then
 from assertpy import assert_that
+from tests.integration.utilities import directories
 from utilities import csv_reader, s3
 from utilities.config_reader import read_config
 
@@ -43,6 +44,7 @@ def put_s3_file(context, file_name):
 @then("I can download the file {file_name} from the s3 bucket")
 def download_s3_file(context, file_name):
     downloadfile = file_name
+    directories.create_folder("downloads")
     context.file_name = "downloads/" + downloadfile
     s3.download_object(context, context.file_name, downloadfile)
 
