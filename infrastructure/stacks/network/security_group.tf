@@ -2,7 +2,7 @@ module "application_lambda_security_group" {
   source = "../../modules/security-group"
 
   depends_on = [
-      aws_vpc. main
+    aws_vpc.main
   ]
 
   vpc_name             = "${var.project}-${var.vpc_name}-${var.environment}"
@@ -15,7 +15,7 @@ module "data_migration_lambda_security_group" {
   source = "../../modules/security-group"
 
   depends_on = [
-      aws_vpc. main
+    aws_vpc.main
   ]
 
   vpc_name             = "${var.project}-${var.vpc_name}-${var.environment}"
