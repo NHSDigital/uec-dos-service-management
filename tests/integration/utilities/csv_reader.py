@@ -1,34 +1,30 @@
-from utilities.config_reader import read_config
 import csv
 
 
-def get_csv_data(filename):
-    # Open the CSV file in read mode
-    file_name = read_config("csv_files", filename)
-    with open(file_name, "r") as csv_file:
+def get_csv_data(context):
+    with open(context.file_name, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
-        # next(csv_reader)
         rows = list(csv_reader)
-        return rows
+    return rows
 
 
-def csv_row_count(file_name):
-    row_count = len(get_csv_data(file_name))
+def csv_row_count(context):
+    row_count = len(get_csv_data(context))
     return row_count
 
 
-def csv_column_count(file_name):
-    column_count = len(get_csv_data(file_name)[0])
+def csv_column_count(context):
+    column_count = len(get_csv_data(context)[0])
     return column_count
 
 
-def csv_headers(file_name):
-    csv_headers = get_csv_data(file_name)[0]
+def csv_headers(context):
+    csv_headers = get_csv_data(context)[0]
     return csv_headers
 
 
-def assert_cell_value(file_name):
-    col_index = get_csv_data(file_name)[0].index("some_value")
-    # Get the specific cell value
-    cell_value = get_csv_data(file_name)[1][col_index]
+def assert_cell_value(context, rownum, colnum):
+    rownum = int(rownum)
+    colnum = int(colnum)
+    cell_value = get_csv_data(context)[rownum][colnum]
     return cell_value
