@@ -67,8 +67,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  deployment_id = aws_api_gateway_deployment.deployment.id
-  rest_api_id   = module.sm_rest_api.rest_api_id
+  deployment_id        = aws_api_gateway_deployment.deployment.id
+  rest_api_id          = module.sm_rest_api.rest_api_id
   xray_tracing_enabled = true
-  stage_name    = "default"
+  stage_name           = "default"
 }
