@@ -23,8 +23,8 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
 
 
-@tracer.capture_method
 @app.post("/healthcare_services")
+@tracer.capture_method
 def create_healthcareservices():
     post_data: dict = app.current_event.json_body
     response = service.add_record(post_data)
@@ -32,24 +32,24 @@ def create_healthcareservices():
 
 
 # Get using query string approach
-@tracer.capture_method
 @app.get("/healthcare_services")
+@tracer.capture_method
 def get_healthcareservices():
     hs_id = app.current_event.get_query_string_value(name="id", default_value="")
     response = service.get_record_by_id(hs_id)
     return response
 
 
-@tracer.capture_method
 @app.put("/healthcare_services")
+@tracer.capture_method
 def update_healthcareservices():
     put_data: dict = app.current_event.json_body
     response = service.update_record(put_data)
     return response
 
 
-@tracer.capture_method
 @app.delete("/healthcare_services")
+@tracer.capture_method
 def delete_healthcareservices():
     delete_data: dict = app.current_event.json_body
     hs_id = delete_data["id"]
