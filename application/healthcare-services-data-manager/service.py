@@ -3,8 +3,10 @@ from botocore.exceptions import ClientError
 from common import utilities
 from aws_lambda_powertools import Tracer
 
+
 TABLE_NAME = "healthcare_services"
 tracer = Tracer(service="healthcare_service")
+
 
 @tracer.capture_method
 def get_table_resource():
