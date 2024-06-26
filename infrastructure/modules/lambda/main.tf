@@ -15,6 +15,8 @@ module "lambda" {
   policy_jsons            = var.policy_jsons
   timeout                 = var.timeout
   vpc_security_group_ids  = var.vpc_security_group_ids
+  tracing_mode            = "Active"
+  attach_tracing_policy   = true
 
   vpc_subnet_ids        = [for s in data.aws_subnet.private_subnet : s.id]
   attach_network_policy = true
