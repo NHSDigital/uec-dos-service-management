@@ -5,6 +5,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.logging import correlation_paths
 
+
 app = APIGatewayRestResolver()
 
 # Auto resolves the type of request coming through and sets APIGatewayRestResolver
@@ -13,6 +14,7 @@ app = APIGatewayRestResolver()
 log_level = os.environ.get("LOG_LEVEL", "info")
 logger = Logger(service="healthcare_services", level=log_level)
 tracer = Tracer(service="healthcare_service")
+
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 @tracer.capture_lambda_handler
