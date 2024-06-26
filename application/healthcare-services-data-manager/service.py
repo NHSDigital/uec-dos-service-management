@@ -1,15 +1,18 @@
 import boto3
 from botocore.exceptions import ClientError
 from common import utilities
+from aws_lambda_powertools import Tracer
 
 TABLE_NAME = "healthcare_services"
+tracer = Tracer(service="healthcare_service")
 
-
+@tracer.capture_method
 def get_table_resource():
     dynamodb_resource = boto3.resource("dynamodb")
     return dynamodb_resource
 
 
+@tracer.capture_method
 def get_record_by_id(id: str):
     dynamodb = get_table_resource()
     hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
@@ -17,6 +20,7 @@ def get_record_by_id(id: str):
     return response
 
 
+@tracer.capture_method
 def add_record(item):
     dynamodb = get_table_resource()
     hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
@@ -26,10 +30,12 @@ def add_record(item):
     return response
 
 
+@tracer.capture_method
 def update_record(item):
     return add_record(item)
 
 
+@tracer.capture_method
 def delete_record(id):
     dynamodb = get_table_resource()
     hs_table = dynamodb.Table(utilities.get_table_name(TABLE_NAME))
