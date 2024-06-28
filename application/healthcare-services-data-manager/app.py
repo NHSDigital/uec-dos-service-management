@@ -31,7 +31,7 @@ def create_healthcareservices():
     return response
 
 
-# Get using query string approach t
+# Get using query string approach
 @app.get("/healthcare_services")
 @tracer.capture_method
 def get_healthcareservices():
