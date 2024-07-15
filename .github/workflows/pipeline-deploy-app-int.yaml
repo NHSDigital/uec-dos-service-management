@@ -33,7 +33,7 @@ jobs:
           echo "artefact_bucket_name: ${{ inputs.artefact_bucket_name }}"
   # deploy-application-infrastructure:
   #   name: Deploy application infrastructure
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yamlv0.34
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.34
   #   with:
   #     environment: test
   #     workspace: ${{ inputs.workspace }}
@@ -48,7 +48,7 @@ jobs:
   #     [
   #       deploy-application-infrastructure,
   #     ]
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yamlv0.34
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.34
   #   with:
   #     directory: 'application'
   #     environment: test
@@ -73,7 +73,7 @@ jobs:
   #       deploy-application-infrastructure,
   #       deploy-application,
   #     ]
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yamlv0.34
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.34
   #   with:
   #     environment: test
   #     workspace: ${{ inputs.workspace }}
