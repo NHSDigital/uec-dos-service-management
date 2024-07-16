@@ -9,7 +9,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.34
   generate-tag-name:
     name: "Generate Tag Name"
-    if: ${{ github.event.label.name == 'Test Ready' }} && startswith(github.head_ref, 'task/')
+    if: ${{ github.event.label.name == 'Test Ready' && startswith(github.head_ref, 'task/') }}
     needs:
       [
         metadata,
