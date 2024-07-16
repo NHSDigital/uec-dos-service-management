@@ -23,7 +23,7 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.34
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.35
 
   temp_placeholder:
     name: Temp place holder code
@@ -41,7 +41,7 @@ jobs:
       [
         metadata,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@v0.34
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@v0.35
     with:
       environment: int
       workspace: ${{ needs.metadata.outputs.workspace }}
@@ -57,7 +57,7 @@ jobs:
   #       deploy-application-infrastructure,
   #       deploy-application,
   #     ]
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.34
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.35
   #   with:
   #     environment: test
   #     workspace: ${{ inputs.workspace }}
