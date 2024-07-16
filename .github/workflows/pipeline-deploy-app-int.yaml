@@ -23,7 +23,7 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: ./.github/workflows/metadata.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.34
 
   temp_placeholder:
     name: Temp place holder code
@@ -41,7 +41,7 @@ jobs:
       [
         metadata,
       ]
-    uses: ./.github/workflows/build-full-application.yaml
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@v0.34
     with:
       environment: int
       workspace: ${{ needs.metadata.outputs.workspace }}
