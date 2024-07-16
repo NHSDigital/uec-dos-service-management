@@ -1,4 +1,4 @@
-name: Pipeline Deployment Application Test Environment
+name: Pipeline Deployment Application Integration Environment
 
 on:
   workflow_call:
@@ -21,6 +21,10 @@ on:
         type: string
 
 jobs:
+  metadata:
+    name: "Get Metadata"
+    uses: ./.github/workflows/metadata.yaml
+
   temp_placeholder:
     name: Temp place holder code
     runs-on: ubuntu-latest
@@ -31,40 +35,20 @@ jobs:
           echo "tag: ${{ inputs.tag }}"
           echo "commit_hash:${{ inputs.commit_hash }}"
           echo "artefact_bucket_name: ${{ inputs.artefact_bucket_name }}"
-  # deploy-application-infrastructure:
-  #   name: Deploy application infrastructure
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.34
-  #   with:
-  #     environment: test
-  #     workspace: ${{ inputs.workspace }}
-  #     domain: "uec-dos-service-management"
-  #     stacks: "['application', 'domain-test']"
-  #     tag: ${{ inputs.tag }}
-  #     action: apply
-  #   secrets: inherit
-  # deploy-application:
-  #   name: Deploy lambda application code
-  #   needs:
-  #     [
-  #       deploy-application-infrastructure,
-  #     ]
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.34
-  #   with:
-  #     directory: 'application'
-  #     environment: test
-  #     workspace: ${{ inputs.workspace }}
-  #     services:
-  #       "[
-  #         'healthcare-services-data-manager',
-  #         'locations-data-manager',
-  #         'organisation-affiliations-data-manager',
-  #         'organisations-data-manager',
-  #         'questionnaire-responses-data-manager',
-  #         'questionnaires-data-manager'
-  #       ]"
-  #     commit_hash: ${{ inputs.commit_hash }}
-  #     artefact_bucket_name: ${{ inputs.artefact_bucket_name }}
-  #   secrets: inherit
+  deploy-to-integration:
+    name: Deploy to integration environment
+    needs:
+      [
+        metadata,
+      ]
+    uses: ./.github/workflows/build-full-application.yaml
+    with:
+      environment: int
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      triggering_repo: uec-dos-service-management
+      triggering_repo_commit_hash: ${{ inputs.commit_hash }}
+      multi_domain: 'true'
+    secrets: inherit
 
   # integration-tests:
   #   name: Run integration tests
