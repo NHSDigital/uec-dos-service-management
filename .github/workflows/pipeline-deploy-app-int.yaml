@@ -1,0 +1,64 @@
+name: Pipeline Deployment Application Integration Environment
+
+on:
+  workflow_call:
+    inputs:
+      workspace:
+        description: "The workspace to deploy the service into"
+        required: true
+        type: string
+      tag:
+        description: "Defines the tag to be used for deployment"
+        required: true
+        type: string
+      commit_hash:
+        description: "The commit hash to identify the version of artefacts"
+        required: true
+        type: string
+      artefact_bucket_name:
+        description: "The name of domain repository for artefacts"
+        required: true
+        type: string
+
+jobs:
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.35
+
+  temp_placeholder:
+    name: Temp place holder code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Temp echos
+        run: |
+          echo "workspace:${{ inputs.workspace }}"
+          echo "tag: ${{ inputs.tag }}"
+          echo "commit_hash:${{ inputs.commit_hash }}"
+          echo "artefact_bucket_name: ${{ inputs.artefact_bucket_name }}"
+  deploy-to-integration:
+    name: Deploy to integration environment
+    needs:
+      [
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@v0.35
+    with:
+      environment: int
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      triggering_repo: uec-dos-service-management
+      triggering_repo_commit_hash: ${{ inputs.commit_hash }}
+      multi_domain: 'true'
+    secrets: inherit
+
+  # integration-tests:
+  #   name: Run integration tests
+  #   needs:
+  #     [
+  #       deploy-application-infrastructure,
+  #       deploy-application,
+  #     ]
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.35
+  #   with:
+  #     environment: test
+  #     workspace: ${{ inputs.workspace }}
+  #   secrets: inherit
