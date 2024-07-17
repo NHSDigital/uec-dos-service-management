@@ -10,6 +10,8 @@ app = APIGatewayRestResolver()
 # Auto resolves the type of request coming through and sets APIGatewayRestResolver
 # fields
 
+# TODO Test comment
+
 log_level = os.environ.get("LOG_LEVEL", "info")
 logger = Logger(service="healthcare_services", level=log_level)
 
