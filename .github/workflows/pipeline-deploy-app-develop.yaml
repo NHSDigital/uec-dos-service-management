@@ -83,7 +83,7 @@ jobs:
     with:
       directory: 'application'
       environment: dev
-      domain: "uec-dos-service-management"
+      # domain: "uec-dos-service-management"
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -135,7 +135,7 @@ jobs:
     with:
       directory: 'data_migration'
       environment: dev
-      domain: "uec-dos-service-management"
+      # domain: "uec-dos-service-management"
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
