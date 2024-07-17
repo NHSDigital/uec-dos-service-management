@@ -20,7 +20,7 @@ jobs:
         environment: dev
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: '["network", "terraform_management", "github-runner"]'
+        stacks: '["network", "aurora", "terraform_management", "github-runner"]'
         action: apply
       secrets: inherit
     deploy-account-infrastructure-apply-int:
@@ -57,6 +57,7 @@ jobs:
         metadata,
         deploy-account-infrastructure-apply-dev,
         deploy-account-infrastructure-apply-test,
+        deploy-account-infrastructure-apply-int
       ]
       if: always()
       uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
