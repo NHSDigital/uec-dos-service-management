@@ -3,8 +3,7 @@ name: Pipeline Deploy Account Level Infrastructure
 on:
   push:
     branches:
-      # - 'main'
-      - 'task/DR-1005_*'
+      - 'main'
 
 jobs:
     metadata:
@@ -21,7 +20,7 @@ jobs:
         environment: dev
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: '["network", "aurora", "terraform_management", "github-runner"]'
+        stacks: '["network", "terraform_management", "github-runner"]'
         action: apply
       secrets: inherit
     deploy-account-infrastructure-apply-int:
@@ -35,7 +34,7 @@ jobs:
           environment: int
           domain: "uec-dos-service-management"
           workspace: ${{ needs.metadata.outputs.workspace }}
-          stacks: '["network", "aurora", "terraform_management", "github-runner"]'
+          stacks: '["network", "terraform_management", "github-runner"]'
           action: apply
         secrets: inherit
     deploy-account-infrastructure-apply-test:
@@ -44,7 +43,6 @@ jobs:
         [
           metadata,
         ]
-
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
       with:
         environment: test
