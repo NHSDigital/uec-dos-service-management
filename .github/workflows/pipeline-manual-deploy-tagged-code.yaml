@@ -10,7 +10,7 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.35
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
   deploy-to-test:
     name: Deploy tagged code to test
     needs: [
