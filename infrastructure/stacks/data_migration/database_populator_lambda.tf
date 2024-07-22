@@ -1,7 +1,7 @@
-module "database_populator_lambda" {
+module "cm_database_populator_lambda" {
   source = "../../modules/lambda"
 
-  function_name = "database_populator"
+  function_name = "cm_database_populator"
   description   = "To load data to DynamoDB"
   handler       = "database_populator.lambda_handler"
   layers = [
