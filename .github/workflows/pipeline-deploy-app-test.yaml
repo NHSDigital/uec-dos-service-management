@@ -23,7 +23,7 @@ on:
 jobs:
   deploy-application-infrastructure:
     name: Deploy application infrastructure
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.35
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
@@ -38,7 +38,7 @@ jobs:
       [
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.35
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'application'
       environment: test
@@ -63,7 +63,7 @@ jobs:
         deploy-application-infrastructure,
         deploy-application,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@v0.35
+    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@latest
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
