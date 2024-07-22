@@ -5,10 +5,12 @@ import json
 import logging
 import os
 import boto3
+import tempfile
 import pandas as pd
 from decimal import ROUND_HALF_UP, Decimal
 from io import BytesIO
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
+from common.common_functions import get_table_name
 
 
 class DatabasePopulator:
@@ -16,25 +18,31 @@ class DatabasePopulator:
         """
         Initialize DatabasePopulator with S3 and DynamoDB clients.
         """
+
+        # Get the environment variable as a string,
+        # default to 'True' if it doesn't exist
+        testing_str = os.environ.get("ISOLATED_TESTING", "True")
+
+        # Convert the string to a boolean
+        self.testing = testing_str.lower() in ["false", "0"]
+
         print("Working in " + os.getcwd())
         try:
             with open("database_populator_config.json") as f:
                 config = json.load(f)
+                self.testing = config["testing"]
         except Exception as e:
             print(f"Error reading config file: {e}")
             raise
 
-        # Check if we are in a testing state
-        self.testing = config.get("testing", False)
-
-        if not self.testing:
+        if self.testing:
+            print("***S3 and DynamoDB disabled***")
+        else:
             # If we are not in a testing state, initialize S3 and DynamoDB
             # clients
             self.s3 = boto3.client(config["s3"])
-            self.dynamodb = boto3.resource(config["dynamodb"])
-            self.ddbclient = boto3.client(config["ddbclient"])
-        else:
-            print("***S3 and DynamoDB disabled***")
+            self.dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+            self.ddbclient = boto3.client("dynamodb", region_name="eu-west-2")
 
         self.bucket_name = config["bucket_name"]
         self.file_key = config["file_key"]
@@ -42,7 +50,8 @@ class DatabasePopulator:
         self.fails = {entity["db_table_name"]: [] for entity in self.FHIR_entities}
         self.maximum_insert_fails = config["maximum_insert_fails"]
         self.insert_fails = 0
-        self.log_file = config["log_file"]
+        # Initialise the log file
+        self.log_file = os.path.join(tempfile.gettempdir(), config["log_file"])
         self.setup_logger()
 
     def setup_logger(self) -> None:
@@ -58,20 +67,24 @@ class DatabasePopulator:
         # Set up the logger - logging level can be changed to DEBUG for more
         # detailed output
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # Get the log level from the environment variable,
+        # default to 'DEBUG' if it doesn't exist
+        log_level_name = os.environ.get("LOG_LEVEL", "DEBUG")
+
+        # Convert the log level name to a log level number
+        log_level = logging.getLevelName(log_level_name)
+
+        # Set the log level
+        logging.basicConfig(level=log_level)
 
         file_handler = logging.FileHandler(self.log_file)
         file_handler.setLevel(logging.DEBUG)
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
 
         # Create a formatter and add it to the handlers
         formatter = logging.Formatter("%(asctime)s - %(message)s")
         file_handler.setFormatter(formatter)
-        console_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
 
         # Log the start of the process
         if removed:
@@ -99,7 +112,10 @@ class DatabasePopulator:
         Log the failures to the console and file
         """
         for table, fails in self.fails.items():
-            self.log(f"Failed to insert {len(fails)} " f"items into {table}", "Error")
+            self.log(
+                f"Failed to insert {len(fails)} " f"items into {table}",
+                "Error",
+            )
             for fail in fails:
                 self.log(fail)
             if self.insert_fails > self.maximum_insert_fails:
@@ -109,7 +125,7 @@ class DatabasePopulator:
                     "Error",
                 )
 
-    def remove_old_log_file(self, log_file: str) -> bool:
+    def remove_old_log_file(self, log_file: str) -> bool: # pragma: no cover
         """
         Remove the old log file if it exists.
 
@@ -141,11 +157,11 @@ class DatabasePopulator:
             + "*****************************************\n"
         )
 
-        self.log("Working in " + os.getcwd())
-        self.log("Workbook path is " + self.file_key + "\n")
-        aborted = False
+        self.log("Working in " + os.getcwd()) # pragma: no cover
+        self.log("Workbook path is " + self.file_key + "\n") # pragma: no cover
+        aborted = False # pragma: no cover
 
-        try:
+        try: # pragma: no cover
             if self.testing:
                 self.log("Testing mode: using local file", "Warning")
                 # Create a dictionary to mimic the S3 get_object response
@@ -159,14 +175,14 @@ class DatabasePopulator:
                 )
                 # Read the streaming body into a BytesIO object
                 excel_object = {"Body": BytesIO(response["Body"].read())}
-        except FileNotFoundError:
+        except FileNotFoundError: # pragma: no cover
             self.log(f"File not found: {self.file_key}", "Error")
             raise
-        except Exception as e:
+        except Exception as e: # pragma: no cover
             self.log(f"An error occurred: {e}", "Error")
             raise
 
-        for FHIR_entity in self.FHIR_entities:
+        for FHIR_entity in self.FHIR_entities: # pragma: no cover
             # Perform a check to determine if the dynamoDB table is empty or
             # not
             self.log(FHIR_entity)
@@ -214,10 +230,11 @@ class DatabasePopulator:
         if not self.testing:
             table = self.dynamodb.Table(table_name)
         else:
-            table = {"table_name": table_name}
+            ws_table_name = get_table_name(table_name)
+            table = {"table_name": ws_table_name}
 
         for index, row in df.iterrows():
-            data_item = self.transpose_into_schema(table_name, row)
+            data_item = self.transpose_into_schema(ws_table_name, row)
             self.insert_into_table(table, data_item)
 
     def get_formatted_datetime(self) -> str:
@@ -250,7 +267,9 @@ class DatabasePopulator:
                 telecom_numbers.append({"system": "phone", "value": telecom_item})
         return telecom_numbers
 
-    def filter_empty_address_fields(self, address: Dict[str, str]) -> Dict[str, str]:
+    def filter_empty_address_fields(
+        self, address: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, Union[str, List[str]]]:
         """
         Filter out empty fields from an address dictionary.
 
@@ -260,11 +279,45 @@ class DatabasePopulator:
         Returns:
             Dict[str, str]: The filtered address dictionary.
         """
+        # first, remove empty address fields
+        address_line = address.get("line", [])
+
+        # Check if address_line is a list
+        if not isinstance(address_line, list):
+            self.log(
+                f"Expected a list for 'line', but got " f"{type(address_line).__name__}"
+            )
+            address_line = []
+
+        filtered_address_line = self.filter_empty_street_address_fields(address_line)
+
+        # set the 'line' key to the filtered address line
+        address["line"] = filtered_address_line
+
         filtered_address = {}
         for k, v in address.items():
             if isinstance(v, str) and v.strip() != "" and v.strip().lower() != "nan":
                 filtered_address[k] = v
         return filtered_address
+
+
+    def filter_empty_street_address_fields(self, streetAddress: List[str]) -> List[str]:
+        """
+        Filter out empty fields from a street address dictionary.
+
+        Args:
+            address (List[str]): The address dictionary.
+
+        Returns:
+            List[str]: The filtered address dictionary.
+        """
+        filtered_streetAddress = list(filter(None, streetAddress))
+        if filtered_streetAddress:
+            return filtered_streetAddress
+        else:
+            # The list is empty
+            self.log("No street address found")
+
 
     def transpose_organisation_affiliations(
         self, formatted_datetime: str, row: pd.Series
@@ -389,14 +442,19 @@ class DatabasePopulator:
             Dict[str, Any]: The transposed data item.
         """
         telecom_numbers = self.split_telecom_numbers(row["Telecom"])
-        streetAdress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
+        streetAddress = [
+            str(row["Line1"]),
+            str(row["Line2"]),
+            str(row["Line3"]),
+        ]
         address = {
-            "line": streetAdress,
+            "line": streetAddress,
             "city": str(row["City"]),
             "district": str(row["District"]),
             "postalCode": str(row["PostalCode"]),
         }
-        filtered_address = self.filter_empty_address_fields(address)
+        self.filter_empty_address_fields(address)
+        filtered_address = [address]
         schema = {
             "resourceType": "Organization",
             "id": str(row["Identifier"]),
@@ -447,6 +505,87 @@ class DatabasePopulator:
 
         return schema
 
+
+    # def transpose_organisations(
+    #     self, formatted_datetime: str, row: pd.Series
+    # ) -> Dict[str, Any]:
+    #     """
+    #     Transpose a row of data into a schema for the organisations table.
+
+    #     Args:
+    #         table_name (str): The name of the table.
+    #         row (pd.Series): The row of data.
+
+    #     Returns:
+    #         Dict[str, Any]: The transposed data item.
+    #     """
+    #     telecom_numbers = self.split_telecom_numbers(row["Telecom"])
+    #     streetAdress = [
+    #         str(row["Line1"]),
+    #         str(row["Line2"]),
+    #         str(row["Line3"]),
+    #     ]
+    #     filtered_streetAddress = self.filter_empty_address_fields(streetAdress)
+    #     address = {
+    #         "line": filtered_streetAddress,
+    #         "city": str(row["City"]),
+    #         "district": str(row["District"]),
+    #         "postalCode": str(row["PostalCode"]),
+    #     }
+
+    #     filtered_address = self.filter_empty_address_fields(address)
+    #     filtered_address = [address]
+
+    #     schema = {
+    #         "resourceType": "Organization",
+    #         "id": str(row["Identifier"]),
+    #         "active": "true",
+    #         "identifier": {
+    #             "use": "secondary",
+    #             "type": "ODS",
+    #             "value": str(row["ODSCode"]),
+    #         },
+    #         "name": str(row["Name"]),
+    #         "type": row["Type"],
+    #         "location": row["LocationID"],
+    #         "telecom": telecom_numbers,
+    #         "Address": filtered_address,
+    #         "createdBy": "Admin",
+    #         "createdDateTime": formatted_datetime,
+    #         "modifiedBy": "Admin",
+    #         "modifiedDateTime": formatted_datetime,
+    #     }
+    #     if not telecom_numbers:
+    #         schema.pop("telecom")
+    #     if not filtered_address:
+    #         schema.pop("Address")
+    #     if row["ODSCode"] in [
+    #         "",
+    #         None,
+    #         "n/a",
+    #         "N/A",
+    #         "NaN",
+    #         "NOT FOUND",
+    #         "NO ID",
+    #     ]:  # If the identifier value field is
+    #         # blank, null, n/a, N/A, NOT FOUND or NO ID
+    #         # Remove the identifier field from the schema
+    #         schema.pop("identifier")
+    #     if row["LocationID"] in [
+    #         "",
+    #         None,
+    #         "n/a",
+    #         "N/A",
+    #         "NaN",
+    #         "NOT FOUND",
+    #         "NO ID",
+    #     ]:  # If the location value field is
+    #         # blank, null, n/a, N/A, NOT FOUND or NO ID
+    #         # Remove the location field from the schema
+    #         schema.pop("location")
+
+    #     return schema
+
     def transpose_locations(
         self, formatted_datetime: str, row: pd.Series
     ) -> Dict[str, Any]:
@@ -461,7 +600,11 @@ class DatabasePopulator:
             Dict[str, Any]: The transposed data item.
         """
 
-        streetAddress = [str(row["Line1"]), str(row["Line2"]), str(row["Line3"])]
+        streetAddress = [
+            str(row["Line1"]),
+            str(row["Line2"]),
+            str(row["Line3"]),
+        ]
 
         address = {
             "line": streetAddress,
@@ -469,13 +612,16 @@ class DatabasePopulator:
             "district": str(row["District"]),
             "postalCode": str(row["PostalCode"]),
         }
-        filtered_address = self.filter_empty_address_fields(address)
+
+        self.filter_empty_address_fields(address)
+        filtered_address = [address]
+        # filtered_address = self.filter_empty_address_fields(address)
         schema = {
             "resourceType": "Location",
             "id": str(row["Identifier"]),
             "active": "true",
             "name": row["Name"],
-            "address": [filtered_address],
+            "address": filtered_address,
             "position": {
                 "latitude": str(
                     Decimal(row["Latitude"]).quantize(
@@ -545,13 +691,13 @@ class DatabasePopulator:
         formatted_datetime = self.get_formatted_datetime()
         self.log("\nRow Data:\n" + str(row), "Debug")
 
-        if table_name == "organisation_affiliations":
+        if table_name == "organisation_affiliations-" + os.getenv("WORKSPACE"):
             return self.transpose_organisation_affiliations(formatted_datetime, row)
-        elif table_name == "healthcare_services":
+        elif table_name == "healthcare_services-" + os.getenv("WORKSPACE"):
             return self.transpose_healthcare_services(formatted_datetime, row)
-        elif table_name == "organisations":
+        elif table_name == "organisations-" + os.getenv("WORKSPACE"):
             return self.transpose_organisations(formatted_datetime, row)
-        elif table_name == "locations":
+        elif table_name == "locations-" + os.getenv("WORKSPACE"):
             return self.transpose_locations(formatted_datetime, row)
         else:
             self.log(f"Unknown table: {table_name}", "Error")
@@ -583,7 +729,7 @@ class DatabasePopulator:
             )
             self.insert_fails += 1
 
-    def main(self) -> None:
+    def run(self, event=None) -> None:
         """
         Main execution of the script.
         """
@@ -606,6 +752,11 @@ class DatabasePopulator:
             )
 
 
+def lambda_handler(event, context):
+    db_populator = DatabasePopulator()
+    db_populator.run()
+
+
 if __name__ == "__main__":
     db_populator = DatabasePopulator()
-    db_populator.main()
+    db_populator.run()
