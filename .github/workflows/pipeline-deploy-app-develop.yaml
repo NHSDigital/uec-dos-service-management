@@ -115,7 +115,8 @@ jobs:
           'org_data_load',
           'locations_data_load',
           'organisation_affiliations_data_load',
-          'service_data_load'
+          'service_data_load',
+          'cm_database_populator'
         ]"
       commit_hash: ${{ needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
@@ -139,7 +140,8 @@ jobs:
           'org_data_load',
           'locations_data_load',
           'organisation_affiliations_data_load',
-          'service_data_load'
+          'service_data_load',
+          'cm_database_populator'
         ]"
       commit_hash: ${{ needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
