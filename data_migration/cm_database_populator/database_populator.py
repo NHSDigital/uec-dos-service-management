@@ -503,8 +503,9 @@ class DatabasePopulator:
 
         return schema
 
-
-    def transpose_locations(self, formatted_datetime: str, row: pd.Series) -> Dict[str, Any]:
+    def transpose_locations(
+        self, formatted_datetime: str, row: pd.Series
+    ) -> Dict[str, Any]:
         """
         Transpose a row of data into a schema for the locations table.
 
