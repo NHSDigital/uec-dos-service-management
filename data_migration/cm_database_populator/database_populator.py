@@ -223,15 +223,16 @@ class DatabasePopulator:
             table_name (str): The name of the DynamoDB table.
             df (pd.DataFrame): The DataFrame containing the data.
         """
+        ws_table_name = get_table_name(table_name)
         if table_name not in [entity["db_table_name"] for entity in self.FHIR_entities]:
             self.log(f"Table not found: {table_name}", "Error")
             return
 
         if not self.testing:
-            table = self.dynamodb.Table(table_name)
+            table = self.dynamodb.Table(ws_table_name)
         else:
-            ws_table_name = get_table_name(table_name)
-            table = {"table_name": ws_table_name}
+
+            table = {"table_name": table_name}
 
         for index, row in df.iterrows():
             data_item = self.transpose_into_schema(ws_table_name, row)
@@ -503,85 +504,6 @@ class DatabasePopulator:
 
         return schema
 
-    # def transpose_organisations(
-    #     self, formatted_datetime: str, row: pd.Series
-    # ) -> Dict[str, Any]:
-    #     """
-    #     Transpose a row of data into a schema for the organisations table.
-
-    #     Args:
-    #         table_name (str): The name of the table.
-    #         row (pd.Series): The row of data.
-
-    #     Returns:
-    #         Dict[str, Any]: The transposed data item.
-    #     """
-    #     telecom_numbers = self.split_telecom_numbers(row["Telecom"])
-    #     streetAdress = [
-    #         str(row["Line1"]),
-    #         str(row["Line2"]),
-    #         str(row["Line3"]),
-    #     ]
-    #     filtered_streetAddress = self.filter_empty_address_fields(streetAdress)
-    #     address = {
-    #         "line": filtered_streetAddress,
-    #         "city": str(row["City"]),
-    #         "district": str(row["District"]),
-    #         "postalCode": str(row["PostalCode"]),
-    #     }
-
-    #     filtered_address = self.filter_empty_address_fields(address)
-    #     filtered_address = [address]
-
-    #     schema = {
-    #         "resourceType": "Organization",
-    #         "id": str(row["Identifier"]),
-    #         "active": "true",
-    #         "identifier": {
-    #             "use": "secondary",
-    #             "type": "ODS",
-    #             "value": str(row["ODSCode"]),
-    #         },
-    #         "name": str(row["Name"]),
-    #         "type": row["Type"],
-    #         "location": row["LocationID"],
-    #         "telecom": telecom_numbers,
-    #         "Address": filtered_address,
-    #         "createdBy": "Admin",
-    #         "createdDateTime": formatted_datetime,
-    #         "modifiedBy": "Admin",
-    #         "modifiedDateTime": formatted_datetime,
-    #     }
-    #     if not telecom_numbers:
-    #         schema.pop("telecom")
-    #     if not filtered_address:
-    #         schema.pop("Address")
-    #     if row["ODSCode"] in [
-    #         "",
-    #         None,
-    #         "n/a",
-    #         "N/A",
-    #         "NaN",
-    #         "NOT FOUND",
-    #         "NO ID",
-    #     ]:  # If the identifier value field is
-    #         # blank, null, n/a, N/A, NOT FOUND or NO ID
-    #         # Remove the identifier field from the schema
-    #         schema.pop("identifier")
-    #     if row["LocationID"] in [
-    #         "",
-    #         None,
-    #         "n/a",
-    #         "N/A",
-    #         "NaN",
-    #         "NOT FOUND",
-    #         "NO ID",
-    #     ]:  # If the location value field is
-    #         # blank, null, n/a, N/A, NOT FOUND or NO ID
-    #         # Remove the location field from the schema
-    #         schema.pop("location")
-
-    #     return schema
 
     def transpose_locations(
         self, formatted_datetime: str, row: pd.Series
