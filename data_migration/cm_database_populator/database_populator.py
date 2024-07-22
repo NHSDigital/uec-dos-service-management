@@ -231,7 +231,6 @@ class DatabasePopulator:
         if not self.testing:
             table = self.dynamodb.Table(ws_table_name)
         else:
-
             table = {"table_name": table_name}
 
         for index, row in df.iterrows():
@@ -505,9 +504,7 @@ class DatabasePopulator:
         return schema
 
 
-    def transpose_locations(
-        self, formatted_datetime: str, row: pd.Series
-    ) -> Dict[str, Any]:
+    def transpose_locations(self, formatted_datetime: str, row: pd.Series) -> Dict[str, Any]:
         """
         Transpose a row of data into a schema for the locations table.
 
@@ -672,10 +669,5 @@ class DatabasePopulator:
 
 
 def lambda_handler(event, context):
-    db_populator = DatabasePopulator()
-    db_populator.run()
-
-
-if __name__ == "__main__":
     db_populator = DatabasePopulator()
     db_populator.run()
