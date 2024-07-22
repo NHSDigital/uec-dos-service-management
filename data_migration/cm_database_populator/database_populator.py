@@ -125,7 +125,7 @@ class DatabasePopulator:
                     "Error",
                 )
 
-    def remove_old_log_file(self, log_file: str) -> bool: # pragma: no cover
+    def remove_old_log_file(self, log_file: str) -> bool:  # pragma: no cover
         """
         Remove the old log file if it exists.
 
@@ -157,11 +157,11 @@ class DatabasePopulator:
             + "*****************************************\n"
         )
 
-        self.log("Working in " + os.getcwd()) # pragma: no cover
-        self.log("Workbook path is " + self.file_key + "\n") # pragma: no cover
-        aborted = False # pragma: no cover
+        self.log("Working in " + os.getcwd())  # pragma: no cover
+        self.log("Workbook path is " + self.file_key + "\n")  # pragma: no cover
+        aborted = False  # pragma: no cover
 
-        try: # pragma: no cover
+        try:  # pragma: no cover
             if self.testing:
                 self.log("Testing mode: using local file", "Warning")
                 # Create a dictionary to mimic the S3 get_object response
@@ -175,14 +175,14 @@ class DatabasePopulator:
                 )
                 # Read the streaming body into a BytesIO object
                 excel_object = {"Body": BytesIO(response["Body"].read())}
-        except FileNotFoundError: # pragma: no cover
+        except FileNotFoundError:  # pragma: no cover
             self.log(f"File not found: {self.file_key}", "Error")
             raise
-        except Exception as e: # pragma: no cover
+        except Exception as e:  # pragma: no cover
             self.log(f"An error occurred: {e}", "Error")
             raise
 
-        for FHIR_entity in self.FHIR_entities: # pragma: no cover
+        for FHIR_entity in self.FHIR_entities:  # pragma: no cover
             # Perform a check to determine if the dynamoDB table is empty or
             # not
             self.log(FHIR_entity)
@@ -300,7 +300,6 @@ class DatabasePopulator:
                 filtered_address[k] = v
         return filtered_address
 
-
     def filter_empty_street_address_fields(self, streetAddress: List[str]) -> List[str]:
         """
         Filter out empty fields from a street address dictionary.
@@ -317,7 +316,6 @@ class DatabasePopulator:
         else:
             # The list is empty
             self.log("No street address found")
-
 
     def transpose_organisation_affiliations(
         self, formatted_datetime: str, row: pd.Series
@@ -504,7 +502,6 @@ class DatabasePopulator:
             schema.pop("location")
 
         return schema
-
 
     # def transpose_organisations(
     #     self, formatted_datetime: str, row: pd.Series
