@@ -9,7 +9,6 @@ omit =
         */data_migration/*/common/*
         */usr/local/lib*
         */__init__.py
-        **/*database_populator.py
         **/*reformat_dataset.py
         **/*ods_location_comparator.py
 
@@ -21,6 +20,5 @@ omit =
         */data_migration/*/common/*
         */usr/local/lib*
         */__init__.py
-        **/*database_populator.py
         **/*reformat_dataset.py
         **/*ods_location_comparator.py
