@@ -1,4 +1,4 @@
-name: Tag and deploy code to test account
+name: Tag and deploy code to integration account
 on:
   pull_request:
     types: [ labeled ]
@@ -9,7 +9,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
   generate-tag-name:
     name: "Generate Tag Name"
-    if: ${{ github.event.label.name == 'Test Ready' && startswith(github.head_ref, 'task/') }}
+    if: ${{ github.event.label.name == 'Int Ready'  && startswith(github.head_ref, 'task/') }}
     needs:
       [
         metadata,
@@ -17,7 +17,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@latest
     with:
       workspace: ${{ needs.metadata.outputs.workspace }}
-      tag_type: test
+      tag_type: int
       use_commit_hash: "yes"
       commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
   tag-repository:
@@ -31,19 +31,19 @@ jobs:
     with:
       tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
       tag_overwrite: "yes"
-  deploy-to-test:
-    name: Deploy to test
+  deploy-to-int:
+    name: Deploy to integration
     needs: [
       metadata,
       generate-tag-name,
       tag-repository,
     ]
-    uses: ./.github/workflows/pipeline-deploy-app-test.yaml
+    uses: ./.github/workflows/pipeline-deploy-app-int.yaml
     with:
       workspace: ${{ needs.metadata.outputs.workspace }}
-      tag: ${{needs.generate-tag-name.outputs.tag_name}}
       commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
-      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+      # tag: ${{needs.generate-tag-name.outputs.tag_name}}
+      # artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
   slack-notifications:
     name: Send notification to slack
@@ -51,7 +51,7 @@ jobs:
       metadata,
       generate-tag-name,
       tag-repository,
-      deploy-to-test
+      deploy-to-int
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest

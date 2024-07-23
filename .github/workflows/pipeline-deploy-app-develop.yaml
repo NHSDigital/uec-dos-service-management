@@ -84,6 +84,7 @@ jobs:
       directory: 'application'
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
           'healthcare-services-data-manager',
@@ -135,6 +136,7 @@ jobs:
       directory: 'data_migration'
       environment: dev
       workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
           'org_data_load',
