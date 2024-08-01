@@ -12,10 +12,6 @@ variable "repo_name" {
   description = "The name of git hub repository"
 }
 
-variable "vpc_cidr_block_marker" {
-  description = "CIDR block range marker to use with VPC"
-}
-
 variable "vpc_name" {
   description = "Name of vpc"
   type        = string

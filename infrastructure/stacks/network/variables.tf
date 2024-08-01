@@ -23,3 +23,7 @@ variable "recovery_window_in_days" {
 variable "vpn_tld_bucket_name" {
   description = "Name of bucket used to hold developer certs "
 }
+
+variable "vpc_cidr_block_marker" {
+  description = "CIDR block range marker to use with VPC"
+}
