@@ -1,0 +1,114 @@
+name: Pipeline Deployment Application production & pre-production Environment
+on:
+  push:
+    branches:
+      - main
+      - 'task/*'
+
+jobs:
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+  quality-check:
+    name: "Quality Check"
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
+    needs:
+      [
+        metadata,
+      ]
+    with:
+      environment: prod
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
+    secrets: inherit
+  unit-tests:
+    name: Unit Test
+    needs:
+      [
+        metadata,
+        quality-check,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
+    with:
+      env: prod
+    secrets: inherit
+  deploy-application-infrastructure:
+      needs:
+        [
+          quality-check,
+          metadata,
+        ]
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
+      with:
+        environment: prod
+        domain: "uec-dos-service-management"
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        stacks: '["application", "data_migration", "domain-test"]'
+        action: apply
+      secrets: inherit
+
+  deploy-application:
+    name: Deploy lambda application code
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'application'
+      environment: prod
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  deploy-data-migration-code:
+    name: Deploy data migration
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: prod
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  slack-notifications:
+    name: Send notification to slack
+    needs: [
+      metadata,
+      quality-check,
+      unit-tests,
+      deploy-application-infrastructure,
+      deploy-application,
+      deploy-data-migration-code,
+    ]
+    if: always()
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    with:
+      env: prod
+    secrets: inherit
