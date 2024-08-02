@@ -17,7 +17,7 @@ jobs:
         metadata,
       ]
     with:
-      environment: prod
+      environment: preprod
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
     secrets: inherit
@@ -30,7 +30,7 @@ jobs:
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
     with:
-      env: prod
+      env: preprod
     secrets: inherit
   deploy-application-infrastructure:
       needs:
@@ -40,7 +40,7 @@ jobs:
         ]
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
       with:
-        environment: prod
+        environment: preprod
         domain: "uec-dos-service-management"
         workspace: ${{ needs.metadata.outputs.workspace }}
         stacks: '["application", "data_migration", "domain-test"]'
@@ -57,7 +57,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'application'
-      environment: prod
+      environment: preprod
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -83,7 +83,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'data_migration'
-      environment: prod
+      environment: preprod
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -110,5 +110,5 @@ jobs:
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
     with:
-      env: prod
+      env: preprod
     secrets: inherit
