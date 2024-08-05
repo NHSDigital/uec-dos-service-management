@@ -6,7 +6,7 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.39
   generate-tag-name:
     name: "Generate Tag Name"
     if: ${{ github.event.label.name == 'Int Ready'  && startswith(github.head_ref, 'task/') }}
@@ -14,7 +14,7 @@ jobs:
       [
         metadata,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@v0.39
     with:
       workspace: ${{ needs.metadata.outputs.workspace }}
       tag_type: int
@@ -27,7 +27,7 @@ jobs:
         metadata,
         generate-tag-name,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/tag-repository.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/tag-repository.yaml@v0.39
     with:
       tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
       tag_overwrite: "yes"
@@ -54,7 +54,7 @@ jobs:
       deploy-to-int
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.39
     with:
       env: test
     secrets: inherit
