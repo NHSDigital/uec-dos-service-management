@@ -45,6 +45,7 @@ jobs:
         workspace: ${{ needs.metadata.outputs.workspace }}
         stacks: '["application", "data_migration", "domain-test"]'
         action: apply
+        workflow_timeout: 10
       secrets: inherit
 
   deploy-application:
