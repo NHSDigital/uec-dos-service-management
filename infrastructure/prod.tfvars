@@ -1,3 +1,3 @@
-environment         = "prod"
-data_classification = "3"
+environment           = "prod"
+data_classification   = "3"
 vpc_cidr_block_marker = "159"
