@@ -12,7 +12,7 @@ module "orgaffiliation-lambda" {
 
   environment_variables = {
     "ODS_CODES_XLSX_FILE" : "ODS_Codes.xlsx",
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+    "S3_DATA_BUCKET" : "nhse-${var.project}-${var.environment}-databucket"
   }
 
   policy_jsons = [
