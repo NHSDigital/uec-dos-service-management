@@ -18,7 +18,7 @@ jobs:
       ]
     with:
       environment: preprod
-      workspace: ${{ needs.metadata.outputs.workspace }}
+      workspace: default
       stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
     secrets: inherit
   unit-tests:
@@ -42,7 +42,7 @@ jobs:
       with:
         environment: preprod
         domain: "uec-dos-service-management"
-        workspace: ${{ needs.metadata.outputs.workspace }}
+        workspace: default
         stacks: '["application", "data_migration", "domain-test"]'
         action: apply
         workflow_timeout: 10
@@ -59,7 +59,7 @@ jobs:
     with:
       directory: 'application'
       environment: preprod
-      workspace: ${{ needs.metadata.outputs.workspace }}
+      workspace: default
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
@@ -85,7 +85,7 @@ jobs:
     with:
       directory: 'data_migration'
       environment: preprod
-      workspace: ${{ needs.metadata.outputs.workspace }}
+      workspace: default
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
