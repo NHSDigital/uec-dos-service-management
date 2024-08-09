@@ -60,7 +60,7 @@ jobs:
       directory: 'application'
       environment: preprod
       workspace: default
-      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: dr-1013
       services:
         "[
           'healthcare-services-data-manager',
@@ -70,7 +70,7 @@ jobs:
           'questionnaire-responses-data-manager',
           'questionnaires-data-manager'
         ]"
-      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      commit_hash: 8fb32d0
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
@@ -86,7 +86,7 @@ jobs:
       directory: 'data_migration'
       environment: preprod
       workspace: default
-      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: dr-1013
       services:
         "[
           'org_data_load',
@@ -94,7 +94,7 @@ jobs:
           'organisation_affiliations_data_load',
           'service_data_load'
         ]"
-      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      commit_hash: 8fb32d0
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
