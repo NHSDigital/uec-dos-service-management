@@ -59,6 +59,7 @@ jobs:
       [
         metadata,
         deploy-application-infrastructure,
+        derive-artefact-address,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.42
     with:
@@ -85,6 +86,7 @@ jobs:
       [
         metadata,
         deploy-application-infrastructure,
+        derive-artefact-address,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.42
     with:
