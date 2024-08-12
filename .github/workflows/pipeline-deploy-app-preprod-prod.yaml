@@ -9,6 +9,8 @@ jobs:
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.39
+    with:
+      artefact-tag: dr-1013-8fb32d0-test
   quality-check:
     name: "Quality Check"
     uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.39
@@ -48,6 +50,11 @@ jobs:
         workflow_timeout: 10
       secrets: inherit
 
+  derive-artefact-address:
+    name: "Get artefact location"
+    uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.39
+    with:
+      artefact-tag: dr-1013-8fb32d0-test
   deploy-application:
     name: Deploy lambda application code
     needs:
