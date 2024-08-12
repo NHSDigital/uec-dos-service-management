@@ -8,12 +8,10 @@ on:
 jobs:
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.39
-    with:
-      artefact-tag: dr-1013-8fb32d0-test
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.42
   quality-check:
     name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.42
     needs:
       [
         metadata,
@@ -30,7 +28,7 @@ jobs:
         metadata,
         quality-check,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.42
     with:
       env: preprod
     secrets: inherit
@@ -40,7 +38,7 @@ jobs:
           quality-check,
           metadata,
         ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.39
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@v0.42
       with:
         environment: preprod
         domain: "uec-dos-service-management"
@@ -52,7 +50,7 @@ jobs:
 
   derive-artefact-address:
     name: "Get artefact location"
-    uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.42
     with:
       artefact-tag: dr-1013-8fb32d0-test
   deploy-application:
@@ -62,12 +60,12 @@ jobs:
         metadata,
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.42
     with:
       directory: 'application'
       environment: preprod
       workspace: default
-      artefact_sub_dir: dr-1013
+      artefact_sub_dir: ${{ needs.derive-artefact-address.outputs.artefact_sub_dir }}
       services:
         "[
           'healthcare-services-data-manager',
@@ -77,7 +75,7 @@ jobs:
           'questionnaire-responses-data-manager',
           'questionnaires-data-manager'
         ]"
-      commit_hash: 8fb32d0
+      commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
@@ -88,12 +86,12 @@ jobs:
         metadata,
         deploy-application-infrastructure,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@v0.42
     with:
       directory: 'data_migration'
       environment: preprod
       workspace: default
-      artefact_sub_dir: dr-1013
+      artefact_sub_dir: ${{ needs.derive-artefact-address.outputs.artefact_sub_dir }}
       services:
         "[
           'org_data_load',
@@ -101,7 +99,7 @@ jobs:
           'organisation_affiliations_data_load',
           'service_data_load'
         ]"
-      commit_hash: 8fb32d0
+      commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
@@ -116,7 +114,7 @@ jobs:
       deploy-data-migration-code,
     ]
     if: always()
-    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.39
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@v0.42
     with:
       env: preprod
     secrets: inherit
