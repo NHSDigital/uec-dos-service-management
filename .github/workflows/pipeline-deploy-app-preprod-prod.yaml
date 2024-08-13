@@ -4,7 +4,21 @@ on:
     branches:
       - main
       - 'task/*'
-
+# on:
+#   workflow_call:
+#     inputs:
+#       tag:
+#         description: "Tag"
+#         required: true
+#         type: string
+#       environment:
+#         description: "environment"
+#         required: true
+#         type: string
+#       environment:
+#         description: "environment"
+#         required: true
+#         type: string
 jobs:
   metadata:
     name: "Get Metadata"
@@ -46,13 +60,14 @@ jobs:
         stacks: '["application", "data_migration", "domain-test"]'
         action: apply
         workflow_timeout: 10
+        tag: dr-1013-8fb32d0-test
       secrets: inherit
 
   derive-artefact-address:
     name: "Get artefact location"
     uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.42
     with:
-      artefact-tag: dr-1013-8fb32d0-test
+      tag: dr-1013-8fb32d0-test
   deploy-application:
     name: Deploy lambda application code
     needs:
@@ -78,6 +93,7 @@ jobs:
         ]"
       commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+      tag: dr-1013-8fb32d0-test
     secrets: inherit
 
   deploy-data-migration-code:
@@ -103,6 +119,7 @@ jobs:
         ]"
       commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+      tag: dr-1013-8fb32d0-test
     secrets: inherit
 
   slack-notifications:
