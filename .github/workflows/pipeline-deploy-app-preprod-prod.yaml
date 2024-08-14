@@ -27,7 +27,7 @@ jobs:
     name: "Get artefact location"
     uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.42
     with:
-      tag: dr-1013-8fb32d0-test
+      tag: dr-1013-31a4a1a-preprod
 
   quality-check:
     name: "Quality Check"
@@ -56,7 +56,7 @@ jobs:
         stacks: '["application", "data_migration", "domain-test"]'
         action: apply
         workflow_timeout: 10
-        tag: dr-1013-8fb32d0-test
+        tag: dr-1013-31a4a1a-preprod
       secrets: inherit
 
   deploy-application:
@@ -84,7 +84,7 @@ jobs:
         ]"
       commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
-      tag: dr-1013-8fb32d0-test
+      tag: dr-1013-31a4a1a-preprod
     secrets: inherit
 
   deploy-data-migration-code:
@@ -110,7 +110,7 @@ jobs:
         ]"
       commit_hash: ${{ needs.derive-artefact-address.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
-      tag: dr-1013-8fb32d0-test
+      tag: dr-1013-31a4a1a-preprod
     secrets: inherit
 
   slack-notifications:
