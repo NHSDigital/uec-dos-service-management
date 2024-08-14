@@ -8,21 +8,27 @@ on:
 #   workflow_call:
 #     inputs:
 #       tag:
-#         description: "Tag"
+#         description: "Select the Tag to deploy artefact from"
 #         required: true
 #         type: string
 #       environment:
-#         description: "environment"
+#         description: "Select the deployment environment"
 #         required: true
 #         type: string
-#       environment:
-#         description: "environment"
-#         required: true
-#         type: string
+#         options:
+#           - preprod
+#           - prod
 jobs:
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@v0.42
+
+  derive-artefact-address:
+    name: "Get artefact location"
+    uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.42
+    with:
+      tag: dr-1013-8fb32d0-test
+
   quality-check:
     name: "Quality Check"
     uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@v0.42
@@ -33,19 +39,9 @@ jobs:
     with:
       environment: preprod
       workspace: default
-      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
+      stacks: '["application", "data_migration", "domain-test"]'
     secrets: inherit
-  unit-tests:
-    name: Unit Test
-    needs:
-      [
-        metadata,
-        quality-check,
-      ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@v0.42
-    with:
-      env: preprod
-    secrets: inherit
+
   deploy-application-infrastructure:
       needs:
         [
@@ -63,11 +59,6 @@ jobs:
         tag: dr-1013-8fb32d0-test
       secrets: inherit
 
-  derive-artefact-address:
-    name: "Get artefact location"
-    uses: NHSDigital/uec-dos-management/.github/workflows/derive-artefact-address.yaml@v0.42
-    with:
-      tag: dr-1013-8fb32d0-test
   deploy-application:
     name: Deploy lambda application code
     needs:
