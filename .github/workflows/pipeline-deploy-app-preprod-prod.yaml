@@ -118,7 +118,6 @@ jobs:
     needs: [
       metadata,
       quality-check,
-      unit-tests,
       deploy-application-infrastructure,
       deploy-application,
       deploy-data-migration-code,

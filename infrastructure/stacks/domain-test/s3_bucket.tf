@@ -4,7 +4,7 @@ module "s3_bucket" {
   force_destroy = var.force_destroy
 }
 
-module "s3_bucket" {
+module "s3_tag_test_bucket" {
   source        = "../../modules/s3"
   bucket_name   = "testing-tag"
   force_destroy = var.force_destroy
