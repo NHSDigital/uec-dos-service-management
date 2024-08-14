@@ -6,6 +6,6 @@ module "s3_bucket" {
 
 module "s3_tag_test_bucket" {
   source        = "../../modules/s3"
-  bucket_name   = "test"
+  bucket_name   = "testing-tag-pira"
   force_destroy = var.force_destroy
 }
