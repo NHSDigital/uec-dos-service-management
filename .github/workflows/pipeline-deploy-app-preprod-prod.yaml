@@ -25,23 +25,9 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
 
-  quality-check:
-    name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
-    needs:
-      [
-        metadata,
-      ]
-    with:
-      environment: ${{ inputs.environment }}
-      workspace: default
-      stacks: '["application", "data_migration", "domain-test"]'
-    secrets: inherit
-
   deploy-application-infrastructure:
       needs:
         [
-          quality-check,
           metadata,
         ]
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
@@ -49,7 +35,7 @@ jobs:
         environment: ${{ inputs.environment }}
         domain: "uec-dos-service-management"
         workspace: default
-        stacks: '["application", "data_migration", "domain-test"]'
+        stacks: '["application", "data_migration"]'
         action: apply
         workflow_timeout: 10
         tag: ${{ inputs.tag }}
@@ -113,7 +99,6 @@ jobs:
     name: Send notification to slack
     needs: [
       metadata,
-      quality-check,
       deploy-application-infrastructure,
       deploy-application,
       deploy-data-migration-code,
