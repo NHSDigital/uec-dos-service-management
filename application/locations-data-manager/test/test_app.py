@@ -132,6 +132,6 @@ def load_lambda_context_from_file(filename):
     """
     load Lambda context from a JSON file
     """
-    context_file_name = "tests/integration/lambda_context_json/" + filename
+    context_file_name = "tests/unit/lambda_context_json/" + filename
     with open(context_file_name, "r") as f:
         return json.load(f)
