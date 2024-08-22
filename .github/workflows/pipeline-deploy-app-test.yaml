@@ -56,14 +56,14 @@ jobs:
       artefact_bucket_name: ${{ inputs.artefact_bucket_name }}
     secrets: inherit
 
-  integration-tests:
-    name: Run integration tests
+  domain-tests:
+    name: Run domain tests
     needs:
       [
         deploy-application-infrastructure,
         deploy-application,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/integration-test.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/domain-test.yaml@latest
     with:
       environment: test
       workspace: ${{ inputs.workspace }}
