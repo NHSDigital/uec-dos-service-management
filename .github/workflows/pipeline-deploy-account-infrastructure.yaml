@@ -34,7 +34,7 @@ jobs:
           environment: int
           domain: "uec-dos-service-management"
           workspace: ${{ needs.metadata.outputs.workspace }}
-          stacks: '["network", "terraform_management"]'
+          stacks: '["network", "terraform_management", "github-runner"]'
           action: apply
         secrets: inherit
     deploy-account-infrastructure-apply-test:
