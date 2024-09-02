@@ -1,6 +1,7 @@
 # Repository Template
 
 Testing if commit is verified
+Testing if commit is verified
 
 Start with an overview or a brief description of what the project is about and what it does. For example -
 
