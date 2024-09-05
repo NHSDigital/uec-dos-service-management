@@ -2,7 +2,7 @@
 
 Testing if commit is verified
 Testing if commit is verified
-
+test1
 Start with an overview or a brief description of what the project is about and what it does. For example -
 
 Welcome to our repository template designed to streamline your project setup! This robust template provides a reliable starting point for your new projects, covering an essential tech stack and encouraging best practices in documenting.
