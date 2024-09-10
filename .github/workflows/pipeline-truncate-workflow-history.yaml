@@ -1,12 +1,9 @@
 name: Pipeline to Truncate Workflow History
 
 on:
-  push:
-    branches:
-      - task/DR-978_Truncate_github_actions_history
-  # # Run daily, at 01:00
-  # schedule:
-  #   - cron: '0 1 * * *'
+  # Run daily, at 01:00
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
   delete_past_runs:
@@ -18,7 +15,6 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/truncate-workflow-history.yaml@latest
     with:
       domain: "uec-dos-service-management"
-      retain_days: 410
     secrets: inherit
 
   slack-notifications:
