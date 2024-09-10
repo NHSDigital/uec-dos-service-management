@@ -18,7 +18,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/truncate-workflow-history.yaml@latest
     with:
       domain: "uec-dos-service-management"
-      retain_days: "410"
+      retain_days: 410
     secrets: inherit
 
   slack-notifications:
