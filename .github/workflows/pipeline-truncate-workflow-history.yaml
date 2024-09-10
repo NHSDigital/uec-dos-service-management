@@ -1,0 +1,28 @@
+name: Pipeline to Truncate Workflow History
+
+on:
+  # Run daily, at 01:00
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  delete_past_runs:
+    name: "Remove older workflow runs"
+    permissions:
+      actions: write
+      id-token: write
+      contents: read
+    uses: NHSDigital/uec-dos-management/.github/workflows/truncate-workflow-history.yaml@latest
+    with:
+      domain: "uec-dos-service-management"
+    secrets: inherit
+
+  slack-notifications:
+    needs: [
+      delete_past_runs,
+    ]
+    if: always()
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    with:
+      env: dev
+    secrets: inherit
