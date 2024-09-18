@@ -1,7 +1,7 @@
 module "questionnaire_response_populator_lambda" {
   source = "../../modules/lambda"
 
-  function_name = "questionnaire_response_populator_lambda"
+  function_name = "cm_questionnaire_response_populator"
   description   = "To load data to DynamoDB"
   handler       = "questionnaire_and_response_populator.lambda_handler"
   layers = [
