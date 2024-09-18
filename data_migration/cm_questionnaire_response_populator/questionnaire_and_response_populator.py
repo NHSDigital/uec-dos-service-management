@@ -335,13 +335,13 @@ class QuestionnairePopulator:
         formatted_datetime = self.get_formatted_datetime()
         self.log("\nRow Data:\n" + str(row), "Debug")
 
-        if table_name == "questionnaires":
+        if table_name == "questionnaires-" + os.getenv("WORKSPACE") or table_name == "questionnaires":
             return self.transpose_questionnaires(formatted_datetime, row)
 
         elif sheet_name == "Questionnaire-001-010":
             self.transpose_questionnaire_collection_sheet(row)
 
-        elif table_name == "questionnaire_responses":
+        elif table_name == "questionnaire_responses-" + os.getenv("WORKSPACE") or table_name == "questionnaire_responses":
             return self.transpose_questionnaire_responses(
                 formatted_datetime, row, self.questions
             )
