@@ -336,7 +336,7 @@ class QuestionnairePopulator:
         self.log("\nRow Data:\n" + str(row), "Debug")
 
         if (
-            table_name == "questionnaires-" + os.getenv("WORKSPACE")
+            table_name == "questionnaires-" + str(os.getenv("WORKSPACE"))
             or table_name == "questionnaires"
         ):
             return self.transpose_questionnaires(formatted_datetime, row)
@@ -345,7 +345,7 @@ class QuestionnairePopulator:
             self.transpose_questionnaire_collection_sheet(row)
 
         elif (
-            table_name == "questionnaire_responses-" + os.getenv("WORKSPACE")
+            table_name == "questionnaire_responses-" + str(os.getenv("WORKSPACE"))
             or table_name == "questionnaire_responses"
         ):
             return self.transpose_questionnaire_responses(
