@@ -182,7 +182,7 @@ class TestQuestionnairePopulator(unittest.TestCase):
                 1: 35,
                 2: 75.4,
                 "responseIdentifier": "ABABABABABABABA",
-                "QuestionnaireURL": "http://abababa.aba",
+                "QuestionnaireURL": "https://abababa.aba",
                 "status": "mock status",
                 "healthcareServiceId": "1234567890987654321",
                 "healthcareServiceName": "mock HS name",
@@ -194,7 +194,7 @@ class TestQuestionnairePopulator(unittest.TestCase):
         expected_result = {
             "resourceType": "QuestionnaireResponse",
             "id": "ABABABABABABABA",
-            "questionnaire": "http://abababa.aba",
+            "questionnaire": "https://abababa.aba",
             "status": "mock status",
             "createdBy": "Admin",
             "createdDateTime": formatted_datetime,
@@ -240,7 +240,7 @@ class TestQuestionnairePopulator(unittest.TestCase):
                 "subjectType": "mock subject type",
                 "effectivePeriod.start": "2024-07-24 00:00:00",
                 "effectivePeriod.end": "2030-07-24 00:00:00",
-                "useContext.code.system": "http://mock.system",
+                "useContext.code.system": "https://mock.system",
                 "useContext.code.code": "mock use code",
                 "useContext.valueCodeableConcept.text": "ServiceTypeA",
             }
@@ -251,7 +251,7 @@ class TestQuestionnairePopulator(unittest.TestCase):
             "resourceType": "Questionnaire",
             "id": "1234567890987654321",
             "identifier": {"use": "secondary", "type": "ID", "value": "ababababababa"},
-            "url": "http://example.org/fhir/Questionnaire/capacity-management-questionnaire-001",
+            "url": "https://example.org/fhir/Questionnaire/capacity-management-questionnaire-001",
             "status": "active",
             "title": "mock title",
             "name": "mock name",
@@ -269,7 +269,7 @@ class TestQuestionnairePopulator(unittest.TestCase):
             "useContext": [
                 {
                     "code": {
-                        "system": "http://mock.system",
+                        "system": "https://mock.system",
                         "code": "mock use code",
                     },
                     "valueCodeableConcept": {"text": "ServiceTypeA"},

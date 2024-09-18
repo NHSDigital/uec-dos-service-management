@@ -299,7 +299,7 @@ class QuestionnairePopulator:
                 "type": "ID",
                 "value": str(row["identifier"]),
             },
-            "url": "http://example.org/fhir/Questionnaire/capacity-management-questionnaire-001",
+            "url": "https://example.org/fhir/Questionnaire/capacity-management-questionnaire-001",
             "status": "active",
             "title": row["title"],
             "name": row["name"],
