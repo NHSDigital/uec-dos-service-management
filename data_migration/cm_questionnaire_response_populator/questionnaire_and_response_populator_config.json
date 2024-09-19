@@ -1,0 +1,24 @@
+{
+  "testing": false,
+  "s3": "s3",
+  "dynamodb": "dynamodb",
+  "ddbclient": "dynamodb",
+  "bucket_name": "nhse-uec-sm-dev-databucket",
+  "file_key": "Capacity_Management_Response_Dataset.xlsx",
+  "maximum_insert_fails": 100,
+  "log_file": "log_file.log",
+  "FHIR_entities": [
+    {
+      "db_table_name": "questionnaire_responses",
+      "spreadsheet_tab_name": "Questionnaire-001-010"
+    },
+    {
+      "db_table_name": "questionnaires",
+      "spreadsheet_tab_name": "Questionnaires"
+    },
+    {
+      "db_table_name": "questionnaire_responses",
+      "spreadsheet_tab_name": "QuestionnaireResponses"
+    }
+  ]
+}
