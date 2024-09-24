@@ -1,0 +1,190 @@
+name: Application Deployment Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The environment to use - eg dev, test, int"
+        required: true
+        type: string
+      # workspace:
+      #   description: "The workspace to deploy the service into"
+      #   required: true
+      #   type: string
+      # tag:
+      #   description: "Defines the tag to be used for deployment"
+      #   required: true
+      #   type: string
+      # commit_hash:
+      #   description: "The commit hash to identify the version of artefacts"
+      #   required: true
+      #   type: string
+      # artefact_bucket_name:
+      #   description: "The name of domain repository for artefacts"
+      #   required: true
+      #   type: string
+
+jobs:
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+  quality-check:
+    if: inputs.environment == 'dev'
+    name: "Quality Check"
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
+    needs:
+      [
+        metadata,
+      ]
+    with:
+      environment: ${{ inputs.environment}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
+    secrets: inherit
+  unit-tests:
+    if: inputs.environment == 'dev'
+    name: Unit Test
+    needs:
+      [
+        metadata,
+        quality-check,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
+    with:
+      env: ${{ inputs.environment}}
+    secrets: inherit
+  deploy-application-infrastructure:
+      needs:
+        [
+          quality-check,
+          metadata,
+        ]
+      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
+      with:
+        environment: ${{ inputs.environment}}
+        domain: "uec-dos-service-management"
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        stacks: '["application", "data_migration", "domain-test"]'
+        action: apply
+      secrets: inherit
+  build-application:
+    name: Build application
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+    with:
+      directory: 'application'
+      environment: ${{ inputs.environment}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+  deploy-application:
+    name: Deploy lambda application code
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+        build-application
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'application'
+      environment: ${{ inputs.environment}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+
+  build-data-migration-code:
+    name: Build data migration
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: ${{ inputs.environment}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load',
+          'cm_database_populator',
+          'cm_questionnaire_response_populator'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  deploy-data-migration-code:
+    name: Deploy data migration
+    needs:
+      [
+        metadata,
+        deploy-application-infrastructure,
+        build-data-migration-code
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: ${{ inputs.environment}}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load',
+          'cm_database_populator',
+          'cm_questionnaire_response_populator'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  # slack-notifications:
+  #   name: Send notification to slack
+  #   needs: [
+  #     metadata,
+  #     quality-check,
+  #     unit-tests,
+  #     deploy-application-infrastructure,
+  #     build-application,
+  #     deploy-application,
+  #     build-data-migration-code,
+  #     deploy-data-migration-code,
+  #   ]
+  #   if: always()
+  #   uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+  #   with:
+  #     env: ${{ inputs.environment}}
+  #   secrets: inherit
