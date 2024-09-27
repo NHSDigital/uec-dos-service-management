@@ -26,26 +26,24 @@ on:
           - test
           - int
 
-env:
-  DOMAIN: uec-dos-service-management
-  PROJECT: dos
+# env:
+#   DOMAIN: uec-dos-service-management
+#   PROJECT: dos
 
 
 jobs:
-  set-domain-project:
-    name: "Set Domain and Project"
-    runs-on: ubuntu-latest
-    outputs:
-      domain: ${{ env.DOMAIN }}
-      project: ${{ env.PROJECT }}
-      # domain: ${{ steps.set-domain.outputs.domain }}
-      # project: ${{ steps.set-project.outputs.project }}
-    steps:
-      - name: "Set domain and project variables"
-        id: set-domain-and-project
-        run: |
-          echo "domain=${{ env.DOMAIN }}"
-          echo "project=${{ env.PROJECT }}"
+  # set-domain-project:
+  #   name: "Set Domain and Project"
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     domain: ${{ env.DOMAIN }}
+  #     project: ${{ env.PROJECT }}
+  #   steps:
+  #     - name: "Set domain and project variables"
+  #       id: set-domain-and-project
+  #       run: |
+  #         echo "domain=${{ env.DOMAIN }}"
+  #         echo "project=${{ env.PROJECT }}"
 
   # set-environment-vars:
   #   name: "Set Environment Variables"
@@ -136,15 +134,15 @@ jobs:
       [
         quality-check,
         metadata,
-        set-domain-project,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
     with:
       environment: ${{ needs.metadata.outputs.environment }}
-      domain: ${{ needs.set-domain-project.outputs.domain }}
+      domain: ${{ needs.metadata.outputs.reponame }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["application", "data_migration", "domain-test"]'
-      project: ${{ needs.set-domain-project.outputs.project }}
+      # project: ${{ needs.set-domain-project.outputs.project }}
+      project: ${{ vars.ACCOUNT_PROJECT}}
       tag: ${{ inputs.tag }}
       action: apply
       workflow_timeout: 10
