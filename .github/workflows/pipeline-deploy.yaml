@@ -44,7 +44,7 @@ jobs:
       - name: "Set domain and project variables"
         id: set-domain-and-project
         run: |
-          echo "domain=${{ env.DOMAIN }}""
+          echo "domain=${{ env.DOMAIN }}"
           echo "project=${{ env.PROJECT }}"
 
   # set-environment-vars:
