@@ -33,20 +33,22 @@ env:
 
 jobs:
   set-domain-project:
-    name: "Set Environment Variables"
+    name: "Set Domain and Project"
     runs-on: ubuntu-latest
     outputs:
-      domain: ${{ steps.set-domain.outputs.domain }}
-      project: ${{ steps.set-project.outputs.project }}
-    steps:
-      - name: "Set domain"
-        id: set-domain
-        run: |
-          echo "domain=${{ env.DOMAIN }}" >> $GITHUB_OUTPUT
-      - name: "Set project"
-        id: set-project
-        run: |
-          echo "project=${{ env.PROJECT }}" >> $GITHUB_OUTPUT
+      domain: ${{ env.DOMAIN }}
+      project: ${{ env.PROJECT }}
+      # domain: ${{ steps.set-domain.outputs.domain }}
+      # project: ${{ steps.set-project.outputs.project }}
+    # steps:
+    #   - name: "Set domain"
+    #     id: set-domain
+    #     run: |
+    #       echo "domain=${{ env.DOMAIN }}" >> $GITHUB_OUTPUT
+    #   - name: "Set project"
+    #     id: set-project
+    #     run: |
+    #       echo "project=${{ env.PROJECT }}" >> $GITHUB_OUTPUT
 
 
   # set-environment-vars:
