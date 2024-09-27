@@ -73,10 +73,7 @@ jobs:
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-1122_Add_env_to_meta
-    # needs:
-    #   [
-    #     set-environment-vars,
-    #   ]
+
   quality-check:
     if: ${{ needs.metadata.outputs.environment == 'dev' }}
     name: "Quality Check"
@@ -91,7 +88,7 @@ jobs:
       stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
     secrets: inherit
   unit-tests:
-    if: inputs.environment == 'dev'
+    if: ${{ needs.metadata.outputs.environment }} == 'dev'
     name: Unit Test
     needs:
       [
@@ -100,7 +97,7 @@ jobs:
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
     with:
-      env: ${{ inputs.environment}}
+      env: ${{ needs.metadata.outputs.environment }}
     secrets: inherit
 
   generate-tag-name:
@@ -270,5 +267,5 @@ jobs:
   #   if: always()
   #   uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
   #   with:
-  #     env: ${{ inputs.environment}}
+  #     env: ${{ needs.metadata.outputs.environment }}
   #   secrets: inherit
