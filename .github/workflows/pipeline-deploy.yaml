@@ -1,35 +1,79 @@
 name: Application Deployment Pipeline
+# if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
 
 on:
-  workflow_call:
+  push:
+    branches:
+      # - main
+      # - 'task/*'
+      - 'task/DR-1122_Refactor_work_flows'
+  pull_request:
+    types:
+      - labeled
+  workflow_dispatch:
     inputs:
-      environment:
-        description: "The environment to use - eg dev, test, int"
+      tag:
+        description: "Specify the tag to be used for deployment"
         required: true
         type: string
-      # workspace:
-      #   description: "The workspace to deploy the service into"
-      #   required: true
-      #   type: string
-      # tag:
-      #   description: "Defines the tag to be used for deployment"
-      #   required: true
-      #   type: string
-      # commit_hash:
-      #   description: "The commit hash to identify the version of artefacts"
-      #   required: true
-      #   type: string
-      # artefact_bucket_name:
-      #   description: "The name of domain repository for artefacts"
-      #   required: true
-      #   type: string
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - int
+
+env:
+  DOMAIN: uec-dos-service-management
+  PROJECT: dos
+
 
 jobs:
+  set-domain-project:
+    name: "Set Environment Variables"
+    runs-on: ubuntu-latest
+    outputs:
+      domain: ${{ env.DOMAIN }}
+      project: ${{ env.PROJECT }}
+
+  # set-environment-vars:
+  #   name: "Set Environment Variables"
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     environment: ${{ steps.set-env.outputs.environment }}
+  #     domain: ${{ env.DOMAIN }}
+  #     project: ${{ env.PROJECT }}
+  #   steps:
+  #     - name: "Determine Environment"
+  #       id: set-env
+  #       run: |
+  #         if [[ "${{ github.event.inputs.environment }}" != "" ]]; then
+  #           echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+  #           echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+  #         elif [[ "${{ github.event.label.name }}" == "Test Ready" ]]; then
+  #           echo "environment=test" >> $GITHUB_ENV
+  #           echo "environment=test" >> $GITHUB_OUTPUT
+  #         elif [[ "${{ github.event.label.name }}" == "Int Ready" ]]; then
+  #           echo "environment=int" >> $GITHUB_ENV
+  #           echo "environment=int" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "environment=dev" >> $GITHUB_ENV  # Default to dev if no label or condition doesn't match
+  #           echo "environment=dev" >> $GITHUB_OUTPUT
+  #         fi
+
+  #         echo "The determined environment is: $(cat $GITHUB_ENV | grep environment | cut -d '=' -f2)"
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-1122_Add_env_to_meta
+    # needs:
+    #   [
+    #     set-environment-vars,
+    #   ]
   quality-check:
-    if: inputs.environment == 'dev'
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
     name: "Quality Check"
     uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
     needs:
@@ -37,7 +81,7 @@ jobs:
         metadata,
       ]
     with:
-      environment: ${{ inputs.environment}}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
     secrets: inherit
@@ -53,31 +97,65 @@ jobs:
     with:
       env: ${{ inputs.environment}}
     secrets: inherit
+
+  generate-tag-name:
+    if: ${{ (needs.metadata.outputs.environment == 'test' || needs.metadata.outputs.environment == 'int') && github.event.action == 'labeled' }}
+    name: "Generate Tag Name"
+    needs:
+      [
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@latest
+    with:
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      tag_type: test
+      use_commit_hash: "yes"
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
+
+  tag-repository:
+    if: ${{ (needs.metadata.outputs.environment == 'test' || needs.metadata.outputs.environment == 'int') && github.event.action == 'labeled' }}
+    name: "Tag Repository"
+    needs:
+      [
+        metadata,
+        generate-tag-name,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/tag-repository.yaml@latest
+    with:
+      tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
+      tag_overwrite: "yes"
+
   deploy-application-infrastructure:
-      needs:
-        [
-          quality-check,
-          metadata,
-        ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
-      with:
-        environment: ${{ inputs.environment}}
-        domain: "uec-dos-service-management"
-        workspace: ${{ needs.metadata.outputs.workspace }}
-        stacks: '["application", "data_migration", "domain-test"]'
-        action: apply
-      secrets: inherit
+    if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
+    needs:
+      [
+        quality-check,
+        metadata,
+        set-domain-project,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
+    with:
+      environment: ${{ needs.metadata.outputs.environment }}
+      domain: ${{ needs.set-domain-project.domain }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["application", "data_migration", "domain-test"]'
+      project: ${{ needs.set-domain-project.project }}
+      tag: ${{ inputs.tag }}
+      action: apply
+      workflow_timeout: 10
+    secrets: inherit
+
   build-application:
     name: Build application
     needs:
       [
         metadata,
-        deploy-application-infrastructure
+        deploy-application-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
       directory: 'application'
-      environment: ${{ inputs.environment}}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
@@ -97,12 +175,12 @@ jobs:
       [
         metadata,
         deploy-application-infrastructure,
-        build-application
+        build-application,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'application'
-      environment: ${{ inputs.environment}}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -124,12 +202,12 @@ jobs:
     needs:
       [
         metadata,
-        deploy-application-infrastructure
+        deploy-application-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
       directory: 'data_migration'
-      environment: ${{ inputs.environment}}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       services:
         "[
@@ -150,12 +228,12 @@ jobs:
       [
         metadata,
         deploy-application-infrastructure,
-        build-data-migration-code
+        build-data-migration-code,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'data_migration'
-      environment: ${{ inputs.environment}}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
       services:
@@ -170,6 +248,7 @@ jobs:
       commit_hash: ${{ needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
+
 
   # slack-notifications:
   #   name: Send notification to slack
