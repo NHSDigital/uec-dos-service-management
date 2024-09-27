@@ -38,7 +38,12 @@ jobs:
     outputs:
       domain: ${{ env.DOMAIN }}
       project: ${{ env.PROJECT }}
-
+    steps:
+      - name: "Set domain and project"
+        id: set-domain-project
+        run: |
+          echo "domain=${{ env.DOMAIN }}"
+          echo "project=${{ env.PROJECT }}"
   # set-environment-vars:
   #   name: "Set Environment Variables"
   #   runs-on: ubuntu-latest
