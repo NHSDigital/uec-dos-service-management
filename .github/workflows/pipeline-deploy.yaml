@@ -143,10 +143,10 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
     with:
       environment: ${{ needs.metadata.outputs.environment }}
-      domain: ${{ needs.set-domain-project.domain }}
+      domain: ${{ needs.set-domain-project.outputs.domain }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["application", "data_migration", "domain-test"]'
-      project: ${{ needs.set-domain-project.project }}
+      project: ${{ needs.set-domain-project.outputs.project }}
       tag: ${{ inputs.tag }}
       action: apply
       workflow_timeout: 10
