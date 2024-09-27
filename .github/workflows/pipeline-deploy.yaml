@@ -26,51 +26,8 @@ on:
           - test
           - int
 
-# env:
-#   DOMAIN: uec-dos-service-management
-#   PROJECT: dos
-
-
 jobs:
-  # set-domain-project:
-  #   name: "Set Domain and Project"
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     domain: ${{ env.DOMAIN }}
-  #     project: ${{ env.PROJECT }}
-  #   steps:
-  #     - name: "Set domain and project variables"
-  #       id: set-domain-and-project
-  #       run: |
-  #         echo "domain=${{ env.DOMAIN }}"
-  #         echo "project=${{ env.PROJECT }}"
 
-  # set-environment-vars:
-  #   name: "Set Environment Variables"
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     environment: ${{ steps.set-env.outputs.environment }}
-  #     domain: ${{ env.DOMAIN }}
-  #     project: ${{ env.PROJECT }}
-  #   steps:
-  #     - name: "Determine Environment"
-  #       id: set-env
-  #       run: |
-  #         if [[ "${{ github.event.inputs.environment }}" != "" ]]; then
-  #           echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-  #           echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
-  #         elif [[ "${{ github.event.label.name }}" == "Test Ready" ]]; then
-  #           echo "environment=test" >> $GITHUB_ENV
-  #           echo "environment=test" >> $GITHUB_OUTPUT
-  #         elif [[ "${{ github.event.label.name }}" == "Int Ready" ]]; then
-  #           echo "environment=int" >> $GITHUB_ENV
-  #           echo "environment=int" >> $GITHUB_OUTPUT
-  #         else
-  #           echo "environment=dev" >> $GITHUB_ENV  # Default to dev if no label or condition doesn't match
-  #           echo "environment=dev" >> $GITHUB_OUTPUT
-  #         fi
-
-  #         echo "The determined environment is: $(cat $GITHUB_ENV | grep environment | cut -d '=' -f2)"
   metadata:
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-1122_Add_env_to_meta
@@ -141,7 +98,6 @@ jobs:
       domain: ${{ needs.metadata.outputs.reponame }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["application", "data_migration", "domain-test"]'
-      # project: ${{ needs.set-domain-project.outputs.project }}
       project: ${{ vars.ACCOUNT_PROJECT}}
       tag: ${{ inputs.tag }}
       action: apply
