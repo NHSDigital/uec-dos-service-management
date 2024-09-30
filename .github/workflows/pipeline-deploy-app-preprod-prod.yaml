@@ -1,16 +1,17 @@
-name: Pipeline Deployment Application production & pre-production Environment
+name: Pipeline Deployment Application Pre-production & Production Environment
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       tag:
-        description: "Select the Tag to deploy artefact from"
+        description: "Specify the tag to be used for deployment"
         required: true
         type: string
       environment:
-        description: "Select the deployment environment"
+        description: 'Deployment environment'
         required: true
-        type: string
+        default: 'preprod'
+        type: choice
         options:
           - preprod
           - prod
@@ -25,15 +26,15 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
 
-  deploy-application-infrastructure:
+  deploy-infrastructure:
       needs:
         [
           metadata,
         ]
       uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
       with:
-        environment: ${{ inputs.environment }}
-        domain: "uec-dos-service-management"
+        environment: ${{ needs.metadata.outputs.environment }}
+        domain: ${{ needs.metadata.outputs.reponame }}
         workspace: default
         stacks: '["application", "data_migration"]'
         action: apply
@@ -46,13 +47,13 @@ jobs:
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
+        deploy-infrastructure,
         derive-artefact-address,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'application'
-      environment: ${{ inputs.environment }}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: default
       artefact_sub_dir: ${{ needs.derive-artefact-address.outputs.artefact_sub_dir }}
       services:
@@ -74,13 +75,13 @@ jobs:
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
+        deploy-infrastructure,
         derive-artefact-address,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
       directory: 'data_migration'
-      environment: ${{ inputs.environment }}
+      environment: ${{ needs.metadata.outputs.environment }}
       workspace: default
       artefact_sub_dir: ${{ needs.derive-artefact-address.outputs.artefact_sub_dir }}
       services:
@@ -96,15 +97,15 @@ jobs:
     secrets: inherit
 
   slack-notifications:
-    name: Send notification to slack
+    name: Send Notification to Slack
     needs: [
       metadata,
-      deploy-application-infrastructure,
+      deploy-infrastructure,
       deploy-application,
       deploy-data-migration-code,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
     with:
-      env: ${{ inputs.environment }}
+      env: ${{ needs.metadata.outputs.environment }}
     secrets: inherit
