@@ -4,9 +4,8 @@ name: Application Deployment Pipeline
 on:
   push:
     branches:
-      # - main
-      # - 'task/*'
-      - 'task/DR-1122_Refactor_work_flows'
+      - main
+      - 'task/*'
   pull_request:
     types:
       - labeled
@@ -30,33 +29,7 @@ jobs:
 
   metadata:
     name: "Get Metadata"
-    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@task/DR-1122_Add_env_to_meta
-
-  quality-check:
-    if: ${{ needs.metadata.outputs.environment == 'dev' }}
-    name: "Quality Check"
-    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
-    needs:
-      [
-        metadata,
-      ]
-    with:
-      environment: ${{ needs.metadata.outputs.environment }}
-      workspace: ${{ needs.metadata.outputs.workspace }}
-      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
-    secrets: inherit
-  unit-tests:
-    if: ${{ needs.metadata.outputs.environment }} == 'dev'
-    name: Unit Test
-    needs:
-      [
-        metadata,
-        quality-check,
-      ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
-    with:
-      env: ${{ needs.metadata.outputs.environment }}
-    secrets: inherit
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
 
   generate-tag-name:
     if: ${{ (needs.metadata.outputs.environment == 'test' || needs.metadata.outputs.environment == 'int') && github.event.action == 'labeled' }}
@@ -68,7 +41,7 @@ jobs:
     uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@latest
     with:
       workspace: ${{ needs.metadata.outputs.workspace }}
-      tag_type: test
+      tag_type: ${{ needs.metadata.outputs.environment }}
       use_commit_hash: "yes"
       commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
 
@@ -85,31 +58,39 @@ jobs:
       tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
       tag_overwrite: "yes"
 
-  deploy-application-infrastructure:
-    if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
+  quality-check:
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: "Quality Check"
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
     needs:
       [
-        quality-check,
         metadata,
       ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
     with:
       environment: ${{ needs.metadata.outputs.environment }}
-      domain: ${{ needs.metadata.outputs.reponame }}
       workspace: ${{ needs.metadata.outputs.workspace }}
-      stacks: '["application", "data_migration", "domain-test"]'
-      project: ${{ vars.ACCOUNT_PROJECT}}
-      tag: ${{ inputs.tag }}
-      action: apply
-      workflow_timeout: 10
+      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
+    secrets: inherit
+
+  unit-tests:
+    if: ${{ needs.metadata.outputs.environment }} == 'dev'
+    name: Unit Test
+    needs:
+      [
+        metadata,
+        quality-check,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
+    with:
+      env: ${{ needs.metadata.outputs.environment }}
     secrets: inherit
 
   build-application:
-    name: Build application
+    if: ${{ needs.metadata.outputs.environment }} == 'dev'
+    name: Build application artefacts and push to storage
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
@@ -128,12 +109,32 @@ jobs:
       commit_hash: ${{ needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
+
+  deploy-infrastructure:
+    if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
+    needs:
+      [
+        quality-check,
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
+    with:
+      environment: ${{ needs.metadata.outputs.environment }}
+      domain: ${{ needs.metadata.outputs.reponame }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["application", "data_migration", "domain-test"]'
+      project: ${{ vars.ACCOUNT_PROJECT}}
+      tag: ${{ inputs.tag }}
+      action: apply
+      workflow_timeout: 10
+    secrets: inherit
+
   deploy-application:
     name: Deploy lambda application code
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
+        deploy-infrastructure,
         build-application,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
@@ -157,11 +158,12 @@ jobs:
 
 
   build-data-migration-code:
-    name: Build data migration
+    if: ${{ needs.metadata.outputs.environment }} == 'dev'
+    name: Build data migration artefacts and push to storage
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
+        deploy-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
@@ -186,7 +188,6 @@ jobs:
     needs:
       [
         metadata,
-        deploy-application-infrastructure,
         build-data-migration-code,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
@@ -209,20 +210,20 @@ jobs:
     secrets: inherit
 
 
-  # slack-notifications:
-  #   name: Send notification to slack
-  #   needs: [
-  #     metadata,
-  #     quality-check,
-  #     unit-tests,
-  #     deploy-application-infrastructure,
-  #     build-application,
-  #     deploy-application,
-  #     build-data-migration-code,
-  #     deploy-data-migration-code,
-  #   ]
-  #   if: always()
-  #   uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
-  #   with:
-  #     env: ${{ needs.metadata.outputs.environment }}
-  #   secrets: inherit
+  slack-notifications:
+    name: Send notification to slack
+    needs: [
+      metadata,
+      quality-check,
+      unit-tests,
+      deploy-infrastructure,
+      build-application,
+      deploy-application,
+      build-data-migration-code,
+      deploy-data-migration-code,
+    ]
+    if: always()
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    with:
+      env: ${{ needs.metadata.outputs.environment }}
+    secrets: inherit
