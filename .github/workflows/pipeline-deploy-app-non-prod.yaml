@@ -1,5 +1,4 @@
-name: Application Deployment Pipeline
-# if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
+name: Application Deployment Pipeline - Non Prod Environments
 
 on:
   push:
@@ -73,7 +72,7 @@ jobs:
     secrets: inherit
 
   unit-tests:
-    if: ${{ needs.metadata.outputs.environment }} == 'dev'
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
     name: Unit Test
     needs:
       [
@@ -86,7 +85,7 @@ jobs:
     secrets: inherit
 
   build-application-artefacts:
-    if: ${{ needs.metadata.outputs.environment }} == 'dev'
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
     name: Build application artefacts and push to storage
     needs:
       [
@@ -111,29 +110,29 @@ jobs:
     secrets: inherit
 
   build-data-migration-artefacts:
-      if: ${{ needs.metadata.outputs.environment }} == 'dev'
-      name: Build data migration artefacts and push to storage
-      needs:
-        [
-          metadata,
-        ]
-      uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
-      with:
-        directory: 'data_migration'
-        environment: ${{ needs.metadata.outputs.environment }}
-        workspace: ${{ needs.metadata.outputs.workspace }}
-        services:
-          "[
-            'org_data_load',
-            'locations_data_load',
-            'organisation_affiliations_data_load',
-            'service_data_load',
-            'cm_database_populator',
-            'cm_questionnaire_response_populator'
-          ]"
-        commit_hash: ${{ needs.metadata.outputs.commit_hash }}
-        artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
-      secrets: inherit
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: Build data migration artefacts and push to storage
+    needs:
+      [
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load',
+          'cm_database_populator',
+          'cm_questionnaire_response_populator'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
 
   deploy-infrastructure:
     if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
