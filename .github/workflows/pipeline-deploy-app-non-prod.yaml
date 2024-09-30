@@ -85,7 +85,7 @@ jobs:
       env: ${{ needs.metadata.outputs.environment }}
     secrets: inherit
 
-  build-application:
+  build-application-artefacts:
     if: ${{ needs.metadata.outputs.environment }} == 'dev'
     name: Build application artefacts and push to storage
     needs:
@@ -110,8 +110,34 @@ jobs:
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
+  build-data-migration-artefacts:
+      if: ${{ needs.metadata.outputs.environment }} == 'dev'
+      name: Build data migration artefacts and push to storage
+      needs:
+        [
+          metadata,
+        ]
+      uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+      with:
+        directory: 'data_migration'
+        environment: ${{ needs.metadata.outputs.environment }}
+        workspace: ${{ needs.metadata.outputs.workspace }}
+        services:
+          "[
+            'org_data_load',
+            'locations_data_load',
+            'organisation_affiliations_data_load',
+            'service_data_load',
+            'cm_database_populator',
+            'cm_questionnaire_response_populator'
+          ]"
+        commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+        artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+      secrets: inherit
+
   deploy-infrastructure:
     if: always() && !cancelled() && (needs.quality-check.result == 'success' || needs.quality-check.result == 'skipped')
+    name: Deploy infrastructure to ${{ needs.metadata.outputs.environment }} Environment
     needs:
       [
         quality-check,
@@ -129,13 +155,14 @@ jobs:
       workflow_timeout: 10
     secrets: inherit
 
-  deploy-application:
-    name: Deploy lambda application code
+  deploy-application-artefacts:
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped')
+    name: Deploy application artefacts
     needs:
       [
         metadata,
         deploy-infrastructure,
-        build-application,
+        build-application-artefacts,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
@@ -156,39 +183,13 @@ jobs:
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
-
-  build-data-migration-code:
-    if: ${{ needs.metadata.outputs.environment }} == 'dev'
-    name: Build data migration artefacts and push to storage
+  deploy-data-migration-artefacts:
+    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped')
+    name: Deploy data migration artefacts
     needs:
       [
         metadata,
-        deploy-infrastructure,
-      ]
-    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
-    with:
-      directory: 'data_migration'
-      environment: ${{ needs.metadata.outputs.environment }}
-      workspace: ${{ needs.metadata.outputs.workspace }}
-      services:
-        "[
-          'org_data_load',
-          'locations_data_load',
-          'organisation_affiliations_data_load',
-          'service_data_load',
-          'cm_database_populator',
-          'cm_questionnaire_response_populator'
-        ]"
-      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
-      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
-    secrets: inherit
-
-  deploy-data-migration-code:
-    name: Deploy data migration
-    needs:
-      [
-        metadata,
-        build-data-migration-code,
+        build-data-migration-artefacts,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
@@ -217,10 +218,10 @@ jobs:
       quality-check,
       unit-tests,
       deploy-infrastructure,
-      build-application,
-      deploy-application,
-      build-data-migration-code,
-      deploy-data-migration-code,
+      build-application-artefacts,
+      deploy-application-artefacts,
+      build-data-migration-artefacts,
+      deploy-data-migration-artefacts,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
