@@ -178,7 +178,7 @@ jobs:
           'questionnaire-responses-data-manager',
           'questionnaires-data-manager'
         ]"
-      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
@@ -205,7 +205,7 @@ jobs:
           'cm_database_populator',
           'cm_questionnaire_response_populator'
         ]"
-      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
 
