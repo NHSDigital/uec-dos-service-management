@@ -16,14 +16,17 @@ jobs:
 
   destroy:
     if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
-    name: "Destroy infrastructure on ${{ needs.metadata.outputs.environment }} Environment"
+    name: "Destroy infrastructure on ${{ matrix.environment }} Environment"
+    strategy:
+      matrix:
+        environment: ${{ fromJson(needs.metadata.outputs.environment) }}
     uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@latest
     needs:
       [
         metadata,
       ]
     with:
-      environment: ${{ needs.metadata.outputs.environment }}
+      environment: $${{ matrix.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: ${{ needs.metadata.outputs.reponame }}
       project: ${{ vars.PROJECT }}
@@ -31,16 +34,19 @@ jobs:
     secrets: inherit
 
   cleardown-artefacts:
-    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: needs.metadata.outputs.environment == '["dev"]' && github.event.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Cleardown Artefacts"
     needs:
       [
         metadata,
         destroy,
       ]
+    strategy:
+      matrix:
+        environment: ${{ fromJson(needs.metadata.outputs.environment) }}
     uses: NHSDigital/uec-dos-management/.github/workflows/artefacts-cleardown.yaml@latest
     with:
-      environment: ${{ needs.metadata.outputs.environment }}
+      environment: ${{ matrix.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_bucket_name: ${{needs.metadata.outputs.artefact_bucket_name}}
     secrets: inherit
