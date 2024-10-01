@@ -10,13 +10,13 @@ on:
 
 jobs:
   metadata:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
 
   destroy:
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Destroy infrastructure on ${{ needs.metadata.outputs.environment }} Environment"
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@latest
     needs:
       [
@@ -31,7 +31,7 @@ jobs:
     secrets: inherit
 
   cleardown-artefacts:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Cleardown Artefacts"
     needs:
       [
@@ -46,7 +46,7 @@ jobs:
     secrets: inherit
 
   summarise:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Summary
@@ -57,7 +57,9 @@ jobs:
   slack-notifications:
     name: Send notification to slack
     needs: [
+      metadata,
       destroy,
+      cleardown-artefacts,
       summarise,
     ]
     if: always()
