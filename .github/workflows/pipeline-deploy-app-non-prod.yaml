@@ -189,6 +189,7 @@ jobs:
       [
         metadata,
         build-data-migration-artefacts,
+        deploy-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
