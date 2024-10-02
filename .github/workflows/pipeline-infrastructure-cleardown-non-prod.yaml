@@ -4,42 +4,55 @@ on:
   delete:
     branches:
       - 'task/*'
+  pull_request:
+    types:
+      - closed
+
 jobs:
   metadata:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && (startswith(github.head_ref, 'task/') || startswith(github.event.ref, 'task/')) && github.actor != 'github-merge-queue[bot]'
     name: "Get Metadata"
     uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+
   destroy:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && (startswith(github.head_ref, 'task/') || startswith(github.event.ref, 'task/')) && github.actor != 'github-merge-queue[bot]'
+    name: "Destroy infrastructure on ${{ matrix.environment }} Environment"
+    strategy:
+      matrix:
+        environment: ${{ fromJson(needs.metadata.outputs.environment) }}
     uses: NHSDigital/uec-dos-management/.github/workflows/infrastructure-cleardown.yaml@latest
     needs:
       [
         metadata,
       ]
     with:
-      environment: dev
+      environment: ${{ matrix.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
-      domain: "uec-dos-service-management"
+      domain: ${{ needs.metadata.outputs.reponame }}
+      project: ${{ vars.PROJECT }}
       stacks: '["application", "data_migration", "domain-test"]'
     secrets: inherit
 
   cleardown-artefacts:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: needs.metadata.outputs.environment == '["dev"]' && github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Cleardown Artefacts"
     needs:
       [
         metadata,
         destroy,
       ]
+    strategy:
+      matrix:
+        environment: ${{ fromJson(needs.metadata.outputs.environment) }}
     uses: NHSDigital/uec-dos-management/.github/workflows/artefacts-cleardown.yaml@latest
     with:
-      environment: dev
+      environment: ${{ matrix.environment }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       artefact_bucket_name: ${{needs.metadata.outputs.artefact_bucket_name}}
     secrets: inherit
 
   summarise:
-    if: github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: (github.ref_type == 'branch' || github.event.ref_type == 'branch') && (startswith(github.head_ref, 'task/') || startswith(github.event.ref, 'task/')) && github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Summary
@@ -50,7 +63,9 @@ jobs:
   slack-notifications:
     name: Send notification to slack
     needs: [
+      metadata,
       destroy,
+      cleardown-artefacts,
       summarise,
     ]
     if: always()

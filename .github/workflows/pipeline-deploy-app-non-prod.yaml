@@ -1,0 +1,231 @@
+name: Application Deployment Pipeline - Non Prod Environments
+
+on:
+  push:
+    branches:
+      - main
+      - 'task/*'
+  pull_request:
+    types:
+      - labeled
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Specify the tag to be used for deployment"
+        required: true
+        type: string
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - int
+
+jobs:
+
+  metadata:
+    name: "Get Metadata"
+    uses: NHSDigital/uec-dos-management/.github/workflows/metadata.yaml@latest
+
+  generate-tag-name:
+    if: ${{ (needs.metadata.outputs.environment == 'test' || needs.metadata.outputs.environment == 'int') && github.event.action == 'labeled' }}
+    name: "Generate Tag Name"
+    needs:
+      [
+        metadata,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/generate-tag-name.yaml@latest
+    with:
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      tag_type: ${{ needs.metadata.outputs.environment }}
+      use_commit_hash: "yes"
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
+
+  tag-repository:
+    if: ${{ (needs.metadata.outputs.environment == 'test' || needs.metadata.outputs.environment == 'int') && github.event.action == 'labeled' }}
+    name: "Tag Repository"
+    needs:
+      [
+        metadata,
+        generate-tag-name,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/tag-repository.yaml@latest
+    with:
+      tag_to_push: ${{ needs.generate-tag-name.outputs.tag_name }}
+      tag_overwrite: "yes"
+
+  quality-check:
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: "Quality Check"
+    uses: NHSDigital/uec-dos-management/.github/workflows/quality-checks.yaml@latest
+    needs:
+      [
+        metadata,
+      ]
+    with:
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["github-runner", "terraform_management", "application", "data_migration", "domain-test"]'
+    secrets: inherit
+
+  unit-tests:
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: Unit Test
+    needs:
+      [
+        metadata,
+        quality-check,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/unit-test.yaml@latest
+    with:
+      env: ${{ needs.metadata.outputs.environment }}
+    secrets: inherit
+
+  build-application-artefacts:
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: Build application artefacts and push to storage
+    needs:
+      [
+        metadata,
+        unit-tests,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+    with:
+      directory: 'application'
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  build-data-migration-artefacts:
+    if: ${{ needs.metadata.outputs.environment == 'dev' }}
+    name: Build data migration artefacts and push to storage
+    needs:
+      [
+        metadata,
+        unit-tests,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load',
+          'cm_database_populator',
+          'cm_questionnaire_response_populator'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  deploy-infrastructure:
+    if: always() && !cancelled() && (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped')
+    name: Deploy infrastructure to ${{ needs.metadata.outputs.environment }} Environment
+    needs:
+      [
+        metadata,
+        build-data-migration-artefacts,
+        build-application-artefacts,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
+    with:
+      environment: ${{ needs.metadata.outputs.environment }}
+      domain: ${{ needs.metadata.outputs.reponame }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      stacks: '["application", "data_migration", "domain-test"]'
+      project: ${{ vars.PROJECT }}
+      tag: ${{ inputs.tag }}
+      action: apply
+      workflow_timeout: 10
+    secrets: inherit
+
+  deploy-application-artefacts:
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped')
+    name: Deploy application artefacts
+    needs:
+      [
+        metadata,
+        deploy-infrastructure,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'application'
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'healthcare-services-data-manager',
+          'locations-data-manager',
+          'organisation-affiliations-data-manager',
+          'organisations-data-manager',
+          'questionnaire-responses-data-manager',
+          'questionnaires-data-manager'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+  deploy-data-migration-artefacts:
+    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped')
+    name: Deploy data migration artefacts
+    needs:
+      [
+        metadata,
+        deploy-infrastructure,
+      ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
+    with:
+      directory: 'data_migration'
+      environment: ${{ needs.metadata.outputs.environment }}
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      artefact_sub_dir: ${{ needs.metadata.outputs.workspace }}
+      services:
+        "[
+          'org_data_load',
+          'locations_data_load',
+          'organisation_affiliations_data_load',
+          'service_data_load',
+          'cm_database_populator',
+          'cm_questionnaire_response_populator'
+        ]"
+      commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
+      artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
+    secrets: inherit
+
+
+  slack-notifications:
+    name: Send notification to slack
+    needs: [
+      metadata,
+      quality-check,
+      unit-tests,
+      deploy-infrastructure,
+      build-application-artefacts,
+      deploy-application-artefacts,
+      build-data-migration-artefacts,
+      deploy-data-migration-artefacts,
+    ]
+    if: always()
+    uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
+    with:
+      env: ${{ needs.metadata.outputs.environment }}
+    secrets: inherit
