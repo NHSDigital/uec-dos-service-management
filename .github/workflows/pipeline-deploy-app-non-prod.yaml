@@ -90,6 +90,7 @@ jobs:
     needs:
       [
         metadata,
+        unit-tests,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
@@ -115,6 +116,7 @@ jobs:
     needs:
       [
         metadata,
+        unit-tests,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-application.yaml@latest
     with:
@@ -139,8 +141,9 @@ jobs:
     name: Deploy infrastructure to ${{ needs.metadata.outputs.environment }} Environment
     needs:
       [
-        quality-check,
         metadata,
+        build-data-migration-artefacts,
+        build-application-artefacts,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-infrastructure.yaml@latest
     with:
@@ -148,7 +151,7 @@ jobs:
       domain: ${{ needs.metadata.outputs.reponame }}
       workspace: ${{ needs.metadata.outputs.workspace }}
       stacks: '["application", "data_migration", "domain-test"]'
-      project: ${{ vars.ACCOUNT_PROJECT}}
+      project: ${{ vars.PROJECT }}
       tag: ${{ inputs.tag }}
       action: apply
       workflow_timeout: 10
@@ -161,7 +164,6 @@ jobs:
       [
         metadata,
         deploy-infrastructure,
-        build-application-artefacts,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest
     with:
@@ -188,7 +190,6 @@ jobs:
     needs:
       [
         metadata,
-        build-data-migration-artefacts,
         deploy-infrastructure,
       ]
     uses: NHSDigital/uec-dos-management/.github/workflows/deploy-lambda-code.yaml@latest

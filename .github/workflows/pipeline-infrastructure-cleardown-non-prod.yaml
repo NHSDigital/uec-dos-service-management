@@ -34,7 +34,7 @@ jobs:
     secrets: inherit
 
   cleardown-artefacts:
-    if: needs.metadata.outputs.environment == '["dev"]' && github.event.ref_type == 'branch' && startswith(github.head_ref, 'task/') && github.actor != 'github-merge-queue[bot]'
+    if: needs.metadata.outputs.environment == '["dev"]' && github.event.ref_type == 'branch' && startswith(github.event.ref, 'task/') && github.actor != 'github-merge-queue[bot]'
     name: "Cleardown Artefacts"
     needs:
       [
