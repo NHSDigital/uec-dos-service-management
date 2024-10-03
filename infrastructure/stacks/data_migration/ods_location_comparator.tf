@@ -15,7 +15,7 @@ module "ods-location-comparator-lambda" {
   environment_variables = {
     "BASE_URL" : "",
     "DOS_LOCATIONS_JSON_FILE" : "pharmacy_locations.json",
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name,
+    "S3_DATA_BUCKET" : "${var.sm_datasource_bucket_prefix}-${var.environment}-${var.sm_datasource_bucket_name}",
     "TOKEN" : ""
   }
 

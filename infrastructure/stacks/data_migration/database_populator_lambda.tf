@@ -12,7 +12,7 @@ module "cm_database_populator_lambda" {
 
   environment_variables = {
     "ODS_CODES_XLSX_FILE" : "CapacityManagementFullDataset.xlsx",
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+    "S3_DATA_BUCKET" : "${var.sm_datasource_bucket_prefix}-${var.environment}-${var.sm_datasource_bucket_name}"
   }
 
   policy_jsons = [
