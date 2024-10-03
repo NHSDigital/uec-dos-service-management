@@ -1,1 +1,3 @@
-sm_datasource_bucket_name = "nhse-uec-sm-databucket"
+sm_datasource_bucket_name   = "databucket"
+sm_datasource_bucket_prefix = "nhse-uec-sm"
+

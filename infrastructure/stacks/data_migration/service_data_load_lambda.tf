@@ -12,7 +12,7 @@ module "service_data_load_lambda" {
 
   environment_variables = {
     "ODS_CODES_XLSX_FILE" : "Filtered_odscodes.xlsx",
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+    "S3_DATA_BUCKET" : "${var.sm_datasource_bucket_prefix}-${var.environment}-${var.sm_datasource_bucket_name}"
   }
 
   policy_jsons = [

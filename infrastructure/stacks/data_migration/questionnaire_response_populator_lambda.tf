@@ -11,7 +11,7 @@ module "questionnaire_response_populator_lambda" {
   timeout = "900"
 
   environment_variables = {
-    "S3_DATA_BUCKET" : var.sm_datasource_bucket_name
+    "S3_DATA_BUCKET" : "${var.sm_datasource_bucket_prefix}-${var.environment}-${var.sm_datasource_bucket_name}"
   }
 
   policy_jsons = [
