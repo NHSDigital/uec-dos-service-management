@@ -30,7 +30,7 @@ jobs:
       workspace: ${{ needs.metadata.outputs.workspace }}
       domain: ${{ needs.metadata.outputs.reponame }}
       project: ${{ vars.PROJECT }}
-      stacks: '["application", "data_migration", "domain-test"]'
+      stacks: '["application", "data_migration", "domain-test", "github-runner", "terraform_management"]'
     secrets: inherit
 
   cleardown-artefacts:
