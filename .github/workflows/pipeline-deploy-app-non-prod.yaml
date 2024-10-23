@@ -223,7 +223,7 @@ jobs:
       environment: int
       workspace: ${{ needs.metadata.outputs.workspace }}
       triggering_repo: uec-dos-service-management
-      triggering_repo_commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      triggering_repo_commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
       multi_domain: 'true'
     secrets: inherit
 
