@@ -215,7 +215,8 @@ jobs:
     if: ${{ needs.metadata.outputs.environment == 'int' }}
     name: Deploy to integration environment
     needs: [
-      metadata
+      metadata,
+      deploy-data-migration-artefacts
     ]
     uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@latest
     with:
@@ -228,7 +229,6 @@ jobs:
 
 
 #
-
   slack-notifications:
     name: Send notification to slack
     needs: [
@@ -240,6 +240,7 @@ jobs:
       deploy-application-artefacts,
       build-data-migration-artefacts,
       deploy-data-migration-artefacts,
+      deploy-to-integration,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
