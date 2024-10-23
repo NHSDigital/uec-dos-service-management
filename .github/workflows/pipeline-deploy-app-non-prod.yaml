@@ -137,7 +137,7 @@ jobs:
     secrets: inherit
 
   deploy-infrastructure:
-    if: always() && !cancelled() && (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped')
+    if: always() && !cancelled() && (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy infrastructure to ${{ needs.metadata.outputs.environment }} Environment
     needs:
       [
@@ -158,7 +158,7 @@ jobs:
     secrets: inherit
 
   deploy-application-artefacts:
-    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped')
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy application artefacts
     needs:
       [
@@ -185,7 +185,7 @@ jobs:
     secrets: inherit
 
   deploy-data-migration-artefacts:
-    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped')
+    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy data migration artefacts
     needs:
       [
@@ -210,8 +210,25 @@ jobs:
       commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
+#
+  deploy-to-integration:
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped') && (needs.metadata.outputs.environment == 'int' )
+    name: Deploy to integration environment
+    needs: [
+      metadata,
+      deploy-data-migration-artefacts
+    ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@latest
+    with:
+      environment: int
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      triggering_repo: uec-dos-service-management
+      triggering_repo_commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash }}
+      multi_domain: 'true'
+    secrets: inherit
 
 
+#
   slack-notifications:
     name: Send notification to slack
     needs: [
@@ -223,6 +240,7 @@ jobs:
       deploy-application-artefacts,
       build-data-migration-artefacts,
       deploy-data-migration-artefacts,
+      deploy-to-integration,
     ]
     if: always()
     uses: NHSDigital/uec-dos-management/.github/workflows/slack-notifications.yaml@latest
