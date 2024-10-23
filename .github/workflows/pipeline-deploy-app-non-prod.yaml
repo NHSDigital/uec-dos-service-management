@@ -137,7 +137,7 @@ jobs:
     secrets: inherit
 
   deploy-infrastructure:
-    if: always() && !cancelled() && (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') && (!needs.metadata.outputs.environment == 'int' )
+    if: always() && !cancelled() && (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy infrastructure to ${{ needs.metadata.outputs.environment }} Environment
     needs:
       [
@@ -158,7 +158,7 @@ jobs:
     secrets: inherit
 
   deploy-application-artefacts:
-    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped') && (!needs.metadata.outputs.environment == 'int' )
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy application artefacts
     needs:
       [
@@ -185,7 +185,7 @@ jobs:
     secrets: inherit
 
   deploy-data-migration-artefacts:
-    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped') && (!needs.metadata.outputs.environment == 'int' )
+    if: always() && !cancelled() && (needs.build-data-migration-artefacts.result == 'success' || needs.build-data-migration-artefacts.result == 'skipped') && (needs.metadata.outputs.environment != 'int' )
     name: Deploy data migration artefacts
     needs:
       [
