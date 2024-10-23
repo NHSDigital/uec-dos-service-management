@@ -212,7 +212,7 @@ jobs:
     secrets: inherit
 #
   deploy-to-integration:
-    if: always() && !cancelled() && (needs.metadata.outputs.environment == 'int' )
+    if: always() && !cancelled() && (needs.build-application-artefacts.result == 'success' || needs.build-application-artefacts.result == 'skipped') && (needs.metadata.outputs.environment == 'int' )
     name: Deploy to integration environment
     needs: [
       metadata,
