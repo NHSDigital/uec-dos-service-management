@@ -210,7 +210,24 @@ jobs:
       commit_hash: ${{ needs.metadata.outputs.artefact_commit_hash != '' && needs.metadata.outputs.artefact_commit_hash || needs.metadata.outputs.commit_hash }}
       artefact_bucket_name: ${{ needs.metadata.outputs.artefact_bucket_name }}
     secrets: inherit
+#
+  deploy-to-integration:
+    if: ${{ needs.metadata.outputs.environment == 'int' }}
+    name: Deploy to integration environment
+    needs: [
+      metadata
+    ]
+    uses: NHSDigital/uec-dos-management/.github/workflows/build-full-application.yaml@latest
+    with:
+      environment: int
+      workspace: ${{ needs.metadata.outputs.workspace }}
+      triggering_repo: uec-dos-service-management
+      triggering_repo_commit_hash: ${{ needs.metadata.outputs.commit_hash }}
+      multi_domain: 'true'
+    secrets: inherit
 
+
+#
 
   slack-notifications:
     name: Send notification to slack
