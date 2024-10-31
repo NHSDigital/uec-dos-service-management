@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-next-line first-line-heading -->
 ## Description
 
-<!-- Describe your changes in detail. Test change-->
+<!-- Describe your changes in detail. -->
 
 ## Sensitive Information Declaration
 
